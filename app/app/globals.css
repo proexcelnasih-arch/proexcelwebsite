@@ -1,0 +1,655 @@
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap");
+@import "tailwindcss";
+
+/* ============================================================
+   DESIGN TOKENS — MaktabaMaroc Premium Burgundy System
+   ============================================================ */
+
+:root {
+  /* Primary — Burgundy / Garnet */
+  --color-primary: #8C1A2B;
+  --color-primary-dark: #5E0F1D;
+  --color-primary-light: #B3495A;
+
+  /* Accent — Warm Gold */
+  --color-accent: #C9A227;
+  --color-accent-light: #D9B74A;
+  --color-accent-dark: #A8861B;
+
+  /* Background & Surfaces — Crisp Pure White & Clean Surfaces */
+  --color-background: #FFFFFF;
+  --color-surface: #FFFFFF;
+
+  --color-surface-0: #FFFFFF;
+  --color-surface-1: #FFFFFF;
+  --color-surface-2: #F8F8F8;
+  --color-surface-3: #EFEFEF;
+
+  /* Neutrals — Crisp Modern Tones */
+  --color-neutral-50: #FAFAFA;
+  --color-neutral-100: #F4F4F4;
+  --color-neutral-200: #ECECEC;
+  --color-neutral-300: #D8D8D8;
+  --color-neutral-400: #A8A8A8;
+  --color-neutral-500: #737373;
+  --color-neutral-600: #525252;
+  --color-neutral-700: #3F3F3F;
+  --color-neutral-800: #262626;
+  --color-neutral-900: #171717;
+
+  /* Semantic Typography */
+  --color-text-primary: #171717;
+  --color-text-secondary: #5A5A5A;
+  --color-text-muted: #8E8E8E;
+  --color-text-on-dark: #FFFFFF;
+
+  --color-border: #ECECEC;
+  --color-border-strong: #D8D8D8;
+
+  /* Discount Badge Red (Distinct from Brand Burgundy) */
+  --color-discount: #C0392B;
+
+  /* Status */
+  --color-success: #2F7D4F;
+  --color-success-bg: #E3F2E9;
+  --color-warning: #C9A227;
+  --color-warning-bg: #FCF6E8;
+  --color-error: #C0392B;
+  --color-error-bg: #FDF0EE;
+  --color-info: #8C1A2B;
+  --color-info-bg: #F7E9EB;
+
+  /* Pricing */
+  --color-price: #8C1A2B;
+  --color-price-sale: #C0392B;
+  --color-price-original: #6B5F5A;
+
+  /* Badges */
+  --color-badge-new: #C9A227;
+  --color-badge-sale: #C0392B;
+  --color-badge-bestseller: #8C1A2B;
+  --color-badge-featured: #2F7D4F;
+
+  /* Legacy Brand Token Aliases for backward compatibility */
+  --color-brand-primary: var(--color-primary);
+  --color-brand-primary-dark: var(--color-primary-dark);
+  --color-brand-primary-light: var(--color-primary-light);
+  --color-brand-accent: var(--color-accent);
+  --color-brand-accent-light: var(--color-accent-light);
+  --color-brand-accent-dark: var(--color-accent-dark);
+
+  /* Typography */
+  --font-display: var(--font-sans), system-ui, -apple-system, sans-serif;
+  --font-body: var(--font-sans), system-ui, -apple-system, sans-serif;
+  --font-ui: var(--font-sans), system-ui, -apple-system, sans-serif;
+
+  /* Spacing */
+  --spacing-section: 4.5rem;
+  --spacing-section-sm: 2.75rem;
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* Shadows — subtle warm single-direction */
+  --shadow-sm: 0 1px 3px rgba(28, 22, 20, 0.05), 0 1px 2px rgba(28, 22, 20, 0.03);
+  --shadow-md: 0 4px 12px rgba(28, 22, 20, 0.07), 0 2px 4px rgba(28, 22, 20, 0.03);
+  --shadow-lg: 0 12px 32px rgba(28, 22, 20, 0.09), 0 4px 8px rgba(28, 22, 20, 0.05);
+  --shadow-card: 0 2px 8px rgba(28, 22, 20, 0.04);
+  --shadow-card-hover: 0 8px 24px rgba(28, 22, 20, 0.08);
+  --shadow-navbar: 0 2px 14px rgba(28, 22, 20, 0.05);
+  --shadow-mega-menu: 0 16px 44px rgba(28, 22, 20, 0.10);
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+
+  /* Z-Index */
+  --z-dropdown: 100;
+  --z-navbar: 200;
+  --z-overlay: 300;
+  --z-drawer: 400;
+  --z-modal: 500;
+  --z-toast: 600;
+
+  /* Heights */
+  --height-announcement: 36px;
+  --height-navbar: 68px;
+  --height-category-nav: 48px;
+  --height-header: calc(var(--height-announcement) + var(--height-navbar) + var(--height-category-nav));
+}
+
+/* ============================================================
+   TAILWIND V4 THEME EXTENSION
+   ============================================================ */
+@theme inline {
+  --color-primary: var(--color-primary);
+  --color-primary-dark: var(--color-primary-dark);
+  --color-primary-light: var(--color-primary-light);
+
+  --color-accent: var(--color-accent);
+  --color-accent-light: var(--color-accent-light);
+  --color-accent-dark: var(--color-accent-dark);
+
+  --color-background: var(--color-background);
+  --color-surface: var(--color-surface);
+
+  --color-brand-primary: var(--color-primary);
+  --color-brand-primary-light: var(--color-primary-light);
+  --color-brand-primary-dark: var(--color-primary-dark);
+  --color-brand-accent: var(--color-accent);
+  --color-brand-accent-light: var(--color-accent-light);
+  --color-brand-accent-dark: var(--color-accent-dark);
+
+  --color-surface-0: var(--color-surface-0);
+  --color-surface-1: var(--color-surface-1);
+  --color-surface-2: var(--color-surface-2);
+  --color-surface-3: var(--color-surface-3);
+
+  --color-neutral-50: var(--color-neutral-50);
+  --color-neutral-100: var(--color-neutral-100);
+  --color-neutral-200: var(--color-neutral-200);
+  --color-neutral-300: var(--color-neutral-300);
+  --color-neutral-400: var(--color-neutral-400);
+  --color-neutral-500: var(--color-neutral-500);
+  --color-neutral-600: var(--color-neutral-600);
+  --color-neutral-700: var(--color-neutral-700);
+  --color-neutral-800: var(--color-neutral-800);
+  --color-neutral-900: var(--color-neutral-900);
+
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-muted: var(--color-text-muted);
+  --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
+
+  --color-discount: var(--color-discount);
+  --color-success: var(--color-success);
+  --color-error: var(--color-error);
+  --color-warning: var(--color-warning);
+
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-ui: var(--font-ui);
+
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+}
+
+/* ============================================================
+   BASE STYLES
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ============================================================
+   TYPOGRAPHY SCALE
+   ============================================================ */
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.text-hero {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.text-display-lg {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
+.text-display {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.text-section-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.375rem, 2vw, 1.75rem);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--color-text-primary);
+}
+
+.text-eyebrow {
+  font-family: var(--font-ui);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface-1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-neutral-300);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-neutral-400);
+}
+
+/* ============================================================
+   FOCUS STYLES
+   ============================================================ */
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ============================================================
+   SELECTION
+   ============================================================ */
+
+::selection {
+  background-color: color-mix(in srgb, var(--color-primary) 18%, transparent);
+  color: var(--color-text-primary);
+}
+
+/* ============================================================
+   COMPONENT UTILITY CLASSES
+   ============================================================ */
+
+/* Container */
+.container-site {
+  width: 100%;
+  max-width: 1320px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .container-site {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-site {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container-site {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+}
+
+/* Section spacing */
+.section-spacing {
+  padding-top: var(--spacing-section);
+  padding-bottom: var(--spacing-section);
+}
+
+.section-spacing-sm {
+  padding-top: var(--spacing-section-sm);
+  padding-bottom: var(--spacing-section-sm);
+}
+
+/* Card base */
+.card-base {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  transition: box-shadow var(--transition-base), transform var(--transition-base), border-color var(--transition-base);
+}
+
+.card-base:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--color-primary) 25%, transparent);
+}
+
+/* Divider */
+.divider {
+  border: none;
+  border-top: 1px solid var(--color-border);
+}
+
+/* Price formatting */
+.price-current {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  font-family: var(--font-ui);
+  letter-spacing: -0.02em;
+}
+
+.price-original {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  text-decoration: line-through;
+}
+
+.price-sale {
+  color: var(--color-discount);
+}
+
+/* Badge */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.1875rem 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: var(--radius-sm);
+}
+
+.badge-new {
+  background-color: var(--color-badge-new);
+  color: var(--color-text-primary);
+  font-weight: 700;
+}
+
+.badge-sale {
+  background-color: var(--color-badge-sale);
+  color: white;
+}
+
+.badge-bestseller {
+  background-color: var(--color-badge-bestseller);
+  color: white;
+}
+
+.badge-featured {
+  background-color: var(--color-badge-featured);
+  color: white;
+}
+
+/* Rating stars */
+.star-filled {
+  color: var(--color-accent);
+  fill: var(--color-accent);
+}
+
+.star-empty {
+  color: var(--color-border-strong);
+}
+
+/* Category pill */
+.category-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.875rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.category-pill:hover,
+.category-pill.active {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+/* Announcement bar */
+.announcement-bar {
+  height: var(--height-announcement);
+  background-color: var(--color-primary-dark);
+  color: var(--color-text-on-dark);
+}
+
+/* Navbar */
+.navbar {
+  height: var(--height-navbar);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-navbar);
+}
+
+/* Category nav */
+.category-nav {
+  height: var(--height-category-nav);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Sticky header offset for anchor links */
+.scroll-mt-header {
+  scroll-margin-top: var(--height-header);
+}
+
+/* Overlay */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(28, 22, 20, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: var(--z-overlay);
+}
+
+/* Loading spinner */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+/* Skeleton animation */
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-neutral-200) 25%,
+    var(--color-neutral-100) 50%,
+    var(--color-neutral-200) 75%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius-md);
+}
+
+/* Input base */
+.input-base {
+  width: 100%;
+  height: 2.625rem;
+  padding: 0 0.875rem;
+  font-size: 0.9375rem;
+  font-family: var(--font-body);
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.input-base::placeholder {
+  color: var(--color-text-muted);
+}
+
+.input-base:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 10%, transparent);
+}
+
+/* Button base resets */
+button, [role="button"] {
+  cursor: pointer;
+}
+
+/* Image rendering */
+img {
+  display: block;
+  max-width: 100%;
+}
+
+/* Link reset */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* RTL preparation */
+[dir="rtl"] .container-site {
+  direction: rtl;
+}
+
+/* Horizontal scroll (category nav mobile) */
+.scroll-x {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.scroll-x::-webkit-scrollbar {
+  display: none;
+}
+
+/* No-wrap flex row */
+.flex-nowrap-row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0;
+}
+
+/* Thin separator */
+.sep-vertical {
+  width: 1px;
+  height: 1.25rem;
+  background: var(--color-border-strong);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   PRIMARY BURGUNDY BUTTONS — WHITE TEXT, TEXT GLOW & ZOOM HOVER
+   ============================================================ */
+
+/* All primary buttons & links */
+button[class*="bg-[var(--color-primary)"],
+a[class*="bg-[var(--color-primary)"],
+button[class*="bg-[#8C1A2B]"],
+a[class*="bg-[#8C1A2B]"],
+button[class*="bg-primary"],
+a[class*="bg-primary"],
+.btn-primary {
+  color: #ffffff !important;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), text-shadow 0.22s ease, background-color 0.22s ease !important;
+  will-change: transform;
+}
+
+button[class*="bg-[var(--color-primary)"] *,
+a[class*="bg-[var(--color-primary)"] *,
+button[class*="bg-[#8C1A2B]"] *,
+a[class*="bg-[#8C1A2B]"] * {
+  color: #ffffff !important;
+}
+
+/* Hover: Full button zoom + pure white text glow (no box-shadow glow) */
+button[class*="bg-[var(--color-primary)"]:hover,
+a[class*="bg-[var(--color-primary)"]:hover,
+button[class*="bg-[#8C1A2B]"]:hover,
+a[class*="bg-[#8C1A2B]"]:hover,
+button[class*="bg-primary"]:hover,
+a[class*="bg-primary"]:hover,
+.btn-primary:hover {
+  color: #ffffff !important;
+  transform: scale(1.04) !important;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.95), 0 0 20px rgba(255, 255, 255, 0.65), 0 0 30px rgba(255, 255, 255, 0.35) !important;
+}
+
+/* Active: tactile press bounce */
+button[class*="bg-[var(--color-primary)"]:active,
+a[class*="bg-[var(--color-primary)"]:active,
+button[class*="bg-[#8C1A2B]"]:active,
+a[class*="bg-[#8C1A2B]"]:active,
+button[class*="bg-primary"]:active,
+a[class*="bg-primary"]:active,
+.btn-primary:active {
+  transform: scale(0.97) !important;
+}
+
+/* Ensure child icons/svg inside primary buttons also glow white on hover */
+button[class*="bg-[var(--color-primary)"]:hover svg,
+a[class*="bg-[var(--color-primary)"]:hover svg,
+button[class*="bg-[#8C1A2B]"]:hover svg,
+a[class*="bg-[#8C1A2B]"]:hover svg,
+.btn-primary:hover svg {
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 12px rgba(255, 255, 255, 0.5)) !important;
+  transition: filter 0.22s ease-out;
+}
+

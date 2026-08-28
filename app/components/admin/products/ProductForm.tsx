@@ -1,0 +1,641 @@
+"use client"
+
+import { useState, useRef } from "react"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
+import Image from "next/image"
+import {
+  ArrowLeft,
+  Save,
+  Plus,
+  Trash2,
+  Image as ImageIcon,
+  Check,
+  Sparkles,
+  Layers,
+  Tag,
+  Boxes,
+  UploadCloud,
+  GraduationCap,
+  BookOpen,
+  Info,
+} from "lucide-react"
+
+export interface ProductFormData {
+  id?: string
+  name: string
+  slug: string
+  description: string
+  price: number
+  compare_at_price: number | null
+  stock: number
+  sku: string
+  category_name: string
+  school_level?: string
+  subject?: string
+  brand_name: string
+  is_bestseller: boolean
+  is_new_arrival: boolean
+  is_featured: boolean
+  is_active: boolean
+  images: string[]
+}
+
+interface ProductFormProps {
+  initialData?: ProductFormData
+  isEdit?: boolean
+}
+
+// ── Academic Levels for Moroccan School System ───────────────
+const SCHOOL_LEVELS = [
+  {
+    group: "Primaire (Fondamental)",
+    options: [
+      { id: "cp", label: "CP / 1ère Année Primaire (1AP)" },
+      { id: "ce1", label: "CE1 / 2ème Année Primaire (2AP)" },
+      { id: "ce2", label: "CE2 / 3ème Année Primaire (3AP)" },
+      { id: "cm1", label: "CM1 / 4ème Année Primaire (4AP)" },
+      { id: "cm2", label: "CM2 / 5ème Année Primaire (5AP)" },
+      { id: "6ap", label: "6ème Année Primaire (6AP)" },
+    ],
+  },
+  {
+    group: "Collège (Enseignement Secondaire Collégial)",
+    options: [
+      { id: "1ac", label: "1ère Année Collège (1AC)" },
+      { id: "2ac", label: "2ème Année Collège (2AC)" },
+      { id: "3ac", label: "3ème Année Collège (3AC) — Brevet" },
+    ],
+  },
+  {
+    group: "Lycée (Secondaire Qualifiant & Baccalauréat)",
+    options: [
+      { id: "tc", label: "Tronc Commun (Sciences / Lettres / Tech)" },
+      { id: "1bac", label: "1ère Année Baccalauréat (Régional)" },
+      { id: "2bac", label: "2ème Année Baccalauréat (National)" },
+    ],
+  },
+  {
+    group: "Maternelle & Éveil",
+    options: [
+      { id: "ps", label: "Petite Section (PS)" },
+      { id: "ms", label: "Moyenne Section (MS)" },
+      { id: "gs", label: "Grande Section (GS)" },
+    ],
+  },
+  {
+    group: "Autre / Supérieur",
+    options: [
+      { id: "univ", label: "Enseignement Supérieur / Université" },
+      { id: "all", label: "Tous Niveaux / Parascolaire & Dictionnaires" },
+    ],
+  },
+]
+
+const SCHOOL_SUBJECTS = [
+  "Toutes matières / Général",
+  "Mathématiques",
+  "Français (Lecture & Grammaire)",
+  "Langue Arabe",
+  "Sciences de la Vie et de la Terre (SVT)",
+  "Physique - Chimie",
+  "Histoire - Géographie",
+  "Anglais",
+  "Éducation Islamique",
+  "Philosophie",
+  "Informatique & Technologie",
+  "Arts Plastiques & Musique",
+]
+
+export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
+  const router = useRouter()
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const [formData, setFormData] = useState<ProductFormData>(
+    initialData ?? {
+      name: "",
+      slug: "",
+      description: "",
+      price: 0,
+      compare_at_price: null,
+      stock: 10,
+      sku: "",
+      category_name: "Livres Scolaires",
+      school_level: "cp",
+      subject: "Français (Lecture & Grammaire)",
+      brand_name: "Clairefontaine",
+      is_bestseller: false,
+      is_new_arrival: true,
+      is_featured: false,
+      is_active: true,
+      images: [
+        "https://images.unsplash.com/photo-1544816155-12df9643f363?w=600&auto=format&fit=crop&q=80",
+      ],
+    }
+  )
+
+  const [imageUrlInput, setImageUrlInput] = useState("")
+  const [isDragging, setIsDragging] = useState(false)
+  const [savedSuccess, setSavedSuccess] = useState(false)
+
+  const isBookOrKitCategory =
+    formData.category_name === "Livres Scolaires" ||
+    formData.category_name === "Kits Scolaires" ||
+    formData.category_name === "Livres"
+
+  // Auto-generate slug from name if creating
+  function handleNameChange(name: string) {
+    const slug = name
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/[\s_-]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+
+    setFormData((prev) => ({
+      ...prev,
+      name,
+      slug: isEdit ? prev.slug : slug,
+    }))
+  }
+
+  // Handle local PC file upload
+  function handleFilesUpload(files: FileList | null) {
+    if (!files || files.length === 0) return
+
+    Array.from(files).forEach((file) => {
+      if (!file.type.startsWith("image/")) return
+
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const result = e.target?.result as string
+        if (result) {
+          setFormData((prev) => ({
+            ...prev,
+            images: [...prev.images, result],
+          }))
+        }
+      }
+      reader.readAsDataURL(file)
+    })
+  }
+
+  function handleAddImageUrl() {
+    if (!imageUrlInput.trim()) return
+    setFormData((prev) => ({
+      ...prev,
+      images: [...prev.images, imageUrlInput.trim()],
+    }))
+    setImageUrlInput("")
+  }
+
+  function handleRemoveImage(index: number) {
+    setFormData((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index),
+    }))
+  }
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setSavedSuccess(true)
+    setTimeout(() => {
+      router.push("/admin/products")
+      router.refresh()
+    }, 1000)
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Hidden file input for PC upload */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        className="hidden"
+        onChange={(e) => handleFilesUpload(e.target.files)}
+      />
+
+      {/* ── Top Bar ───────────────────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E2E8F0]">
+        <div className="flex items-center gap-3">
+          <Link
+            href="/admin/products"
+            className="w-9 h-9 rounded-xl border border-[#E2E8F0] bg-white flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors"
+            aria-label="Retour aux produits"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </Link>
+          <div>
+            <h1 className="text-xl font-bold text-slate-900">
+              {isEdit ? `Modifier : ${formData.name}` : "Ajouter un Nouveau Produit"}
+            </h1>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Renseignez les détails techniques, tarifs, niveau scolaire et photos du produit.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {savedSuccess && (
+            <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+              <Check className="w-4 h-4" /> Produit enregistré !
+            </span>
+          )}
+
+          <button
+            type="submit"
+            className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-[#8C1A2B] hover:bg-[#5E0F1D] text-white text-xs font-bold shadow-xs hover:shadow-sm transition-all cursor-pointer"
+          >
+            <Save className="w-4 h-4" />
+            <span>{isEdit ? "Mettre à jour" : "Publier le produit"}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* ── 2 Columns Form Layout ─────────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column: General Info, School Level & Images (2 cols) */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Basic Info */}
+          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
+            <h3 className="font-bold text-sm text-slate-900">Informations Générales</h3>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-700">Nom du produit *</label>
+              <input
+                type="text"
+                required
+                value={formData.name}
+                onChange={(e) => handleNameChange(e.target.value)}
+                placeholder="Ex: Manuel de Français CP — Mes Premiers Pas"
+                className="w-full h-10 px-3.5 rounded-xl border border-[#E2E8F0] text-xs font-medium text-slate-800 outline-none focus:border-[#8C1A2B]"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700">Slug URL *</label>
+                <input
+                  type="text"
+                  required
+                  value={formData.slug}
+                  onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                  className="w-full h-10 px-3.5 rounded-xl border border-[#E2E8F0] text-xs font-mono text-slate-600 outline-none focus:border-[#8C1A2B]"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700">Référence / SKU</label>
+                <input
+                  type="text"
+                  value={formData.sku}
+                  onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
+                  placeholder="Ex: LIV-CP-FR-01"
+                  className="w-full h-10 px-3.5 rounded-xl border border-[#E2E8F0] text-xs font-medium text-slate-800 outline-none focus:border-[#8C1A2B]"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-700">Description détaillée</label>
+              <textarea
+                rows={4}
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="Description complète, caractéristiques du manuel, éditeur, conformité au programme du Ministère de l'Éducation Nationale..."
+                className="w-full p-3 rounded-xl border border-[#E2E8F0] text-xs font-medium text-slate-800 outline-none focus:border-[#8C1A2B] resize-none"
+              />
+            </div>
+          </div>
+
+          {/* ── Dynamic Academic Level (Appears for Livres / Kits) ── */}
+          {isBookOrKitCategory && (
+            <div className="bg-white border-2 border-[#8C1A2B]/20 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4 animate-in fade-in duration-200">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-[#8C1A2B]/10 text-[#8C1A2B] flex items-center justify-center">
+                    <GraduationCap className="w-4.5 h-4.5" strokeWidth={2} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-sm text-slate-900">
+                      Niveau Scolaire &amp; Matière (Programme Marocain)
+                    </h3>
+                    <p className="text-[11px] text-slate-500">
+                      Sélectionnez la classe et la discipline pour classer ce manuel dans les filtres de recherche.
+                    </p>
+                  </div>
+                </div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#8C1A2B] bg-[#8C1A2B]/10 px-2 py-0.5 rounded-full">
+                  Spécial Livres
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* School Level Selector */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                    <BookOpen className="w-3.5 h-3.5 text-[#8C1A2B]" />
+                    <span>Niveau / Classe *</span>
+                  </label>
+                  <select
+                    value={formData.school_level ?? "cp"}
+                    onChange={(e) => setFormData({ ...formData, school_level: e.target.value })}
+                    className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] text-xs font-bold text-slate-800 bg-slate-50 focus:bg-white outline-none focus:border-[#8C1A2B] cursor-pointer"
+                  >
+                    {SCHOOL_LEVELS.map((grp) => (
+                      <optgroup key={grp.group} label={grp.group}>
+                        {grp.options.map((opt) => (
+                          <option key={opt.id} value={opt.id}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </optgroup>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Subject Selector */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700">Matière / Discipline</label>
+                  <select
+                    value={formData.subject ?? "Toutes matières / Général"}
+                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                    className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] text-xs font-bold text-slate-800 bg-slate-50 focus:bg-white outline-none focus:border-[#8C1A2B] cursor-pointer"
+                  >
+                    {SCHOOL_SUBJECTS.map((subj) => (
+                      <option key={subj} value={subj}>
+                        {subj}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Quick Preset Buttons for Popular Levels */}
+              <div className="pt-2">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">
+                  Accès Rapide :
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {[
+                    { id: "cp", label: "CP (1AP)" },
+                    { id: "ce1", label: "CE1 (2AP)" },
+                    { id: "ce2", label: "CE2 (3AP)" },
+                    { id: "cm1", label: "CM1 (4AP)" },
+                    { id: "cm2", label: "CM2 (5AP)" },
+                    { id: "6ap", label: "6ème AP" },
+                    { id: "1ac", label: "1ère Collège" },
+                    { id: "2ac", label: "2ème Collège" },
+                    { id: "3ac", label: "3ème Collège" },
+                    { id: "tc", label: "Tronc Commun" },
+                    { id: "1bac", label: "1ère Bac" },
+                    { id: "2bac", label: "2ème Bac" },
+                  ].map((preset) => {
+                    const isSelected = formData.school_level === preset.id
+                    return (
+                      <button
+                        key={preset.id}
+                        type="button"
+                        onClick={() => setFormData({ ...formData, school_level: preset.id })}
+                        className={`text-xs font-bold px-2.5 py-1 rounded-lg border transition-all ${
+                          isSelected
+                            ? "bg-[#8C1A2B] text-white border-[#8C1A2B] shadow-xs"
+                            : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                        }`}
+                      >
+                        {preset.label}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── Media Images & PC Upload ─────────────────────────── */}
+          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
+                <ImageIcon className="w-4 h-4 text-[#8C1A2B]" />
+                <span>Photos du Produit ({formData.images.length})</span>
+              </h3>
+
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#8C1A2B] hover:bg-[#5E0F1D] text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+              >
+                <UploadCloud className="w-3.5 h-3.5" />
+                <span>Importer depuis PC</span>
+              </button>
+            </div>
+
+            {/* Drag & Drop Zone */}
+            <div
+              onDragOver={(e) => {
+                e.preventDefault()
+                setIsDragging(true)
+              }}
+              onDragLeave={() => setIsDragging(false)}
+              onDrop={(e) => {
+                e.preventDefault()
+                setIsDragging(false)
+                handleFilesUpload(e.dataTransfer.files)
+              }}
+              onClick={() => fileInputRef.current?.click()}
+              className={`border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all flex flex-col items-center justify-center ${
+                isDragging
+                  ? "border-[#8C1A2B] bg-[#8C1A2B]/5 scale-[0.99]"
+                  : "border-slate-200 hover:border-[#8C1A2B] bg-slate-50/50 hover:bg-slate-50"
+              }`}
+            >
+              <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200 shadow-xs flex items-center justify-center text-[#8C1A2B] mb-2.5">
+                <UploadCloud className="w-6 h-6" strokeWidth={1.75} />
+              </div>
+              <p className="text-xs font-bold text-slate-800">
+                Glissez-déposez vos photos ici ou{" "}
+                <span className="text-[#8C1A2B] underline">parcourez votre ordinateur</span>
+              </p>
+              <p className="text-[11px] text-slate-400 mt-1">
+                Formats acceptés : JPG, PNG, WEBP, GIF (plusieurs photos autorisées)
+              </p>
+            </div>
+
+            {/* Image Preview Grid */}
+            {formData.images.length > 0 && (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                {formData.images.map((url, idx) => (
+                  <div
+                    key={idx}
+                    className="relative aspect-square rounded-xl bg-slate-50 border border-slate-200 overflow-hidden group shadow-2xs"
+                  >
+                    <Image src={url} alt="Photo produit" fill className="object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage(idx)}
+                      className="absolute top-2 right-2 w-7 h-7 rounded-lg bg-rose-600 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm cursor-pointer"
+                      aria-label="Supprimer photo"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                    {idx === 0 && (
+                      <span className="absolute bottom-2 left-2 text-[9px] font-extrabold uppercase bg-slate-900/85 text-white px-2 py-0.5 rounded shadow-sm">
+                        Principale
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Add Image via URL (Alternative) */}
+            <div className="flex gap-2 pt-2 border-t border-slate-100">
+              <input
+                type="url"
+                value={imageUrlInput}
+                onChange={(e) => setImageUrlInput(e.target.value)}
+                placeholder="Ou coller une URL d'image externe (HTTPS)…"
+                className="flex-1 h-9.5 px-3.5 rounded-xl border border-[#E2E8F0] text-xs text-slate-800 outline-none focus:border-[#8C1A2B]"
+              />
+              <button
+                type="button"
+                onClick={handleAddImageUrl}
+                className="h-9.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-colors shrink-0 cursor-pointer"
+              >
+                Ajouter URL
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: Pricing, Inventory, Organization & Flags (1 col) */}
+        <div className="space-y-6">
+          {/* Pricing & Stock */}
+          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 shadow-xs space-y-4">
+            <h3 className="font-bold text-sm text-slate-900">Tarification &amp; Stock</h3>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-700">Prix de vente (DH) *</label>
+              <input
+                type="number"
+                step="0.5"
+                required
+                value={formData.price}
+                onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })}
+                className="w-full h-10 px-3.5 rounded-xl border border-[#E2E8F0] text-xs font-bold text-slate-900 outline-none focus:border-[#8C1A2B]"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-700">Prix barré (DH)</label>
+              <input
+                type="number"
+                step="0.5"
+                value={formData.compare_at_price ?? ""}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    compare_at_price: e.target.value ? parseFloat(e.target.value) : null,
+                  })
+                }
+                placeholder="Optionnel (pour afficher promo)"
+                className="w-full h-10 px-3.5 rounded-xl border border-[#E2E8F0] text-xs text-slate-600 outline-none focus:border-[#8C1A2B]"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-700">Quantité en Stock *</label>
+              <input
+                type="number"
+                required
+                value={formData.stock}
+                onChange={(e) => setFormData({ ...formData, stock: parseInt(e.target.value, 10) || 0 })}
+                className="w-full h-10 px-3.5 rounded-xl border border-[#E2E8F0] text-xs font-bold text-slate-900 outline-none focus:border-[#8C1A2B]"
+              />
+            </div>
+          </div>
+
+          {/* Categorization */}
+          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 shadow-xs space-y-4">
+            <h3 className="font-bold text-sm text-slate-900">Rayon &amp; Marque</h3>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-700">Catégorie *</label>
+              <select
+                value={formData.category_name}
+                onChange={(e) => setFormData({ ...formData, category_name: e.target.value })}
+                className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] text-xs font-bold text-slate-800 bg-white outline-none focus:border-[#8C1A2B] cursor-pointer"
+              >
+                <option value="Livres Scolaires">Livres Scolaires (Manuels)</option>
+                <option value="Papeterie">Papeterie</option>
+                <option value="Fournitures Scolaires">Fournitures Scolaires</option>
+                <option value="Arts & Créativité">Arts &amp; Créativité</option>
+                <option value="Livres">Livres &amp; Romans</option>
+                <option value="Bureau">Bureau</option>
+                <option value="Kits Scolaires">Kits Scolaires</option>
+              </select>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-700">Marque / Éditeur</label>
+              <select
+                value={formData.brand_name}
+                onChange={(e) => setFormData({ ...formData, brand_name: e.target.value })}
+                className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] text-xs font-bold text-slate-800 bg-white outline-none focus:border-[#8C1A2B] cursor-pointer"
+              >
+                <option value="Éditions Officielles">Éditions Officielles (Ministère)</option>
+                <option value="Hachette">Hachette</option>
+                <option value="Nathan">Nathan</option>
+                <option value="Clairefontaine">Clairefontaine</option>
+                <option value="BIC">BIC</option>
+                <option value="Faber-Castell">Faber-Castell</option>
+                <option value="Maped">Maped</option>
+                <option value="Oxford">Oxford</option>
+                <option value="Casio">Casio</option>
+                <option value="Stabilo">Stabilo</option>
+                <option value="Générique">Autre / Générique</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Visibility & Badges */}
+          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 shadow-xs space-y-3">
+            <h3 className="font-bold text-sm text-slate-900">Visibilité &amp; Badges</h3>
+
+            <label className="flex items-center justify-between p-2 rounded-xl bg-slate-50 hover:bg-slate-100 cursor-pointer transition-colors">
+              <span className="text-xs font-bold text-slate-800">Actif sur la boutique</span>
+              <input
+                type="checkbox"
+                checked={formData.is_active}
+                onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+                className="w-4 h-4 rounded text-[#8C1A2B] focus:ring-[#8C1A2B]"
+              />
+            </label>
+
+            <label className="flex items-center justify-between p-2 rounded-xl bg-slate-50 hover:bg-slate-100 cursor-pointer transition-colors">
+              <span className="text-xs font-bold text-slate-800">Badge Meilleure Vente</span>
+              <input
+                type="checkbox"
+                checked={formData.is_bestseller}
+                onChange={(e) => setFormData({ ...formData, is_bestseller: e.target.checked })}
+                className="w-4 h-4 rounded text-[#8C1A2B] focus:ring-[#8C1A2B]"
+              />
+            </label>
+
+            <label className="flex items-center justify-between p-2 rounded-xl bg-slate-50 hover:bg-slate-100 cursor-pointer transition-colors">
+              <span className="text-xs font-bold text-slate-800">Badge Nouveauté 2026</span>
+              <input
+                type="checkbox"
+                checked={formData.is_new_arrival}
+                onChange={(e) => setFormData({ ...formData, is_new_arrival: e.target.checked })}
+                className="w-4 h-4 rounded text-[#8C1A2B] focus:ring-[#8C1A2B]"
+              />
+            </label>
+          </div>
+        </div>
+      </div>
+    </form>
+  )
+}

@@ -1,0 +1,66 @@
+import { createServerClient } from "@supabase/ssr"
+import { NextResponse, type NextRequest } from "next/server"
+import type { Database } from "@/types/database"
+
+export async function updateSession(request: NextRequest) {
+  let supabaseResponse = NextResponse.next({ request })
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseKey =
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  if (!supabaseUrl || !supabaseKey || supabaseUrl.includes("placeholder")) {
+    return supabaseResponse
+  }
+
+  const supabase = createServerClient<Database>(
+    supabaseUrl,
+    supabaseKey,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll()
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value)
+          )
+          supabaseResponse = NextResponse.next({ request })
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options)
+          )
+        },
+      },
+    }
+  )
+
+  // Refresh session — IMPORTANT: do not add logic between here and return
+  const { data: { user } } = await supabase.auth.getUser()
+
+  // Protect admin routes
+  if (request.nextUrl.pathname.startsWith("/admin")) {
+    const isDev = process.env.NODE_ENV === "development"
+    const hasAdminCookie = request.cookies.get("proexcel_admin_session")?.value === "true"
+
+    if (!user && !isDev && !hasAdminCookie) {
+      const url = request.nextUrl.clone()
+      url.pathname = "/login"
+      url.searchParams.set("redirect", request.nextUrl.pathname)
+      return NextResponse.redirect(url)
+    }
+    // Admin role check is done per-page/action via RLS
+  }
+
+  // Protect account routes
+  if (request.nextUrl.pathname.startsWith("/account")) {
+    if (!user) {
+      const url = request.nextUrl.clone()
+      url.pathname = "/login"
+      url.searchParams.set("redirect", request.nextUrl.pathname)
+      return NextResponse.redirect(url)
+    }
+  }
+
+  return supabaseResponse
+}
