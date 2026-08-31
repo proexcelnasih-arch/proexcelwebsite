@@ -19,7 +19,18 @@ import {
   GraduationCap,
   BookOpen,
   Info,
+  DollarSign,
+  Package,
 } from "lucide-react"
+import { createClient } from "@/lib/supabase/client"
+
+export interface VariantItem {
+  id?: string
+  variant_type: string // "Taille" | "Couleur" | "Goût" | "Format" | "Pack" | "size" | "color" | string
+  label: string
+  price_delta: number
+  stock_quantity: number
+}
 
 export interface ProductFormData {
   id?: string
@@ -39,6 +50,7 @@ export interface ProductFormData {
   is_featured: boolean
   is_active: boolean
   images: string[]
+  variants?: VariantItem[]
 }
 
 interface ProductFormProps {
@@ -107,6 +119,15 @@ const SCHOOL_SUBJECTS = [
   "Arts Plastiques & Musique",
 ]
 
+const VARIANT_TYPE_PRESETS = [
+  { label: "Format / Dimension", value: "Format" },
+  { label: "Couleur / Teinte", value: "Couleur" },
+  { label: "Conditionnement / Pack", value: "Pack" },
+  { label: "Réglure / Quadrillage", value: "Réglure" },
+  { label: "Taille", value: "Taille" },
+  { label: "Autre option", value: "Option" },
+]
+
 export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
   const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -120,7 +141,7 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
       compare_at_price: null,
       stock: 10,
       sku: "",
-      category_name: "Livres Scolaires",
+      category_name: "Papeterie",
       school_level: "cp",
       subject: "Français (Lecture & Grammaire)",
       brand_name: "Clairefontaine",
@@ -128,15 +149,20 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
       is_new_arrival: true,
       is_featured: false,
       is_active: true,
-      images: [
-        "https://images.unsplash.com/photo-1544816155-12df9643f363?w=600&auto=format&fit=crop&q=80",
-      ],
+      images: [],
+      variants: [],
     }
+  )
+
+  const [variants, setVariants] = useState<VariantItem[]>(
+    initialData?.variants ?? []
   )
 
   const [imageUrlInput, setImageUrlInput] = useState("")
   const [isDragging, setIsDragging] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [savedSuccess, setSavedSuccess] = useState(false)
+  const [formError, setFormError] = useState("")
 
   const isBookOrKitCategory =
     formData.category_name === "Livres Scolaires" ||
@@ -196,13 +222,178 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
     }))
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  // ── Variant Handlers ─────────────────────────────────────────
+  function handleAddVariant(type = "Taille", label = "", priceDelta = 0, stockQty = 10) {
+    const newVariant: VariantItem = {
+      id: `var-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      variant_type: type,
+      label: label || `Option ${variants.length + 1}`,
+      price_delta: priceDelta,
+      stock_quantity: stockQty,
+    }
+    setVariants((prev) => [...prev, newVariant])
+  }
+
+  function handleUpdateVariant(index: number, field: keyof VariantItem, value: any) {
+    setVariants((prev) =>
+      prev.map((v, i) => (i === index ? { ...v, [field]: value } : v))
+    )
+  }
+
+  function handleRemoveVariant(index: number) {
+    setVariants((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setSavedSuccess(true)
-    setTimeout(() => {
-      router.push("/admin/products")
-      router.refresh()
-    }, 1000)
+    setIsSubmitting(true)
+    setFormError("")
+
+    try {
+      const supabase = createClient()
+
+      // ── Resolve category_id and brand_id by name ────────────
+      const { data: catRow } = await supabase
+        .from("categories")
+        .select("id, slug")
+        .ilike("name", formData.category_name)
+        .maybeSingle()
+
+      const { data: brandRow } = await supabase
+        .from("brands")
+        .select("id")
+        .ilike("name", formData.brand_name)
+        .maybeSingle()
+
+      const categoryId: string | null = catRow?.id ?? null
+      const brandId: string | null = brandRow?.id ?? null
+      const categorySlug: string = catRow?.slug ?? formData.category_name.toLowerCase().replace(/\s+/g, "-")
+
+      if (isEdit && formData.id) {
+        // ── UPDATE existing product ────────────────────────────
+        await supabase
+          .from("products")
+          .update({
+            name: formData.name,
+            slug: formData.slug,
+            description: formData.description,
+            price: formData.price,
+            compare_at_price: formData.compare_at_price,
+            stock_quantity: formData.stock,
+            sku: formData.sku,
+            ...(categoryId ? { category_id: categoryId } : {}),
+            ...(brandId ? { brand_id: brandId } : {}),
+            is_bestseller: formData.is_bestseller,
+            is_new_arrival: formData.is_new_arrival,
+            is_featured: formData.is_featured,
+            is_active: formData.is_active,
+          })
+          .eq("id", formData.id)
+
+        // Save variants (delete-and-reinsert)
+        if (variants.length > 0) {
+          try {
+            await (supabase as any).from("product_variants").delete().eq("product_id", formData.id)
+            await (supabase as any).from("product_variants").insert(
+              variants.map((v, idx) => ({
+                product_id: formData.id,
+                variant_type: v.variant_type,
+                label: v.label,
+                price_delta: Number(v.price_delta) || 0,
+                stock_quantity: Number(v.stock_quantity) || 0,
+                display_order: idx,
+              }))
+            )
+          } catch (varErr) {
+            console.warn("[ProductForm] Error updating variants:", varErr)
+          }
+        }
+
+      } else {
+        // ── INSERT new product ──────────────────────────────────
+        const insertPayload: Record<string, any> = {
+          name: formData.name,
+          slug: formData.slug,
+          description: formData.description || null,
+          price: formData.price,
+          compare_at_price: formData.compare_at_price ?? null,
+          stock_quantity: formData.stock,
+          sku: formData.sku || formData.slug.toUpperCase(),
+          is_bestseller: formData.is_bestseller,
+          is_new_arrival: formData.is_new_arrival,
+          is_featured: formData.is_featured,
+          is_active: formData.is_active,
+        }
+        if (categoryId) insertPayload.category_id = categoryId
+        if (brandId) insertPayload.brand_id = brandId
+
+        const { data: newProduct, error: insertError } = await supabase
+          .from("products")
+          .insert(insertPayload)
+          .select("id")
+          .single()
+
+        if (insertError || !newProduct) {
+          throw new Error(insertError?.message ?? "Erreur lors de la création du produit")
+        }
+
+        const newProductId: string = newProduct.id
+
+        // Insert product images (filter out placeholder/base64 for external URLs only)
+        const imageUrls = formData.images.filter(
+          (url) => url && url.startsWith("http")
+        )
+        if (imageUrls.length > 0) {
+          await supabase.from("product_images").insert(
+            imageUrls.map((url, idx) => ({
+              product_id: newProductId,
+              url,
+              is_primary: idx === 0,
+              display_order: idx,
+              alt_text: formData.name,
+            }))
+          )
+        }
+
+        // Insert variants if any were added
+        if (variants.length > 0) {
+          try {
+            await (supabase as any).from("product_variants").insert(
+              variants.map((v, idx) => ({
+                product_id: newProductId,
+                variant_type: v.variant_type,
+                label: v.label,
+                price_delta: Number(v.price_delta) || 0,
+                stock_quantity: Number(v.stock_quantity) || 0,
+                display_order: idx,
+              }))
+            )
+          } catch (varErr) {
+            console.warn("[ProductForm] Error inserting variants:", varErr)
+          }
+        }
+      }
+
+      // ── Revalidate storefront cache so new/updated products appear immediately ──
+      try {
+        await fetch(`/api/revalidate?slug=${encodeURIComponent(formData.slug)}&category=${encodeURIComponent(categorySlug)}`)
+      } catch {
+        // Non-blocking — cache will eventually expire on its own
+      }
+
+      setSavedSuccess(true)
+      setTimeout(() => {
+        router.push("/admin/products")
+        router.refresh()
+      }, 1000)
+    } catch (err: any) {
+      console.warn("[ProductForm] Save error:", err)
+      setFormError(err?.message || "Erreur lors de l'enregistrement. Vérifiez votre connexion et réessayez.")
+      setIsSubmitting(false)
+      return
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -232,7 +423,7 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
               {isEdit ? `Modifier : ${formData.name}` : "Ajouter un Nouveau Produit"}
             </h1>
             <p className="text-xs text-slate-500 mt-0.5">
-              Renseignez les détails techniques, tarifs, niveau scolaire et photos du produit.
+              Renseignez les détails techniques, tarifs, variantes et photos du produit.
             </p>
           </div>
         </div>
@@ -246,18 +437,29 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
 
           <button
             type="submit"
-            className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-[#8C1A2B] hover:bg-[#5E0F1D] text-white text-xs font-bold shadow-xs hover:shadow-sm transition-all cursor-pointer"
+            disabled={isSubmitting}
+            className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-[#8C1A2B] hover:bg-[#5E0F1D] text-white text-xs font-bold shadow-xs hover:shadow-sm transition-all disabled:opacity-60 cursor-pointer"
           >
             <Save className="w-4 h-4" />
-            <span>{isEdit ? "Mettre à jour" : "Publier le produit"}</span>
+            <span>{isSubmitting ? "Enregistrement..." : isEdit ? "Mettre à jour" : "Publier le produit"}</span>
           </button>
         </div>
       </div>
 
+      {/* Error banner */}
+      {formError && (
+        <div className="px-4 py-3 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-start gap-2">
+          <span className="shrink-0 mt-0.5">⚠</span>
+          <span>{formError}</span>
+        </div>
+      )}
+
       {/* ── 2 Columns Form Layout ─────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column: General Info, School Level & Images (2 cols) */}
+        
+        {/* Left Column: General Info, Variants & Images (2 cols) */}
         <div className="lg:col-span-2 space-y-6">
+          
           {/* Basic Info */}
           <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
             <h3 className="font-bold text-sm text-slate-900">Informations Générales</h3>
@@ -269,7 +471,7 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
                 required
                 value={formData.name}
                 onChange={(e) => handleNameChange(e.target.value)}
-                placeholder="Ex: Manuel de Français CP — Mes Premiers Pas"
+                placeholder="Ex: Taille crayon Staedtler / Cahier Séyès 96p"
                 className="w-full h-10 px-3.5 rounded-xl border border-[#E2E8F0] text-xs font-medium text-slate-800 outline-none focus:border-[#8C1A2B]"
               />
             </div>
@@ -304,10 +506,198 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
                 rows={4}
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Description complète, caractéristiques du manuel, éditeur, conformité au programme du Ministère de l'Éducation Nationale..."
+                placeholder="Description complète, caractéristiques, matériaux, usage..."
                 className="w-full p-3 rounded-xl border border-[#E2E8F0] text-xs font-medium text-slate-800 outline-none focus:border-[#8C1A2B] resize-none"
               />
             </div>
+          </div>
+
+          {/* ══════════════════════════════════════════════════════
+              DYNAMIC PRODUCT VARIANTS SECTION
+              Allows adding, editing, and deleting variant options
+              (Size, Color, Flavor, Pack, etc.) with custom prices & stock
+             ══════════════════════════════════════════════════════ */}
+          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 sm:p-6 shadow-xs space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-[#8C1A2B]/10 text-[#8C1A2B] flex items-center justify-center">
+                  <Layers className="w-4.5 h-4.5" strokeWidth={2} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
+                    <span>Variantes &amp; Options</span>
+                    <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[11px] font-extrabold">
+                      {variants.length}
+                    </span>
+                  </h3>
+                  <p className="text-[11px] text-slate-500">
+                    Définissez les options au choix (format, couleur, pack, réglure) avec prix et stock dédiés.
+                  </p>
+                </div>
+              </div>
+
+              {/* Quick Add Buttons */}
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => handleAddVariant("Format", "Grand Format (24x32 cm)", 5, 20)}
+                  className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold transition-colors cursor-pointer"
+                >
+                  + Format
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleAddVariant("Couleur", "Bleu", 0, 25)}
+                  className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold transition-colors cursor-pointer"
+                >
+                  + Couleur
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleAddVariant("Pack", "Lot de 3", 10, 15)}
+                  className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold transition-colors cursor-pointer"
+                >
+                  + Pack
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleAddVariant("Option", "Standard", 0, 10)}
+                  className="px-3 py-1 rounded-lg bg-[#8C1A2B] hover:bg-[#5E0F1D] text-white text-[11px] font-bold flex items-center gap-1 shadow-xs transition-all cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Ajouter</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Variants List Table / Grid */}
+            {variants.length === 0 ? (
+              <div className="text-center py-8 px-4 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50 space-y-2">
+                <Boxes className="w-8 h-8 text-slate-400 mx-auto stroke-[1.5]" />
+                <p className="text-xs font-bold text-slate-700">Aucune variante configurée pour ce produit</p>
+                <p className="text-[11px] text-slate-500 max-w-md mx-auto">
+                  Le produit sera vendu en option unique. Ajoutez des variantes si vous souhaitez proposer plusieurs tailles, couleurs, saveurs ou packs.
+                </p>
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={() => handleAddVariant("Taille", "Format Standard", 0, 10)}
+                    className="px-3.5 py-1.5 rounded-xl bg-white border border-slate-300 text-xs font-bold text-slate-800 hover:border-[#8C1A2B] shadow-2xs transition-colors cursor-pointer"
+                  >
+                    + Créer ma première variante
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div className="hidden sm:grid sm:grid-cols-12 gap-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider px-2">
+                  <div className="col-span-3">Type d&apos;option</div>
+                  <div className="col-span-4">Nom / Intitulé</div>
+                  <div className="col-span-2">Ajustement Prix (DH)</div>
+                  <div className="col-span-2">Stock disponible</div>
+                  <div className="col-span-1 text-center">Action</div>
+                </div>
+
+                {variants.map((v, index) => (
+                  <div
+                    key={v.id || index}
+                    className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 p-3 sm:p-2 bg-slate-50/80 rounded-xl border border-slate-200 items-center hover:border-slate-300 transition-colors"
+                  >
+                    {/* Option Type */}
+                    <div className="sm:col-span-3">
+                      <label className="sm:hidden text-[10px] font-bold text-slate-500 uppercase block mb-1">
+                        Type d&apos;option
+                      </label>
+                      <input
+                        type="text"
+                        value={v.variant_type}
+                        onChange={(e) => handleUpdateVariant(index, "variant_type", e.target.value)}
+                        placeholder="Ex: Taille, Couleur, Goût"
+                        className="w-full h-8 px-2.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-800 outline-none focus:border-[#8C1A2B]"
+                      />
+                    </div>
+
+                    {/* Variant Label */}
+                    <div className="sm:col-span-4">
+                      <label className="sm:hidden text-[10px] font-bold text-slate-500 uppercase block mb-1">
+                        Intitulé de l&apos;option
+                      </label>
+                      <input
+                        type="text"
+                        value={v.label}
+                        onChange={(e) => handleUpdateVariant(index, "label", e.target.value)}
+                        placeholder="Ex: Pouch 250g, Bleu, Chocolat"
+                        className="w-full h-8 px-2.5 rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-800 outline-none focus:border-[#8C1A2B]"
+                      />
+                    </div>
+
+                    {/* Price Delta */}
+                    <div className="sm:col-span-2">
+                      <label className="sm:hidden text-[10px] font-bold text-slate-500 uppercase block mb-1">
+                        Ajustement Prix (DH)
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          step="0.5"
+                          value={v.price_delta}
+                          onChange={(e) =>
+                            handleUpdateVariant(index, "price_delta", parseFloat(e.target.value) || 0)
+                          }
+                          placeholder="0"
+                          className="w-full h-8 px-2.5 pr-6 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-800 outline-none focus:border-[#8C1A2B]"
+                        />
+                        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">
+                          DH
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Stock Quantity */}
+                    <div className="sm:col-span-2">
+                      <label className="sm:hidden text-[10px] font-bold text-slate-500 uppercase block mb-1">
+                        Stock
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={v.stock_quantity}
+                        onChange={(e) =>
+                          handleUpdateVariant(index, "stock_quantity", parseInt(e.target.value, 10) || 0)
+                        }
+                        placeholder="10"
+                        className="w-full h-8 px-2.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-800 outline-none focus:border-[#8C1A2B]"
+                      />
+                    </div>
+
+                    {/* Delete Variant Button */}
+                    <div className="sm:col-span-1 flex justify-end sm:justify-center pt-1 sm:pt-0">
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveVariant(index)}
+                        className="w-8 h-8 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-colors cursor-pointer"
+                        aria-label="Supprimer cette variante"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+
+                {/* Summary bar */}
+                <div className="flex items-center justify-between text-xs text-slate-500 pt-2 px-1">
+                  <span>
+                    Total des variantes : <strong className="text-slate-800">{variants.length}</strong>
+                  </span>
+                  <span>
+                    Stock total combiné :{" "}
+                    <strong className="text-slate-800">
+                      {variants.reduce((acc, v) => acc + (Number(v.stock_quantity) || 0), 0)} unités
+                    </strong>
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* ── Dynamic Academic Level (Appears for Livres / Kits) ── */}
@@ -372,45 +762,6 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
                   </select>
                 </div>
               </div>
-
-              {/* Quick Preset Buttons for Popular Levels */}
-              <div className="pt-2">
-                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">
-                  Accès Rapide :
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {[
-                    { id: "cp", label: "CP (1AP)" },
-                    { id: "ce1", label: "CE1 (2AP)" },
-                    { id: "ce2", label: "CE2 (3AP)" },
-                    { id: "cm1", label: "CM1 (4AP)" },
-                    { id: "cm2", label: "CM2 (5AP)" },
-                    { id: "6ap", label: "6ème AP" },
-                    { id: "1ac", label: "1ère Collège" },
-                    { id: "2ac", label: "2ème Collège" },
-                    { id: "3ac", label: "3ème Collège" },
-                    { id: "tc", label: "Tronc Commun" },
-                    { id: "1bac", label: "1ère Bac" },
-                    { id: "2bac", label: "2ème Bac" },
-                  ].map((preset) => {
-                    const isSelected = formData.school_level === preset.id
-                    return (
-                      <button
-                        key={preset.id}
-                        type="button"
-                        onClick={() => setFormData({ ...formData, school_level: preset.id })}
-                        className={`text-xs font-bold px-2.5 py-1 rounded-lg border transition-all ${
-                          isSelected
-                            ? "bg-[#8C1A2B] text-white border-[#8C1A2B] shadow-xs"
-                            : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
-                        }`}
-                      >
-                        {preset.label}
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
             </div>
           )}
 
@@ -471,7 +822,7 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
                     key={idx}
                     className="relative aspect-square rounded-xl bg-slate-50 border border-slate-200 overflow-hidden group shadow-2xs"
                   >
-                    <Image src={url} alt="Photo produit" fill className="object-cover" />
+                    <Image src={url} alt="Photo produit" fill unoptimized className="object-cover" />
                     <button
                       type="button"
                       onClick={() => handleRemoveImage(idx)}
@@ -514,7 +865,7 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
         <div className="space-y-6">
           {/* Pricing & Stock */}
           <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 shadow-xs space-y-4">
-            <h3 className="font-bold text-sm text-slate-900">Tarification &amp; Stock</h3>
+            <h3 className="font-bold text-sm text-slate-900">Tarification &amp; Stock de Base</h3>
 
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700">Prix de vente (DH) *</label>
@@ -546,7 +897,7 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700">Quantité en Stock *</label>
+              <label className="text-xs font-bold text-slate-700">Quantité en Stock Global *</label>
               <input
                 type="number"
                 required

@@ -4,6 +4,8 @@ import type { Database } from "@/types/database"
 import type {
   ProductListItem,
   ProductWithDetails,
+  ProductVariant,
+  RecentPurchase,
   Category,
   Brand,
   Review,
@@ -16,6 +18,9 @@ export type ProductRow = Database["public"]["Tables"]["products"]["Row"]
 export type ProductImageRow = Database["public"]["Tables"]["product_images"]["Row"]
 export type CategoryRow = Database["public"]["Tables"]["categories"]["Row"]
 export type BrandRow = Database["public"]["Tables"]["brands"]["Row"]
+
+export const PRODUCT_LIST_SELECT =
+  "*, product_images(url, is_primary, display_order), categories(name, slug), brands(name, slug)"
 
 export { formatProductListItem }
 
@@ -198,7 +203,7 @@ export async function getBestsellerProducts(limit = 8): Promise<ProductListItem[
     const supabase = await createClient()
     const { data, error } = await supabase
       .from("products")
-      .select("*, product_images(url, is_primary, display_order), categories(name, slug), brands(name, slug)")
+      .select(PRODUCT_LIST_SELECT)
       .eq("is_active", true)
       .eq("is_bestseller", true)
       .order("rating_avg", { ascending: false })
@@ -223,7 +228,7 @@ export async function getNewArrivalProducts(limit = 8): Promise<ProductListItem[
     const supabase = await createClient()
     const { data, error } = await supabase
       .from("products")
-      .select("*, product_images(url, is_primary, display_order), categories(name, slug), brands(name, slug)")
+      .select(PRODUCT_LIST_SELECT)
       .eq("is_active", true)
       .eq("is_new_arrival", true)
       .order("created_at", { ascending: false })
@@ -248,7 +253,7 @@ export async function getBestOfferProducts(excludeIds: string[] = [], limit = 8)
     const supabase = await createClient()
     let query = supabase
       .from("products")
-      .select("*, product_images(url, is_primary, display_order), categories(name, slug), brands(name, slug)")
+      .select(PRODUCT_LIST_SELECT)
       .eq("is_active", true)
       .not("compare_at_price", "is", null)
 
@@ -353,10 +358,7 @@ export async function getCatalogProducts(params: CatalogQueryParams): Promise<Ca
     // 3. Build main query
     let query = supabase
       .from("products")
-      .select(
-        "*, product_images(url, is_primary, display_order), categories(name, slug), brands(name, slug)",
-        { count: "exact" }
-      )
+      .select(PRODUCT_LIST_SELECT, { count: "exact" })
       .eq("is_active", true)
 
     // Full-text search with tsvector GIN index
@@ -439,10 +441,91 @@ export async function getCatalogProducts(params: CatalogQueryParams): Promise<Ca
   }
 }
 
-// ── 4. PRODUCT DETAIL QUERY ────────────────────────────────────
+// ── 4. PRODUCT DETAIL & SOCIAL PROOF QUERIES ──────────────────
 
 /**
- * Fetch product by slug with images, brand, category, and approved reviews
+ * Query product variants for a product
+ */
+export async function getProductVariants(productId: string): Promise<ProductVariant[]> {
+  try {
+    const supabase = await createClient()
+    const { data, error } = await (supabase as any)
+      .from("product_variants")
+      .select("*")
+      .eq("product_id", productId)
+      .order("display_order", { ascending: true })
+
+    if (error || !data) return []
+    return data as ProductVariant[]
+  } catch {
+    return []
+  }
+}
+
+/**
+ * Query actual order items in last 24h for a specific product (real data only, 0 if none)
+ */
+export async function getProductRecentPurchaseCount(productId: string): Promise<number> {
+  try {
+    const supabase = await createClient()
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+    const { count, error } = await supabase
+      .from("order_items")
+      .select("id, orders!inner(created_at)", { count: "exact", head: true })
+      .eq("product_id", productId)
+      .gte("orders.created_at", twentyFourHoursAgo)
+
+    if (error) return 0
+    return count ?? 0
+  } catch {
+    return 0
+  }
+}
+
+/**
+ * Query recent real orders across the store for floating purchase toast (real data only)
+ */
+export async function getRecentStorePurchases(limit = 4): Promise<RecentPurchase[]> {
+  try {
+    const supabase = await createClient()
+    const { data, error } = await supabase
+      .from("order_items")
+      .select("id, product_name_snapshot, quantity, orders!inner(customer_name, shipping_address, created_at), products(slug, product_images(url))")
+      .order("created_at", { ascending: false, foreignTable: "orders" })
+      .limit(limit)
+
+    if (error || !data || data.length === 0) return []
+
+    return data.map((item: any) => {
+      const order = item.orders
+      const fullName = order?.customer_name || "Client"
+      const firstName = fullName.split(" ")[0] || "Client"
+      const address = order?.shipping_address
+      const city = address?.city || address?.region || "Maroc"
+      const productSlug = item.products?.slug || ""
+      const productImg = item.products?.product_images?.[0]?.url || null
+
+      const createdTime = new Date(order?.created_at || Date.now())
+      const diffMinutes = Math.max(1, Math.round((Date.now() - createdTime.getTime()) / (1000 * 60)))
+      const timeText = diffMinutes < 60 ? `Il y a ${diffMinutes} min` : `Il y a ${Math.round(diffMinutes / 60)} h`
+
+      return {
+        id: item.id,
+        customer_first_name: firstName,
+        city,
+        product_name: item.product_name_snapshot,
+        product_slug: productSlug,
+        product_image: productImg,
+        time_ago_text: timeText,
+      }
+    })
+  } catch {
+    return []
+  }
+}
+
+/**
+ * Fetch product by slug with images, brand, category, variants, and approved reviews
  */
 export async function getProductBySlug(slug: string): Promise<ProductWithDetails | null> {
   try {
@@ -469,6 +552,8 @@ export async function getProductBySlug(slug: string): Promise<ProductWithDetails
         ? Math.round(((data.compare_at_price - data.price) / data.compare_at_price) * 100)
         : null
 
+    const variants = await getProductVariants(data.id)
+
     return {
       ...data,
       images: sortedImages,
@@ -476,6 +561,8 @@ export async function getProductBySlug(slug: string): Promise<ProductWithDetails
       brand: data.brands as any,
       discount_percentage: discountPercentage,
       average_rating: data.rating_avg,
+      video_url: (data as any).video_url ?? null,
+      variants,
     }
   } catch (err) {
     console.warn("[queries] getProductBySlug exception:", err)
@@ -495,7 +582,7 @@ export async function getRelatedProducts(
     const supabase = await createClient()
     const { data, error } = await supabase
       .from("products")
-      .select("*, product_images(url, is_primary, display_order), categories(name, slug), brands(name, slug)")
+      .select(PRODUCT_LIST_SELECT)
       .eq("category_id", categoryId)
       .eq("is_active", true)
       .neq("id", excludeProductId)
@@ -546,7 +633,7 @@ export async function getProductsByIds(ids: string[]): Promise<ProductListItem[]
     const supabase = await createClient()
     const { data, error } = await supabase
       .from("products")
-      .select("*, product_images(url, is_primary, display_order), categories(name, slug), brands(name, slug)")
+      .select(PRODUCT_LIST_SELECT)
       .in("id", ids)
       .eq("is_active", true)
 

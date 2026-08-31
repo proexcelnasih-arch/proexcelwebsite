@@ -9,6 +9,7 @@ export interface CartItem {
   image?: string | null
   quantity: number
   max_quantity?: number
+  variant?: string | null
 }
 
 const CART_STORAGE_KEY = "cart"

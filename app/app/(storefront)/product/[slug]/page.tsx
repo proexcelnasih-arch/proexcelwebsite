@@ -1,6 +1,11 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import { getProductBySlug, getRelatedProducts } from "@/lib/supabase/queries"
+import {
+  getProductBySlug,
+  getRelatedProducts,
+  getProductRecentPurchaseCount,
+  getRecentStorePurchases,
+} from "@/lib/supabase/queries"
 import { ProductDetailView } from "@/components/products/ProductDetailView"
 
 interface ProductPageProps {
@@ -42,7 +47,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
     notFound()
   }
 
-  const relatedProducts = await getRelatedProducts(product.category_id, product.id, 4)
+  const [relatedProducts, purchasesTodayCount, recentPurchases] = await Promise.all([
+    getRelatedProducts(product.category_id, product.id, 4),
+    getProductRecentPurchaseCount(product.id),
+    getRecentStorePurchases(5),
+  ])
 
-  return <ProductDetailView product={product} relatedProducts={relatedProducts} />
+  return (
+    <ProductDetailView
+      product={product}
+      relatedProducts={relatedProducts}
+      purchasesTodayCount={purchasesTodayCount}
+      recentPurchases={recentPurchases}
+    />
+  )
 }

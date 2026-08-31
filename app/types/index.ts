@@ -21,6 +21,26 @@ export type HeroSlide = Database["public"]["Tables"]["hero_slides"]["Row"]
 export type PromoTile = Database["public"]["Tables"]["promo_tiles"]["Row"]
 export type StoreSettings = Database["public"]["Tables"]["store_settings"]["Row"]
 
+export interface ProductVariant {
+  id: string
+  product_id: string
+  variant_type: "color" | "size" | "pack" | string
+  label: string
+  price_delta: number
+  stock_quantity?: number
+  display_order?: number
+}
+
+export interface RecentPurchase {
+  id: string
+  customer_first_name: string
+  city: string
+  product_name: string
+  product_slug: string
+  product_image?: string | null
+  time_ago_text: string
+}
+
 // ── Enriched types ───────────────────────────────────────────
 
 export type ProductWithDetails = Product & {
@@ -30,6 +50,8 @@ export type ProductWithDetails = Product & {
   stock_movements?: StockMovement[]
   discount_percentage?: number | null
   average_rating: number
+  video_url?: string | null
+  variants?: ProductVariant[]
 }
 
 export type ProductListItem = Pick<
@@ -46,6 +68,8 @@ export type ProductListItem = Pick<
   | "review_count"
   | "is_active"
 > & {
+  needs_manual_image?: boolean
+  pending_image_source?: string | null
   rating_avg?: number
   average_rating: number
   primary_image?: string | null
@@ -74,6 +98,7 @@ export interface CartItem {
   image: string | null
   quantity: number
   max_quantity?: number
+  variant?: string | null
 }
 
 export interface Cart {

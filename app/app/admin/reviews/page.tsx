@@ -84,7 +84,7 @@ export default function AdminReviewsPage() {
         return (
           <div className="flex items-center gap-3 min-w-0">
             <div className="relative w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 overflow-hidden shrink-0">
-              <Image src={prodImg} alt={prodName} fill className="object-cover" />
+              <Image src={prodImg} alt={prodName} fill unoptimized className="object-cover" />
             </div>
             <div className="min-w-0">
               <p className="font-bold text-slate-900 truncate max-w-xs">{prodName}</p>

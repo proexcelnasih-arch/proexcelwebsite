@@ -19,3 +19,4 @@
 \ir migrations/013_rls_policies.sql
 \ir migrations/014_transactional_checkout_functions.sql
 \ir migrations/015_seed_data.sql
+\ir migrations/016_add_needs_manual_image_and_pending_source.sql

@@ -55,7 +55,7 @@ export default function LowStockPage() {
         return (
           <div className="flex items-center gap-3">
             <div className="relative w-11 h-11 rounded-xl bg-slate-50 border border-slate-100 overflow-hidden shrink-0">
-              <Image src={img} alt={item.name} fill className="object-cover" />
+              <Image src={img} alt={item.name} fill unoptimized className="object-cover" />
             </div>
             <div>
               <p className="font-bold text-slate-900">{item.name}</p>

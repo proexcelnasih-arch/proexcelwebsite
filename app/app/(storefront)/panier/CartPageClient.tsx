@@ -183,6 +183,7 @@ export function CartPageClient() {
                         alt={item.name}
                         fill
                         sizes="96px"
+                        unoptimized
                         className="object-cover"
                       />
                     ) : (

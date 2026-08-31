@@ -40,6 +40,8 @@ create table public.products (
   is_bestseller boolean not null default false,
   is_new_arrival boolean not null default false,
   is_active boolean not null default true,
+  needs_manual_image boolean not null default false,
+  pending_image_source text,
   rating_avg numeric(3,2) not null default 0 check (rating_avg between 0 and 5),
   review_count int not null default 0 check (review_count >= 0),
   seo_title text,

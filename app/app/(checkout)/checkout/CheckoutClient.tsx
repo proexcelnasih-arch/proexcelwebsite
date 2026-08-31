@@ -447,7 +447,7 @@ export function CheckoutClient() {
                   <div key={item.id} className="flex items-center gap-3">
                     <div className="relative w-11 h-11 shrink-0 rounded-[var(--radius-md)] overflow-hidden bg-[var(--color-surface-1)]">
                       {item.image ? (
-                        <Image src={item.image} alt={item.name} fill sizes="44px" className="object-cover" />
+                        <Image src={item.image} alt={item.name} fill sizes="44px" unoptimized className="object-cover" />
                       ) : (
                         <div className="absolute inset-0 flex items-center justify-center">
                           <ShoppingBag className="w-4 h-4 text-[var(--color-neutral-300)]" strokeWidth={1} />

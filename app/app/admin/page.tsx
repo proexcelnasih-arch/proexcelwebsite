@@ -7,7 +7,6 @@ import {
   DollarSign,
   ShoppingCart,
   Users,
-  AlertTriangle,
   ArrowRight,
   Package,
   Eye,
@@ -26,34 +25,65 @@ export default function AdminDashboardPage() {
   const [lowStockItems, setLowStockItems] = useState<ProductRow[]>([])
   const [customerCount, setCustomerCount] = useState(0)
   const [totalRevenue, setTotalRevenue] = useState(0)
+  const [activeProductCount, setActiveProductCount] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
+
+  // Real 7-day trend deltas (null = not enough data to compare)
+  const [revenueChange, setRevenueChange] = useState<number | null>(null)
+  const [ordersChange, setOrdersChange] = useState<number | null>(null)
 
   useEffect(() => {
     async function loadDashboard() {
       setIsLoading(true)
       try {
         const supabase = createClient()
-        const [ordersRes, productsRes, profilesRes] = await Promise.all([
+
+        // Time windows for trend comparison
+        const now = new Date()
+        const t7dAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString()
+        const t14dAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString()
+
+        const [ordersRes, productsRes, profilesRes, activeProductsRes] = await Promise.all([
           supabase.from("orders").select("*").order("created_at", { ascending: false }),
-          supabase.from("products").select("*").order("stock_quantity", { ascending: true }),
+          supabase.from("products").select("id, name, sku, stock_quantity, min_stock_threshold, is_active").order("stock_quantity", { ascending: true }),
           supabase.from("profiles").select("id", { count: "exact" }),
+          supabase.from("products").select("id", { count: "exact" }).eq("is_active", true),
         ])
 
         if (ordersRes.data) {
-          setOrders(ordersRes.data)
-          const rev = ordersRes.data.reduce((s, o) => s + (Number(o.total) || 0), 0)
-          setTotalRevenue(rev)
+          const allOrders = ordersRes.data
+          setOrders(allOrders)
+          const totalRev = allOrders.reduce((s, o) => s + (Number(o.total) || 0), 0)
+          setTotalRevenue(totalRev)
+
+          // Compute 7-day vs prior 7-day windows for revenue and order count
+          const current7d = allOrders.filter((o) => o.created_at >= t7dAgo)
+          const prior7d = allOrders.filter((o) => o.created_at >= t14dAgo && o.created_at < t7dAgo)
+
+          const currentRevenue = current7d.reduce((s, o) => s + (Number(o.total) || 0), 0)
+          const priorRevenue = prior7d.reduce((s, o) => s + (Number(o.total) || 0), 0)
+
+          if (priorRevenue > 0) {
+            setRevenueChange(Math.round(((currentRevenue - priorRevenue) / priorRevenue) * 1000) / 10)
+          }
+          if (prior7d.length > 0) {
+            setOrdersChange(Math.round(((current7d.length - prior7d.length) / prior7d.length) * 1000) / 10)
+          }
         }
 
         if (productsRes.data) {
-          const low = productsRes.data.filter(
-            (p) => p.stock_quantity <= p.min_stock_threshold
+          const low = (productsRes.data as ProductRow[]).filter(
+            (p) => p.stock_quantity <= (p.min_stock_threshold ?? 5)
           )
           setLowStockItems(low.slice(0, 4))
         }
 
         if (profilesRes.count !== null) {
           setCustomerCount(profilesRes.count)
+        }
+
+        if (activeProductsRes.count !== null) {
+          setActiveProductCount(activeProductsRes.count)
         }
       } catch (err) {
         console.warn("[admin-dashboard] Error loading stats:", err)
@@ -95,7 +125,8 @@ export default function AdminDashboardPage() {
         <StatCard
           title="Chiffre d'Affaires"
           value={`${totalRevenue.toLocaleString()} DH`}
-          change={18.4}
+          change={revenueChange ?? 0}
+          showChange={revenueChange !== null}
           icon={DollarSign}
           iconColor="burgundy"
           sparklineData={[30, 40, 35, 50, 65, 80, 75, 95]}
@@ -103,26 +134,29 @@ export default function AdminDashboardPage() {
         <StatCard
           title="Commandes Validées"
           value={String(orders.length)}
-          change={12.1}
+          change={ordersChange ?? 0}
+          showChange={ordersChange !== null}
           icon={ShoppingCart}
           iconColor="amber"
           sparklineData={[20, 25, 30, 28, 45, 50, 60, 65]}
         />
         <StatCard
           title="Clients Inscrits"
-          value={String(customerCount > 0 ? customerCount : 142)}
-          change={8.5}
+          value={customerCount > 0 ? String(customerCount) : "—"}
+          change={0}
+          showChange={false}
           icon={Users}
           iconColor="blue"
           sparklineData={[10, 15, 20, 25, 30, 35, 40, 45]}
         />
         <StatCard
-          title="Alertes Stock"
-          value={String(lowStockItems.length)}
-          change={-4.2}
-          icon={AlertTriangle}
+          title="Produits Actifs"
+          value={String(activeProductCount)}
+          change={0}
+          showChange={false}
+          icon={Package}
           iconColor="burgundy"
-          sparklineData={[15, 12, 10, 8, 9, 6, 7, 5]}
+          sparklineData={[5, 8, 10, 12, 15, 18, 20, activeProductCount]}
         />
       </div>
 

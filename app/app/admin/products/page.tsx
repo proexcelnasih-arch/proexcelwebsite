@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { Plus, Edit2, Trash2, Copy, Eye, ExternalLink } from "lucide-react"
+import { Plus, Edit2, Trash2, Copy, Eye, ExternalLink, ImageOff } from "lucide-react"
 import { DataTable, type Column, type FilterTab } from "@/components/admin/DataTable"
 import { StatusBadge } from "@/components/admin/StatusBadge"
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog"
@@ -42,6 +42,11 @@ export default function AdminProductsPage() {
 
   const categoryTabs: FilterTab[] = [
     { id: "all", label: "Tous", count: products.length },
+    {
+      id: "needs_image",
+      label: "Besoin d'image",
+      count: products.filter((p) => p.needs_manual_image).length,
+    },
     { id: "Papeterie", label: "Papeterie", count: products.filter((p) => p.category_name === "Papeterie").length },
     { id: "Livres Scolaires", label: "Livres Scolaires", count: products.filter((p) => p.category_name === "Livres Scolaires").length },
     { id: "Fournitures Scolaires", label: "Fournitures", count: products.filter((p) => p.category_name === "Fournitures Scolaires").length },
@@ -52,6 +57,8 @@ export default function AdminProductsPage() {
   const filteredProducts =
     activeTab === "all"
       ? products
+      : activeTab === "needs_image"
+      ? products.filter((p) => p.needs_manual_image)
       : products.filter((p) => p.category_name === activeTab)
 
   async function handleDeleteConfirm() {
@@ -92,15 +99,23 @@ export default function AdminProductsPage() {
         <div className="flex items-center gap-3 min-w-0">
           <div className="relative w-11 h-11 rounded-xl bg-slate-50 border border-slate-100 overflow-hidden shrink-0">
             {prod.primary_image ? (
-              <Image src={prod.primary_image} alt={prod.name} fill className="object-cover" />
+              <Image src={prod.primary_image} alt={prod.name} fill unoptimized className="object-cover" />
             ) : (
-              <div className="w-full h-full bg-slate-100 flex items-center justify-center text-[10px] text-slate-400 font-bold">
-                IMG
+              <div className="w-full h-full bg-amber-50/70 border border-amber-200/50 flex flex-col items-center justify-center text-[9px] text-amber-700 font-bold">
+                <ImageOff className="w-3.5 h-3.5 mb-0.5 text-amber-500" />
+                <span>Image</span>
               </div>
             )}
           </div>
           <div className="min-w-0">
-            <p className="font-semibold text-slate-800 text-xs truncate max-w-[220px]">{prod.name}</p>
+            <div className="flex items-center gap-2">
+              <p className="font-semibold text-slate-800 text-xs truncate max-w-[200px]">{prod.name}</p>
+              {prod.needs_manual_image && (
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-100 text-amber-800 shrink-0">
+                  Sans image
+                </span>
+              )}
+            </div>
             <p className="text-[11px] text-slate-400 font-mono mt-0.5">{prod.slug}</p>
           </div>
         </div>

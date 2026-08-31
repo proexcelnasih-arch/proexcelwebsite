@@ -1,0 +1,218 @@
+[
+  {
+    "name": "cahier petit format 100 pages",
+    "price": 10,
+    "category_slug": "fournitures-scolaires",
+    "source_image_url": "https://mylibrairie.ma/42-large_default/cahier-petit-format-100-pages.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/43-cahier-petit-format-100-pages.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "feutres duo de 10 maped",
+    "price": 104,
+    "category_slug": "fournitures-scolaires",
+    "source_image_url": "https://mylibrairie.ma/69-large_default/feutres-duo-de-10-maped-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/72-feutres-duo-de-10-maped-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "set de 3 pieces de geometrie maped",
+    "price": 37,
+    "category_slug": "fournitures-scolaires",
+    "source_image_url": "https://mylibrairie.ma/80-large_default/set-de-3-pieces-de-geometrie-maped-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/84-set-de-3-pieces-de-geometrie-maped-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "rapporteur flexible maped",
+    "price": 10,
+    "category_slug": "fournitures-scolaires",
+    "source_image_url": "https://mylibrairie.ma/91-large_default/rapporteur-flexible-maped.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/99-rapporteur-flexible-maped.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "equerre maped",
+    "price": 5,
+    "category_slug": "fournitures-scolaires",
+    "source_image_url": "https://mylibrairie.ma/95-large_default/equerre-maped-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/103-equerre-maped-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "gomme technic 600 de maped",
+    "price": 7,
+    "category_slug": "fournitures-scolaires",
+    "source_image_url": "https://mylibrairie.ma/124-large_default/gomme-technic-600-de-maped-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/133-gomme-technic-600-de-maped-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "flute en plastique maped",
+    "price": 70,
+    "category_slug": "fournitures-scolaires",
+    "source_image_url": "https://mylibrairie.ma/133-large_default/flute-en-plastique-maped-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/142-flute-en-plastique-maped-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "feuilles doubles grand format blanche 100p maped",
+    "price": 17,
+    "category_slug": "fournitures-scolaires",
+    "source_image_url": "https://mylibrairie.ma/142-large_default/feuilles-doubles-grand-format-blanche-100p-maped-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/149-feuilles-doubles-grand-format-blanche-100p-maped-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "crayon de couleur de 12 faber castell",
+    "price": 23,
+    "category_slug": "fournitures-scolaires",
+    "source_image_url": "https://mylibrairie.ma/169-large_default/crayon-de-couleur-de-12-faber-castell.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/178-crayon-de-couleur-de-12-faber-castell.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "crayon aquarelle de 12 faber castell",
+    "price": 49,
+    "category_slug": "fournitures-scolaires",
+    "source_image_url": "https://mylibrairie.ma/174-large_default/crayon-aquarelle-de-12-faber-castell.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/185-crayon-aquarelle-de-12-faber-castell.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "marqueur de tableau bleu faber castell",
+    "price": 8,
+    "category_slug": "fournitures-scolaires",
+    "source_image_url": "https://mylibrairie.ma/207-large_default/marqueur-de-tableau-bleu-faber-castell.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/221-marqueur-de-tableau-bleu-faber-castell.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "feuilles simple grand format 100 pages oxford",
+    "price": 57,
+    "category_slug": "fournitures-scolaires",
+    "source_image_url": "https://mylibrairie.ma/416-large_default/feuilles-simple-grand-format-100-pages-oxford-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/405-feuilles-simple-grand-format-100-pages-oxford-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "papier calque canson 12 feuilles 70g A4",
+    "price": 60,
+    "category_slug": "fournitures-scolaires",
+    "source_image_url": "https://mylibrairie.ma/484-large_default/papier-calque-canson-12-feuilles-70g-a4.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/471-papier-calque-canson-12-feuilles-70g-a4.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "papier canson blanc 180g 21*32 10 feuilles",
+    "price": 24,
+    "category_slug": "fournitures-scolaires",
+    "source_image_url": "https://mylibrairie.ma/551-large_default/papier-canson-blanc-180g-2132-10-feuilles-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/545-papier-canson-blanc-180g-2132-10-feuilles-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "protège cahier 24*32 grand format",
+    "price": 6,
+    "category_slug": "fournitures-scolaires",
+    "source_image_url": "https://mylibrairie.ma/704-large_default/protege-cahier-2432-grand-format-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/701-130-protege-cahier-2432-grand-format-.html#/5-couleur-gris",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "stylo blanco 7ml",
+    "price": 11,
+    "category_slug": "fournitures-scolaires",
+    "source_image_url": "https://mylibrairie.ma/716-large_default/stylo-blanco-7ml.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/710-stylo-blanco-7ml.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "grande colle UHU stick",
+    "price": 18,
+    "category_slug": "fournitures-scolaires",
+    "source_image_url": "https://mylibrairie.ma/947-large_default/grande-colle-uhu-stick-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/953-grande-colle-uhu-stick-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Patafix UHU",
+    "price": 22,
+    "category_slug": "fournitures-scolaires",
+    "source_image_url": "https://mylibrairie.ma/959-large_default/patafix-uhu.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/965-patafix-uhu.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "stylo plume hello kity bic",
+    "price": 89,
+    "category_slug": "fournitures-scolaires",
+    "source_image_url": "https://mylibrairie.ma/1006-large_default/stylo-plume-hello-kity-bic.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/1017-stylo-plume-hello-kity-bic.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "copie double clairefontaine 17*22 -200 page",
+    "price": 17,
+    "category_slug": "fournitures-scolaires",
+    "source_image_url": "https://mylibrairie.ma/3049-large_default/copie-double-clairefontaine-1722-200-page.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/2593-copie-double-clairefontaine-1722-200-page.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "taille-crayon ullmann",
+    "price": 12,
+    "category_slug": "fournitures-scolaires",
+    "source_image_url": "https://mylibrairie.ma/2458-large_default/taille-crayon-ullmann.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/2734-taille-crayon-ullmann.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "crayon staedtlder H3",
+    "price": 3.5,
+    "category_slug": "fournitures-scolaires",
+    "source_image_url": "https://mylibrairie.ma/2497-large_default/crayon-staedtlder-h3.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/2781-crayon-staedtlder-h3.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "BLOC BRICO ASSORTIMENT A4 SADIPAL",
+    "price": 67,
+    "category_slug": "fournitures-scolaires",
+    "source_image_url": "https://mylibrairie.ma/3019-large_default/bloc-brico-assortiment-a4-sadipal.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/3338-bloc-brico-assortiment-a4-sadipal.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CANSON Kids - Papier à dessin 24 x 32 cm 10feuilles couleurs",
+    "price": 49,
+    "category_slug": "fournitures-scolaires",
+    "source_image_url": "https://mylibrairie.ma/3045-large_default/canson-kids-papier-a-dessin-24-x-32-cm-10feuilles-couleurs.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/3359-canson-kids-papier-a-dessin-24-x-32-cm-10feuilles-couleurs.html",
+    "needs_manual_image": true,
+    "is_active": false
+  }
+]

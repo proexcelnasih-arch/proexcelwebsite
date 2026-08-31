@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "scrape": "tsx scripts/scrape-mylibrairie.ts",
+    "import:products": "tsx scripts/import-scraped-products.ts",
+    "backfill:images": "tsx scripts/backfill-product-images.ts",
+    "update:images": "tsx scripts/update-images.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.5",
@@ -21,12 +25,17 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/cheerio": "^0.22.35",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cheerio": "^1.2.0",
+    "dotenv": "^17.4.2",
     "eslint": "^9",
     "eslint-config-next": "16.3.3",
+    "supabase": "^2.116.0",
     "tailwindcss": "^4",
+    "tsx": "^4.23.12",
     "typescript": "^5"
   }
 }

@@ -143,7 +143,7 @@ export default function FeaturedProductsAdminPage() {
                     <div className="flex items-center gap-3">
                       <div className="relative w-9 h-9 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden shrink-0">
                         {p.primary_image ? (
-                          <Image src={p.primary_image} alt={p.name} fill className="object-cover" />
+                          <Image src={p.primary_image} alt={p.name} fill unoptimized className="object-cover" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-[9px] text-slate-400">
                             IMG

@@ -5,6 +5,7 @@ interface StatCardProps {
   title: string
   value: string | number
   change: number // e.g. +12.5 or -3.2
+  showChange?: boolean // if false, hides the trend footer entirely
   period?: string
   icon: LucideIcon
   iconColor?: "burgundy" | "amber" | "blue" | "purple" | "emerald"
@@ -15,7 +16,8 @@ export function StatCard({
   title,
   value,
   change,
-  period = "vs mois dernier",
+  showChange = true,
+  period = "vs 7 derniers jours",
   icon: Icon,
   iconColor = "burgundy",
   sparklineData = [10, 15, 12, 18, 20, 25, 22, 30],
@@ -84,28 +86,30 @@ export function StatCard({
         </h3>
       </div>
 
-      {/* Percentage Trend footer */}
-      <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-slate-100 text-xs">
-        <span
-          className={cn(
-            "inline-flex items-center gap-0.5 font-bold text-[11px] px-1.5 py-0.5 rounded-md",
-            isPositive
-              ? "bg-emerald-50 text-emerald-700"
-              : "bg-rose-50 text-rose-700"
-          )}
-        >
-          {isPositive ? (
-            <TrendingUp className="w-3 h-3 text-emerald-600" />
-          ) : (
-            <TrendingDown className="w-3 h-3 text-rose-600" />
-          )}
-          <span>
-            {isPositive ? "+" : ""}
-            {change}%
+      {/* Percentage Trend footer — only when showChange is true */}
+      {showChange && (
+        <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-slate-100 text-xs">
+          <span
+            className={cn(
+              "inline-flex items-center gap-0.5 font-bold text-[11px] px-1.5 py-0.5 rounded-md",
+              isPositive
+                ? "bg-emerald-50 text-emerald-700"
+                : "bg-rose-50 text-rose-700"
+            )}
+          >
+            {isPositive ? (
+              <TrendingUp className="w-3 h-3 text-emerald-600" />
+            ) : (
+              <TrendingDown className="w-3 h-3 text-rose-600" />
+            )}
+            <span>
+              {isPositive ? "+" : ""}
+              {change}%
+            </span>
           </span>
-        </span>
-        <span className="text-slate-400 text-[11px]">{period}</span>
-      </div>
+          <span className="text-slate-400 text-[11px]">{period}</span>
+        </div>
+      )}
     </div>
   )
 }

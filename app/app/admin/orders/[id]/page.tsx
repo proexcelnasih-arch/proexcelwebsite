@@ -250,6 +250,7 @@ export default function OrderDetailPage() {
                           src={prodImg}
                           alt={item.product_name_snapshot}
                           fill
+                          unoptimized
                           className="object-cover"
                         />
                       </div>

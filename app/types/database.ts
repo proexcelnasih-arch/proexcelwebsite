@@ -183,6 +183,8 @@ export interface Database {
           is_bestseller: boolean
           is_new_arrival: boolean
           is_active: boolean
+          needs_manual_image: boolean
+          pending_image_source: string | null
           rating_avg: number
           review_count: number
           seo_title: string | null
@@ -210,6 +212,8 @@ export interface Database {
           is_bestseller?: boolean
           is_new_arrival?: boolean
           is_active?: boolean
+          needs_manual_image?: boolean
+          pending_image_source?: string | null
           rating_avg?: number
           review_count?: number
           seo_title?: string | null
@@ -235,6 +239,8 @@ export interface Database {
           is_bestseller?: boolean
           is_new_arrival?: boolean
           is_active?: boolean
+          needs_manual_image?: boolean
+          pending_image_source?: string | null
           rating_avg?: number
           review_count?: number
           seo_title?: string | null

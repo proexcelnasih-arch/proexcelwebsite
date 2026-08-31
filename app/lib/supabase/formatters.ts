@@ -34,6 +34,8 @@ export function formatProductListItem(
     average_rating: product.rating_avg,
     review_count: product.review_count,
     is_active: product.is_active,
+    needs_manual_image: product.needs_manual_image ?? false,
+    pending_image_source: product.pending_image_source ?? null,
     primary_image: primaryImg,
     category_name: product.categories?.name ?? null,
     brand_name: product.brands?.name ?? null,

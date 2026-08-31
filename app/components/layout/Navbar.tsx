@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { STORE_INFO } from "@/lib/navigation"
+import { createClient } from "@/lib/supabase/client"
 
 // ── Official PE Brand Logo (PNG only) ─────────────────────────
 export function PeLogo({ className = "h-9" }: { className?: string }) {
@@ -201,9 +202,11 @@ function SearchBar({ className }: { className?: string }) {
 function MobileDrawer({
   open,
   onClose,
+  user,
 }: {
   open: boolean
   onClose: () => void
+  user: { id: string; email?: string; full_name?: string } | null
 }) {
   return (
     <AnimatePresence>
@@ -233,7 +236,7 @@ function MobileDrawer({
               </Link>
               <button
                 onClick={onClose}
-                className="p-2 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
+                className="p-2 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors cursor-pointer"
                 aria-label="Fermer le menu"
               >
                 <X className="w-5 h-5" strokeWidth={1.75} />
@@ -254,16 +257,27 @@ function MobileDrawer({
               ))}
             </div>
 
-            {/* Direct Login CTA */}
+            {/* Direct Login or Account CTA */}
             <div className="px-5 py-4 border-t border-[var(--color-border)]">
-              <Link
-                href="/login"
-                onClick={onClose}
-                className="flex items-center justify-center gap-2 w-full h-11 bg-[var(--color-primary)] text-white font-bold text-sm uppercase tracking-wider rounded-full shadow-sm hover:bg-[var(--color-primary-dark)] active:scale-[0.98] transition-all duration-200"
-              >
-                <LogIn className="w-4.5 h-4.5" strokeWidth={1.75} />
-                Connexion
-              </Link>
+              {user ? (
+                <Link
+                  href="/account"
+                  onClick={onClose}
+                  className="flex items-center justify-center gap-2 w-full h-11 bg-[var(--color-primary)] text-white font-bold text-sm uppercase tracking-wider rounded-full shadow-sm hover:bg-[var(--color-primary-dark)] active:scale-[0.98] transition-all duration-200"
+                >
+                  <User className="w-4.5 h-4.5" strokeWidth={1.75} />
+                  <span>Mon compte ({user.full_name?.split(" ")[0]})</span>
+                </Link>
+              ) : (
+                <Link
+                  href="/login"
+                  onClick={onClose}
+                  className="flex items-center justify-center gap-2 w-full h-11 bg-[var(--color-primary)] text-white font-bold text-sm uppercase tracking-wider rounded-full shadow-sm hover:bg-[var(--color-primary-dark)] active:scale-[0.98] transition-all duration-200"
+                >
+                  <LogIn className="w-4.5 h-4.5" strokeWidth={1.75} />
+                  <span>Connexion</span>
+                </Link>
+              )}
             </div>
           </motion.nav>
         </>
@@ -290,6 +304,7 @@ const MOBILE_LINKS = [
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [user, setUser] = useState<{ id: string; email?: string; full_name?: string } | null>(null)
   const cartCount = useCartCount()
 
   useEffect(() => {
@@ -298,6 +313,38 @@ export function Navbar() {
     }
     window.addEventListener("scroll", onScroll, { passive: true })
     return () => window.removeEventListener("scroll", onScroll)
+  }, [])
+
+  // Reactive Supabase Auth Listener
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        setUser({
+          id: user.id,
+          email: user.email,
+          full_name: user.user_metadata?.full_name || user.email?.split("@")[0] || "Client",
+        })
+      } else {
+        setUser(null)
+      }
+    })
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setUser({
+          id: session.user.id,
+          email: session.user.email,
+          full_name: session.user.user_metadata?.full_name || session.user.email?.split("@")[0] || "Client",
+        })
+      } else {
+        setUser(null)
+      }
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
   }, [])
 
   return (
@@ -313,7 +360,7 @@ export function Navbar() {
           {/* Mobile menu toggle */}
           <button
             onClick={() => setMobileOpen(true)}
-            className="group lg:hidden p-2 -ml-2 text-[var(--color-text-primary)] rounded-full focus:outline-none"
+            className="group lg:hidden p-2 -ml-2 text-[var(--color-text-primary)] rounded-full focus:outline-none cursor-pointer"
             aria-label="Ouvrir le menu"
             aria-expanded={mobileOpen}
           >
@@ -332,7 +379,7 @@ export function Navbar() {
           {/* Centered Search Bar */}
           <SearchBar className="hidden lg:flex" />
 
-          {/* Right Action Icons (Pure Smooth Zoom In/Out on Hover) */}
+          {/* Right Action Icons */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* Search icon on mobile */}
             <Link
@@ -344,17 +391,34 @@ export function Navbar() {
             </Link>
 
             {/* Connexion / Mon Compte Icon Button */}
-            <Link
-              href="/login"
-              id="navbar-login-btn"
-              className="group relative flex items-center justify-center w-10 h-10 text-[var(--color-text-primary)]"
-              aria-label="Connexion / Mon compte"
-              title="Connexion / Mon compte"
-            >
-              <User className="w-5 h-5 transition-transform duration-300 ease-out group-hover:scale-125 active:scale-95" strokeWidth={1.75} />
-            </Link>
+            {user ? (
+              <Link
+                href="/account"
+                id="navbar-account-btn"
+                className="group relative flex items-center gap-2 h-10 px-2 sm:px-3 rounded-full hover:bg-slate-50 transition-colors text-[var(--color-text-primary)]"
+                aria-label="Mon compte client"
+                title={`Mon compte (${user.full_name})`}
+              >
+                <div className="w-8 h-8 rounded-full bg-[color-mix(in_srgb,var(--color-primary)_10%,transparent)] border border-[var(--color-primary)]/20 flex items-center justify-center text-[var(--color-primary)] font-bold text-xs">
+                  {user.full_name ? user.full_name.charAt(0).toUpperCase() : <User className="w-4 h-4" />}
+                </div>
+                <span className="hidden xl:inline-block text-xs font-bold text-slate-800 max-w-[100px] truncate">
+                  {user.full_name?.split(" ")[0]}
+                </span>
+              </Link>
+            ) : (
+              <Link
+                href="/login"
+                id="navbar-login-btn"
+                className="group relative flex items-center justify-center w-10 h-10 text-[var(--color-text-primary)]"
+                aria-label="Connexion / Créer un compte"
+                title="Connexion / Créer un compte"
+              >
+                <User className="w-5 h-5 transition-transform duration-300 ease-out group-hover:scale-125 active:scale-95" strokeWidth={1.75} />
+              </Link>
+            )}
 
-            {/* Wishlist (9lb) Icon Button */}
+            {/* Wishlist Icon Button */}
             <Link
               href="/wishlist"
               className="group relative hidden sm:flex items-center justify-center w-10 h-10 text-[var(--color-text-primary)]"
@@ -394,7 +458,7 @@ export function Navbar() {
       </header>
 
       {/* Mobile Drawer */}
-      <MobileDrawer open={mobileOpen} onClose={() => setMobileOpen(false)} />
+      <MobileDrawer open={mobileOpen} onClose={() => setMobileOpen(false)} user={user} />
     </>
   )
 }

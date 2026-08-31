@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
-import { ProductForm, type ProductFormData } from "@/components/admin/products/ProductForm"
+import { ProductForm, type ProductFormData, type VariantItem } from "@/components/admin/products/ProductForm"
 import { createClient } from "@/lib/supabase/client"
 
 export default function EditProductPage() {
@@ -25,6 +25,29 @@ export default function EditProductPage() {
 
         if (data) {
           const imgs = (((data as any).product_images || []) as Array<{ url: string }>).map((i) => i.url)
+
+          // Fetch variants
+          let variants: VariantItem[] = []
+          try {
+            const { data: variantsData } = await (supabase as any)
+              .from("product_variants")
+              .select("*")
+              .eq("product_id", id)
+              .order("display_order", { ascending: true })
+
+            if (variantsData && variantsData.length > 0) {
+              variants = variantsData.map((v: any) => ({
+                id: v.id,
+                variant_type: v.variant_type || "Taille",
+                label: v.label || "",
+                price_delta: Number(v.price_delta) || 0,
+                stock_quantity: Number(v.stock_quantity) || 10,
+              }))
+            }
+          } catch {
+            // ignore if table doesn't have rows
+          }
+
           setProductData({
             id: data.id,
             name: data.name,
@@ -41,6 +64,7 @@ export default function EditProductPage() {
             is_featured: data.is_featured ?? false,
             is_active: data.is_active !== false,
             images: imgs,
+            variants,
           })
         }
       } catch (err) {
@@ -55,7 +79,7 @@ export default function EditProductPage() {
   if (isLoading) {
     return (
       <div className="p-12 flex justify-center items-center">
-        <div className="w-8 h-8 rounded-full border-2 border-[var(--color-primary)] border-t-transparent animate-spin" />
+        <div className="w-8 h-8 rounded-full border-2 border-[#8C1A2B] border-t-transparent animate-spin" />
       </div>
     )
   }

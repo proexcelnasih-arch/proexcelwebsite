@@ -35,7 +35,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       <div className="flex-1 flex flex-col min-w-0">
         <AdminTopbar onOpenMobileMenu={() => setMobileOpen(true)} />
 
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-[1600px] 2xl:max-w-[1800px] w-full mx-auto">
           {children}
         </main>
       </div>
