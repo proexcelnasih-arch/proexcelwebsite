@@ -18,10 +18,13 @@
     "@supabase/supabase-js": "^2.112.4",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/cheerio": "^0.22.35",
+    "@types/node": "^26.4.0",
+    "@types/react": "^19.2.18",
     "cheerio": "^1.2.0",
     "dotenv": "^17.4.2",
     "postcss": "^8.5.26",
     "tailwindcss": "^4.3.3",
-    "tsx": "^4.23.12"
+    "tsx": "^4.23.12",
+    "typescript": "^7.0.2"
   }
 }
