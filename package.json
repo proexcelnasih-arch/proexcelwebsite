@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
   "dependencies": {
     "@supabase/ssr": "^0.12.5"
   },
@@ -7,6 +11,7 @@
     "@types/cheerio": "^0.22.35",
     "cheerio": "^1.2.0",
     "dotenv": "^17.4.2",
-    "tsx": "^4.23.12"
+    "tsx": "^4.23.12",
+    "vite": "^8.2.2"
   }
 }
