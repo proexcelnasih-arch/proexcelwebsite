@@ -1,5 +1,58 @@
-import { NextRequest, NextResponse } from "next/server"
+﻿import { NextRequest, NextResponse } from "next/server"
 import { createAdminClient } from "@/lib/supabase/server"
+
+export const dynamic = "force-dynamic"
+export const maxDuration = 60
+
+/**
+ * Uploads a base64 or URL image to Supabase Storage and returns its public URL
+ */
+async function processImageUrl(supabase: any, imageSource: string, productName: string, index: number): Promise<string | null> {
+  if (!imageSource || typeof imageSource !== "string") return null
+
+  // If it is already an HTTP URL, return as is
+  if (imageSource.startsWith("http://") || imageSource.startsWith("https://")) {
+    return imageSource
+  }
+
+  // If it is a data URL / Base64 string
+  if (imageSource.startsWith("data:image/")) {
+    try {
+      const matches = imageSource.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)
+      if (!matches || matches.length !== 3) return null
+
+      const mimeType = matches[1]
+      const base64Data = matches[2]
+      const buffer = Buffer.from(base64Data, "base64")
+      const ext = mimeType.split("/")[1] || "jpg"
+      const cleanName = productName.toLowerCase().replace(/[^\w-]/g, "_").slice(0, 30)
+      const fileName = `products/${Date.now()}-${cleanName}-${index}.${ext}`
+
+      const { error: uploadErr } = await supabase.storage
+        .from("product-images")
+        .upload(fileName, buffer, {
+          contentType: mimeType,
+          upsert: true,
+        })
+
+      if (uploadErr) {
+        console.warn("[api/admin/products] Storage upload error for base64:", uploadErr)
+        return null
+      }
+
+      const { data: urlData } = supabase.storage
+        .from("product-images")
+        .getPublicUrl(fileName)
+
+      return urlData?.publicUrl || null
+    } catch (err) {
+      console.warn("[api/admin/products] Base64 decoding error:", err)
+      return null
+    }
+  }
+
+  return null
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -27,6 +80,15 @@ export async function POST(req: NextRequest) {
 
     let productId = formData.id
 
+    // 2. Process images (upload base64 to Storage or keep valid URLs)
+    const rawImages: string[] = Array.isArray(formData.images) ? formData.images : []
+    const processedImageUrls: string[] = []
+
+    for (let i = 0; i < rawImages.length; i++) {
+      const url = await processImageUrl(supabase, rawImages[i], formData.name || "product", i)
+      if (url) processedImageUrls.push(url)
+    }
+
     if (isEdit && formData.id) {
       // UPDATE existing product
       const { error: updateError } = await supabase
@@ -49,6 +111,24 @@ export async function POST(req: NextRequest) {
         .eq("id", formData.id)
 
       if (updateError) throw updateError
+
+      // Replace product images if new ones provided
+      if (processedImageUrls.length > 0) {
+        try {
+          await supabase.from("product_images").delete().eq("product_id", formData.id)
+          await supabase.from("product_images").insert(
+            processedImageUrls.map((url, idx) => ({
+              product_id: formData.id,
+              url,
+              is_primary: idx === 0,
+              display_order: idx,
+              alt_text: formData.name,
+            }))
+          )
+        } catch (imgErr) {
+          console.warn("[api/admin/products] Images update warning:", imgErr)
+        }
+      }
 
       // Update variants
       try {
@@ -99,10 +179,9 @@ export async function POST(req: NextRequest) {
       productId = newProduct.id
 
       // Insert product images
-      const imageUrls = (formData.images || []).filter((url: string) => url && url.startsWith("http"))
-      if (imageUrls.length > 0) {
+      if (processedImageUrls.length > 0) {
         await supabase.from("product_images").insert(
-          imageUrls.map((url: string, idx: number) => ({
+          processedImageUrls.map((url, idx) => ({
             product_id: productId,
             url,
             is_primary: idx === 0,

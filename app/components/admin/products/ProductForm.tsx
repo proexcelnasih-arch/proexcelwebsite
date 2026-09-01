@@ -160,6 +160,7 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
 
   const [imageUrlInput, setImageUrlInput] = useState("")
   const [isDragging, setIsDragging] = useState(false)
+  const [isUploadingImages, setIsUploadingImages] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [savedSuccess, setSavedSuccess] = useState(false)
   const [formError, setFormError] = useState("")
@@ -185,25 +186,68 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
     }))
   }
 
-  // Handle local PC file upload
-  function handleFilesUpload(files: FileList | null) {
+  // Handle local PC file upload directly to Storage via API
+  async function handleFilesUpload(files: FileList | null) {
     if (!files || files.length === 0) return
 
-    Array.from(files).forEach((file) => {
-      if (!file.type.startsWith("image/")) return
+    const validFiles = Array.from(files).filter((file) => file.type.startsWith("image/"))
+    if (validFiles.length === 0) return
 
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        const result = e.target?.result as string
-        if (result) {
-          setFormData((prev) => ({
-            ...prev,
-            images: [...prev.images, result],
-          }))
+    setIsUploadingImages(true)
+    setFormError("")
+
+    try {
+      const uploadFormData = new FormData()
+      validFiles.forEach((file) => {
+        uploadFormData.append("file", file)
+      })
+
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: uploadFormData,
+      })
+
+      const text = await res.text()
+      let data: any = null
+      try {
+        data = JSON.parse(text)
+      } catch {
+        if (!res.ok) {
+          throw new Error(`Erreur de téléchargement (${res.status}): ${text.slice(0, 100)}`)
         }
       }
-      reader.readAsDataURL(file)
-    })
+
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.error || "Échec du téléchargement des images sur le serveur.")
+      }
+
+      if (Array.isArray(data.urls) && data.urls.length > 0) {
+        setFormData((prev) => ({
+          ...prev,
+          images: [...prev.images, ...data.urls],
+        }))
+      }
+    } catch (uploadErr: any) {
+      console.warn("[ProductForm] Storage upload failed, falling back to local preview:", uploadErr)
+      setFormError(uploadErr?.message || "Erreur lors du transfert de l'image. Veuillez réessayer.")
+      
+      // Fallback to local FileReader if storage route is offline
+      validFiles.forEach((file) => {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          const result = e.target?.result as string
+          if (result) {
+            setFormData((prev) => ({
+              ...prev,
+              images: [...prev.images, result],
+            }))
+          }
+        }
+        reader.readAsDataURL(file)
+      })
+    } finally {
+      setIsUploadingImages(false)
+    }
   }
 
   function handleAddImageUrl() {
@@ -261,10 +305,23 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
         }),
       })
 
-      const result = await res.json()
+      // Safely read response text to prevent JSON parse crashes on HTML/413 errors
+      const text = await res.text()
+      let result: any = null
+      try {
+        result = JSON.parse(text)
+      } catch (parseErr) {
+        if (!res.ok) {
+          if (res.status === 413 || text.toLowerCase().includes("too large")) {
+            throw new Error("L'image ou les données envoyées dépassent la limite de taille autorisée. Veuillez importer une image plus légère.")
+          }
+          throw new Error(`Erreur serveur (${res.status}): ${text.slice(0, 150)}`)
+        }
+        throw new Error("Réponse inattendue du serveur lors de la sauvegarde.")
+      }
 
-      if (!res.ok || !result.success) {
-        throw new Error(result.error || "Erreur lors de l'enregistrement du produit")
+      if (!res.ok || !result?.success) {
+        throw new Error(result?.error || `Erreur (${res.status}) lors de l'enregistrement du produit`)
       }
 
       const categorySlug = result.categorySlug || formData.category_name.toLowerCase().replace(/\s+/g, "-")
@@ -283,7 +340,7 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
       }, 1000)
     } catch (err: any) {
       console.warn("[ProductForm] Save error:", err)
-      setFormError(err?.message || "Erreur lors de l'enregistrement. Vérifiez vos permissions et réessayez.")
+      setFormError(err?.message || "Erreur lors de l'enregistrement. Vérifiez votre image et vos permissions.")
       setIsSubmitting(false)
       return
     } finally {
@@ -670,11 +727,21 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
 
               <button
                 type="button"
+                disabled={isUploadingImages}
                 onClick={() => fileInputRef.current?.click()}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#8C1A2B] hover:bg-[#5E0F1D] text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#8C1A2B] hover:bg-[#5E0F1D] disabled:opacity-60 text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
               >
-                <UploadCloud className="w-3.5 h-3.5" />
-                <span>Importer depuis PC</span>
+                {isUploadingImages ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Téléchargement...</span>
+                  </>
+                ) : (
+                  <>
+                    <UploadCloud className="w-3.5 h-3.5" />
+                    <span>Importer depuis PC</span>
+                  </>
+                )}
               </button>
             </div>
 
@@ -690,7 +757,9 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
                 setIsDragging(false)
                 handleFilesUpload(e.dataTransfer.files)
               }}
-              onClick={() => fileInputRef.current?.click()}
+              onClick={() => {
+                if (!isUploadingImages) fileInputRef.current?.click()
+              }}
               className={`border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all flex flex-col items-center justify-center ${
                 isDragging
                   ? "border-[#8C1A2B] bg-[#8C1A2B]/5 scale-[0.99]"
@@ -698,14 +767,22 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
               }`}
             >
               <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200 shadow-xs flex items-center justify-center text-[#8C1A2B] mb-2.5">
-                <UploadCloud className="w-6 h-6" strokeWidth={1.75} />
+                {isUploadingImages ? (
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                ) : (
+                  <UploadCloud className="w-6 h-6" strokeWidth={1.75} />
+                )}
               </div>
               <p className="text-xs font-bold text-slate-800">
-                Glissez-déposez vos photos ici ou{" "}
-                <span className="text-[#8C1A2B] underline">parcourez votre ordinateur</span>
+                {isUploadingImages
+                  ? "Téléchargement de vos photos vers le stockage..."
+                  : "Glissez-déposez vos photos ici ou "}
+                {!isUploadingImages && (
+                  <span className="text-[#8C1A2B] underline">parcourez votre ordinateur</span>
+                )}
               </p>
               <p className="text-[11px] text-slate-400 mt-1">
-                Formats acceptés : JPG, PNG, WEBP, GIF (plusieurs photos autorisées)
+                Formats acceptés : JPG, PNG, WEBP, GIF (les photos sont automatiquement optimisées et hébergées)
               </p>
             </div>
 
