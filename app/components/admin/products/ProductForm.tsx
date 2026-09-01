@@ -250,135 +250,30 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
     setFormError("")
 
     try {
-      const supabase = createClient()
+      // 1. Save product via server API (using admin service role client to bypass RLS issues)
+      const res = await fetch("/api/admin/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          formData,
+          variants,
+          isEdit,
+        }),
+      })
 
-      // ── Resolve category_id and brand_id by name ────────────
-      const { data: catRow } = await supabase
-        .from("categories")
-        .select("id, slug")
-        .ilike("name", formData.category_name)
-        .maybeSingle()
+      const result = await res.json()
 
-      const { data: brandRow } = await supabase
-        .from("brands")
-        .select("id")
-        .ilike("name", formData.brand_name)
-        .maybeSingle()
-
-      const categoryId: string | null = catRow?.id ?? null
-      const brandId: string | null = brandRow?.id ?? null
-      const categorySlug: string = catRow?.slug ?? formData.category_name.toLowerCase().replace(/\s+/g, "-")
-
-      if (isEdit && formData.id) {
-        // ── UPDATE existing product ────────────────────────────
-        await supabase
-          .from("products")
-          .update({
-            name: formData.name,
-            slug: formData.slug,
-            description: formData.description,
-            price: formData.price,
-            compare_at_price: formData.compare_at_price,
-            stock_quantity: formData.stock,
-            sku: formData.sku,
-            ...(categoryId ? { category_id: categoryId } : {}),
-            ...(brandId ? { brand_id: brandId } : {}),
-            is_bestseller: formData.is_bestseller,
-            is_new_arrival: formData.is_new_arrival,
-            is_featured: formData.is_featured,
-            is_active: formData.is_active,
-          })
-          .eq("id", formData.id)
-
-        // Save variants (delete-and-reinsert)
-        if (variants.length > 0) {
-          try {
-            await (supabase as any).from("product_variants").delete().eq("product_id", formData.id)
-            await (supabase as any).from("product_variants").insert(
-              variants.map((v, idx) => ({
-                product_id: formData.id,
-                variant_type: v.variant_type,
-                label: v.label,
-                price_delta: Number(v.price_delta) || 0,
-                stock_quantity: Number(v.stock_quantity) || 0,
-                display_order: idx,
-              }))
-            )
-          } catch (varErr) {
-            console.warn("[ProductForm] Error updating variants:", varErr)
-          }
-        }
-
-      } else {
-        // ── INSERT new product ──────────────────────────────────
-        const insertPayload: Record<string, any> = {
-          name: formData.name,
-          slug: formData.slug,
-          description: formData.description || null,
-          price: formData.price,
-          compare_at_price: formData.compare_at_price ?? null,
-          stock_quantity: formData.stock,
-          sku: formData.sku || formData.slug.toUpperCase(),
-          is_bestseller: formData.is_bestseller,
-          is_new_arrival: formData.is_new_arrival,
-          is_featured: formData.is_featured,
-          is_active: formData.is_active,
-        }
-        if (categoryId) insertPayload.category_id = categoryId
-        if (brandId) insertPayload.brand_id = brandId
-
-        const { data: newProduct, error: insertError } = await supabase
-          .from("products")
-          .insert(insertPayload)
-          .select("id")
-          .single()
-
-        if (insertError || !newProduct) {
-          throw new Error(insertError?.message ?? "Erreur lors de la création du produit")
-        }
-
-        const newProductId: string = newProduct.id
-
-        // Insert product images (filter out placeholder/base64 for external URLs only)
-        const imageUrls = formData.images.filter(
-          (url) => url && url.startsWith("http")
-        )
-        if (imageUrls.length > 0) {
-          await supabase.from("product_images").insert(
-            imageUrls.map((url, idx) => ({
-              product_id: newProductId,
-              url,
-              is_primary: idx === 0,
-              display_order: idx,
-              alt_text: formData.name,
-            }))
-          )
-        }
-
-        // Insert variants if any were added
-        if (variants.length > 0) {
-          try {
-            await (supabase as any).from("product_variants").insert(
-              variants.map((v, idx) => ({
-                product_id: newProductId,
-                variant_type: v.variant_type,
-                label: v.label,
-                price_delta: Number(v.price_delta) || 0,
-                stock_quantity: Number(v.stock_quantity) || 0,
-                display_order: idx,
-              }))
-            )
-          } catch (varErr) {
-            console.warn("[ProductForm] Error inserting variants:", varErr)
-          }
-        }
+      if (!res.ok || !result.success) {
+        throw new Error(result.error || "Erreur lors de l'enregistrement du produit")
       }
 
-      // ── Revalidate storefront cache so new/updated products appear immediately ──
+      const categorySlug = result.categorySlug || formData.category_name.toLowerCase().replace(/\s+/g, "-")
+
+      // 2. Revalidate storefront cache so new/updated products appear immediately
       try {
         await fetch(`/api/revalidate?slug=${encodeURIComponent(formData.slug)}&category=${encodeURIComponent(categorySlug)}`)
       } catch {
-        // Non-blocking — cache will eventually expire on its own
+        // Non-blocking
       }
 
       setSavedSuccess(true)
@@ -388,7 +283,7 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
       }, 1000)
     } catch (err: any) {
       console.warn("[ProductForm] Save error:", err)
-      setFormError(err?.message || "Erreur lors de l'enregistrement. Vérifiez votre connexion et réessayez.")
+      setFormError(err?.message || "Erreur lors de l'enregistrement. Vérifiez vos permissions et réessayez.")
       setIsSubmitting(false)
       return
     } finally {
