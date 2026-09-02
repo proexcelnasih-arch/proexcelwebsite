@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { createAdminClient } from "@/lib/supabase/server"
 
 export const dynamic = "force-dynamic"
@@ -213,6 +213,146 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, productId, categorySlug })
   } catch (err: any) {
     console.error("[api/admin/products] Error:", err)
+    return NextResponse.json({ success: false, error: err?.message || String(err) }, { status: 500 })
+  }
+}
+
+export async function PATCH(req: NextRequest) {
+  try {
+    const body = await req.json()
+    const { id, is_active } = body
+
+    if (!id) {
+      return NextResponse.json({ success: false, error: "Product ID is required" }, { status: 400 })
+    }
+
+    const supabase = await createAdminClient()
+    const updateData: Record<string, any> = { updated_at: new Date().toISOString() }
+    if (is_active !== undefined) {
+      updateData.is_active = Boolean(is_active)
+    }
+
+    const { error } = await supabase
+      .from("products")
+      .update(updateData)
+      .eq("id", id)
+
+    if (error) {
+      throw new Error(error.message || "Failed to update product status")
+    }
+
+    return NextResponse.json({ success: true })
+  } catch (err: any) {
+    console.error("[api/admin/products/patch] Error:", err)
+    return NextResponse.json({ success: false, error: err?.message || String(err) }, { status: 500 })
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url)
+    let productId = searchParams.get("id")
+
+    if (!productId) {
+      try {
+        const body = await req.json()
+        productId = body?.id
+      } catch {
+        // query param used
+      }
+    }
+
+    if (!productId) {
+      return NextResponse.json({ success: false, error: "Product ID is required" }, { status: 400 })
+    }
+
+    const supabase = await createAdminClient()
+
+    // 1. Delete associated stock movements (which have on delete restrict)
+    try {
+      await supabase.from("stock_movements").delete().eq("product_id", productId)
+    } catch (e) {
+      console.warn("[api/admin/products/delete] stock_movements warning:", e)
+    }
+
+    // 2. Delete cart items
+    try {
+      await supabase.from("cart_items").delete().eq("product_id", productId)
+    } catch (e) {
+      console.warn("[api/admin/products/delete] cart_items warning:", e)
+    }
+
+    // 3. Delete wishlist items
+    try {
+      await supabase.from("wishlist_items").delete().eq("product_id", productId)
+    } catch (e) {
+      console.warn("[api/admin/products/delete] wishlist_items warning:", e)
+    }
+
+    // 4. Delete product reviews
+    try {
+      await supabase.from("reviews").delete().eq("product_id", productId)
+    } catch (e) {
+      console.warn("[api/admin/products/delete] reviews warning:", e)
+    }
+
+    // 5. Delete variants
+    try {
+      await (supabase as any).from("product_variants").delete().eq("product_id", productId)
+    } catch (e) {
+      console.warn("[api/admin/products/delete] variants warning:", e)
+    }
+
+    // 6. Delete image files from storage if stored on Supabase, and remove product_images rows
+    try {
+      const { data: images } = await supabase
+        .from("product_images")
+        .select("url")
+        .eq("product_id", productId)
+
+      if (images && images.length > 0) {
+        for (const img of images) {
+          if (img.url && img.url.includes("product-images")) {
+            try {
+              const parts = img.url.split("/product-images/")
+              if (parts[1]) {
+                const storagePath = decodeURIComponent(parts[1].split("?")[0])
+                await supabase.storage.from("product-images").remove([storagePath])
+              }
+            } catch (storageErr) {
+              console.warn("[api/admin/products/delete] Storage image remove warning:", storageErr)
+            }
+          }
+        }
+        await supabase.from("product_images").delete().eq("product_id", productId)
+      }
+    } catch (imgErr) {
+      console.warn("[api/admin/products/delete] Images cleanup warning:", imgErr)
+    }
+
+    // 7. Nullify product_id on order_items so historical orders remain valid without breaking constraint
+    try {
+      await supabase
+        .from("order_items")
+        .update({ product_id: null })
+        .eq("product_id", productId)
+    } catch (orderErr) {
+      console.warn("[api/admin/products/delete] Order items nullify warning:", orderErr)
+    }
+
+    // 8. Delete the product itself from products table
+    const { error: deleteError } = await supabase
+      .from("products")
+      .delete()
+      .eq("id", productId)
+
+    if (deleteError) {
+      throw new Error(deleteError.message || "Failed to delete product from database")
+    }
+
+    return NextResponse.json({ success: true, message: "Produit supprimé avec succès" })
+  } catch (err: any) {
+    console.error("[api/admin/products/delete] Error:", err)
     return NextResponse.json({ success: false, error: err?.message || String(err) }, { status: 500 })
   }
 }

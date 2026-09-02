@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { Plus, Edit2, Trash2, Copy, Eye, ExternalLink, ImageOff } from "lucide-react"
+import { Plus, Edit2, Trash2, Copy, Eye, ExternalLink, ImageOff, CheckCircle2, AlertCircle, Loader2 } from "lucide-react"
 import { DataTable, type Column, type FilterTab } from "@/components/admin/DataTable"
 import { StatusBadge } from "@/components/admin/StatusBadge"
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog"
@@ -16,6 +16,15 @@ export default function AdminProductsPage() {
   const [activeTab, setActiveTab] = useState("all")
   const [deleteProduct, setDeleteProduct] = useState<ProductListItem | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [toastMessage, setToastMessage] = useState<{ type: "success" | "error"; text: string } | null>(null)
+
+  useEffect(() => {
+    if (toastMessage) {
+      const timer = setTimeout(() => setToastMessage(null), 4000)
+      return () => clearTimeout(timer)
+    }
+  }, [toastMessage])
 
   async function loadProducts() {
     setIsLoading(true)
@@ -63,14 +72,34 @@ export default function AdminProductsPage() {
 
   async function handleDeleteConfirm() {
     if (!deleteProduct) return
+    setIsDeleting(true)
     try {
-      const supabase = createClient()
-      await supabase.from("products").update({ is_active: false }).eq("id", deleteProduct.id)
-    } catch {
-      // ignore
+      const res = await fetch(`/api/admin/products?id=${encodeURIComponent(deleteProduct.id)}`, {
+        method: "DELETE",
+      })
+      const data = await res.json()
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Erreur lors de la suppression du produit")
+      }
+
+      const deletedName = deleteProduct.name
+      // Update local state immediately so it vanishes without reload
+      setProducts((prev) => prev.filter((p) => p.id !== deleteProduct.id))
+      setDeleteProduct(null)
+      setToastMessage({
+        type: "success",
+        text: `"${deletedName}" a été définitivement supprimé de la base de données.`,
+      })
+    } catch (err: any) {
+      console.error("[admin-products] Delete failed:", err)
+      setToastMessage({
+        type: "error",
+        text: `Échec de la suppression: ${err?.message || "Erreur serveur"}`,
+      })
+    } finally {
+      setIsDeleting(false)
     }
-    setProducts((prev) => prev.filter((p) => p.id !== deleteProduct.id))
-    setDeleteProduct(null)
   }
 
   async function handleToggleActive(id: string) {
@@ -78,15 +107,31 @@ export default function AdminProductsPage() {
     if (!target) return
     const nextState = !target.is_active
 
+    // Optimistic UI update
     setProducts((prev) =>
       prev.map((p) => (p.id === id ? { ...p, is_active: nextState } : p))
     )
 
     try {
-      const supabase = createClient()
-      await supabase.from("products").update({ is_active: nextState }).eq("id", id)
-    } catch {
-      // ignore
+      const res = await fetch("/api/admin/products", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, is_active: nextState }),
+      })
+      const data = await res.json()
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Erreur lors du changement de statut")
+      }
+    } catch (err) {
+      console.warn("[admin-products] Toggle status error, reverting:", err)
+      // Revert if error
+      setProducts((prev) =>
+        prev.map((p) => (p.id === id ? { ...p, is_active: !nextState } : p))
+      )
+      setToastMessage({
+        type: "error",
+        text: "Impossible de modifier le statut du produit.",
+      })
     }
   }
 
@@ -260,13 +305,33 @@ export default function AdminProductsPage() {
       {/* Delete dialog */}
       <ConfirmDialog
         open={deleteProduct !== null}
-        onCancel={() => setDeleteProduct(null)}
+        onCancel={() => !isDeleting && setDeleteProduct(null)}
         onConfirm={handleDeleteConfirm}
-        title="Désactiver ce produit ?"
-        description={`Le produit "${deleteProduct?.name}" sera marqué comme inactif et ne sera plus visible sur la boutique.`}
-        confirmText="Désactiver"
+        loading={isDeleting}
+        title="Supprimer définitivement ce produit ?"
+        description={`Le produit "${deleteProduct?.name}" sera définitivement supprimé de la base de données et de l'inventaire. Cette action est irréversible.`}
+        confirmText="Supprimer définitivement"
+        cancelText="Annuler"
         variant="danger"
       />
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div
+          className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-xl text-xs font-semibold border transition-all duration-300 animate-in fade-in slide-in-from-bottom-3 ${
+            toastMessage.type === "success"
+              ? "bg-emerald-50 text-emerald-900 border-emerald-200"
+              : "bg-rose-50 text-rose-900 border-rose-200"
+          }`}
+        >
+          {toastMessage.type === "success" ? (
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+          ) : (
+            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+          )}
+          <span>{toastMessage.text}</span>
+        </div>
+      )}
     </div>
   )
 }
