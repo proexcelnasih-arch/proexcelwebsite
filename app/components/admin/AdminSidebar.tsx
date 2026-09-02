@@ -26,6 +26,7 @@ interface AdminSidebarProps {
   collapsed?: boolean
   onToggleCollapse?: () => void
   onCloseMobile?: () => void
+  logoUrl?: string | null
 }
 
 function SidebarNavList({
@@ -156,6 +157,7 @@ export function AdminSidebar({
   collapsed = false,
   onToggleCollapse,
   onCloseMobile,
+  logoUrl,
 }: AdminSidebarProps) {
   return (
     <aside
@@ -173,7 +175,7 @@ export function AdminSidebar({
         >
           <div className="w-10 h-10 flex items-center justify-center shrink-0">
             <Image
-              src="/logo.png"
+              src={logoUrl || "/logo.png"}
               alt="ProExcel Logo"
               width={40}
               height={40}

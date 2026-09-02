@@ -2,16 +2,20 @@ import { Navbar } from "@/components/layout/Navbar"
 import { CategoryNav, MobileCategoryStrip } from "@/components/layout/CategoryNav"
 import { Footer } from "@/components/layout/Footer"
 import { FloatingChatButton } from "@/components/layout/FloatingChatButton"
+import { getStoreSettings } from "@/lib/supabase/queries"
 
-export default function StorefrontLayout({
+export default async function StorefrontLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const storeSettings = await getStoreSettings()
+  const logoUrl = storeSettings?.logo_url ?? null
+
   return (
     <div className="flex flex-col min-h-screen bg-[var(--color-background)]">
       {/* Global header */}
-      <Navbar />
+      <Navbar logoUrl={logoUrl} storeName={storeSettings?.store_name} />
       <CategoryNav />
       <MobileCategoryStrip />
 
@@ -21,7 +25,7 @@ export default function StorefrontLayout({
       </main>
 
       {/* Footer */}
-      <Footer />
+      <Footer logoUrl={logoUrl} storeSettings={storeSettings} />
 
       {/* Global Floating Chat */}
       <FloatingChatButton />

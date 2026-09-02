@@ -18,16 +18,25 @@ import { cn } from "@/lib/utils"
 import { STORE_INFO } from "@/lib/navigation"
 import { createClient } from "@/lib/supabase/client"
 
-// ── Official PE Brand Logo (PNG only) ─────────────────────────
-export function PeLogo({ className = "h-9" }: { className?: string }) {
+// ── Official PE Brand Logo (PNG or Storage URL) ──────────────
+export function PeLogo({
+  className = "h-9",
+  logoUrl,
+  alt = "Pro Excel",
+}: {
+  className?: string
+  logoUrl?: string | null
+  alt?: string
+}) {
+  const src = logoUrl || "/logo.png"
   return (
     <div className={cn("flex items-center shrink-0", className)}>
       <Image
-        src="/logo.png"
-        alt="Pro Excel"
+        src={src}
+        alt={alt}
         width={110}
         height={48}
-        className="h-8 sm:h-9 w-auto object-contain shrink-0"
+        className={cn("h-8 sm:h-9 w-auto object-contain shrink-0", className)}
         priority
       />
     </div>
@@ -203,10 +212,12 @@ function MobileDrawer({
   open,
   onClose,
   user,
+  logoUrl,
 }: {
   open: boolean
   onClose: () => void
   user: { id: string; email?: string; full_name?: string } | null
+  logoUrl?: string | null
 }) {
   return (
     <AnimatePresence>
@@ -232,7 +243,7 @@ function MobileDrawer({
             {/* Drawer header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--color-border)]">
               <Link href="/" onClick={onClose}>
-                <PeLogo className="h-8" />
+                <PeLogo className="h-8" logoUrl={logoUrl} />
               </Link>
               <button
                 onClick={onClose}
@@ -301,7 +312,13 @@ const MOBILE_LINKS = [
 ]
 
 // ── Main Navbar ───────────────────────────────────────────────
-export function Navbar() {
+export function Navbar({
+  logoUrl,
+  storeName,
+}: {
+  logoUrl?: string | null
+  storeName?: string | null
+} = {}) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [user, setUser] = useState<{ id: string; email?: string; full_name?: string } | null>(null)
@@ -371,9 +388,9 @@ export function Navbar() {
           <Link
             href="/"
             className="flex items-center shrink-0 group"
-            aria-label={`${STORE_INFO.name} — Accueil`}
+            aria-label={`${storeName || STORE_INFO.name} — Accueil`}
           >
-            <PeLogo />
+            <PeLogo logoUrl={logoUrl} />
           </Link>
 
           {/* Centered Search Bar */}
@@ -458,7 +475,12 @@ export function Navbar() {
       </header>
 
       {/* Mobile Drawer */}
-      <MobileDrawer open={mobileOpen} onClose={() => setMobileOpen(false)} user={user} />
+      <MobileDrawer
+        open={mobileOpen}
+        onClose={() => setMobileOpen(false)}
+        user={user}
+        logoUrl={logoUrl}
+      />
     </>
   )
 }

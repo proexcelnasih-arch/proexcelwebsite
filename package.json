@@ -2,7 +2,12 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "next lint",
+    "scrape": "tsx scripts/scrape-mylibrairie.ts",
+    "import:products": "tsx scripts/import-scraped-products.ts",
+    "backfill:images": "tsx scripts/backfill-product-images.ts",
+    "update:images": "tsx scripts/update-images.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.5",

@@ -91,7 +91,13 @@ function WhatsAppOutlineIcon({ className = "w-4.5 h-4.5" }: { className?: string
   )
 }
 
-export function Footer() {
+export function Footer({
+  logoUrl,
+  storeSettings,
+}: {
+  logoUrl?: string | null
+  storeSettings?: any
+} = {}) {
   const whatsappClean = STORE_INFO.whatsapp.replace(/[^0-9]/g, "")
 
   return (
@@ -107,7 +113,7 @@ export function Footer() {
           {/* Column 1: Logo & Outline Social Media Icons (3 cols) */}
           <div className="lg:col-span-3 flex flex-col gap-6">
             <Link href="/" aria-label="Accueil Pro Excel">
-              <PeLogo className="h-10" />
+              <PeLogo className="h-10" logoUrl={logoUrl} />
             </Link>
 
             {/* Outline Social Icons (Filled with brand color only on hover) */}

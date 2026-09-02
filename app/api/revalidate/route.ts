@@ -35,3 +35,5 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ revalidated: false, error: String(err) }, { status: 500 })
   }
 }
+
+export const POST = GET

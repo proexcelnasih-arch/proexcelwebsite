@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { createAdminClient } from "@/lib/supabase/server"
 
 export const dynamic = "force-dynamic"
@@ -17,6 +17,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Aucun fichier fourni" }, { status: 400 })
     }
 
+    const requestedBucket = (formData.get("bucket") as string) || "product-images"
+    const allowedBuckets = ["product-images", "site-assets"]
+    const targetBucket = allowedBuckets.includes(requestedBucket) ? requestedBucket : "product-images"
+    const folder = targetBucket === "site-assets" ? "brand" : "products"
+
     const supabase = await createAdminClient()
     const uploadedUrls: string[] = []
 
@@ -30,10 +35,10 @@ export async function POST(req: NextRequest) {
       const cleanName = file.name
         ? file.name.replace(/[^\w.-]/g, "_").toLowerCase()
         : `image.${ext}`
-      const fileName = `products/${Date.now()}-${Math.random().toString(36).substring(2, 8)}-${cleanName}`
+      const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).substring(2, 8)}-${cleanName}`
 
       const { error } = await supabase.storage
-        .from("product-images")
+        .from(targetBucket)
         .upload(fileName, buffer, {
           contentType: file.type || `image/${ext}`,
           upsert: true,
@@ -45,7 +50,7 @@ export async function POST(req: NextRequest) {
       }
 
       const { data: publicUrlData } = supabase.storage
-        .from("product-images")
+        .from(targetBucket)
         .getPublicUrl(fileName)
 
       if (publicUrlData?.publicUrl) {
