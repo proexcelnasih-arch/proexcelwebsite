@@ -1,26 +1,27 @@
 "use client"
 
-import { useState, Suspense } from "react"
+import { Suspense } from "react"
 import Link from "next/link"
-import { usePathname, useSearchParams } from "next/navigation"
+import { usePathname } from "next/navigation"
 import Image from "next/image"
 import {
-  ChevronDown,
   LayoutDashboard,
   ShoppingCart,
   Package,
+  PlusCircle,
   Layers,
   Boxes,
   Users,
   Tag,
+  MessageSquareQuote,
   Palette,
   Settings,
   ExternalLink,
   ChevronLeft,
   ChevronRight,
+  type LucideIcon,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { ADMIN_NAVIGATION, type AdminNavGroup } from "@/lib/admin/admin-navigation"
 
 interface AdminSidebarProps {
   collapsed?: boolean
@@ -28,6 +29,77 @@ interface AdminSidebarProps {
   onCloseMobile?: () => void
   logoUrl?: string | null
 }
+
+interface NavItem {
+  title: string
+  href: string
+  icon: LucideIcon
+  badge?: string | number
+  badgeColor?: string
+  exact?: boolean
+}
+
+// ── Flat Navigation List (Sedap Style — No Accordion Dropdowns) ──
+const NAV_ITEMS: NavItem[] = [
+  {
+    title: "Dashboard",
+    href: "/admin",
+    icon: LayoutDashboard,
+    exact: true,
+  },
+  {
+    title: "Commandes",
+    href: "/admin/orders",
+    icon: ShoppingCart,
+  },
+  {
+    title: "Produits",
+    href: "/admin/products",
+    icon: Package,
+    exact: true,
+  },
+  {
+    title: "Ajouter Produit",
+    href: "/admin/products/new",
+    icon: PlusCircle,
+    exact: true,
+  },
+  {
+    title: "Catégories",
+    href: "/admin/categories",
+    icon: Layers,
+  },
+  {
+    title: "Stock & Inventaire",
+    href: "/admin/inventory",
+    icon: Boxes,
+  },
+  {
+    title: "Clients",
+    href: "/admin/customers",
+    icon: Users,
+  },
+  {
+    title: "Marketing & Coupons",
+    href: "/admin/coupons",
+    icon: Tag,
+  },
+  {
+    title: "Avis Clients",
+    href: "/admin/reviews",
+    icon: MessageSquareQuote,
+  },
+  {
+    title: "Vitrine & CMS",
+    href: "/admin/storefront",
+    icon: Palette,
+  },
+  {
+    title: "Paramètres",
+    href: "/admin/settings/store",
+    icon: Settings,
+  },
+]
 
 function SidebarNavList({
   collapsed,
@@ -37,116 +109,74 @@ function SidebarNavList({
   onCloseMobile?: () => void
 }) {
   const pathname = usePathname()
-  const searchParams = useSearchParams()
 
-  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
-    main: true,
-    orders: true,
-    products: true,
-    categories: true,
-    inventory: true,
-    customers: true,
-    marketing: true,
-    storefront: true,
-    settings: true,
-  })
-
-  function toggleGroup(groupId: string) {
-    setOpenGroups((prev) => ({ ...prev, [groupId]: !prev[groupId] }))
-  }
-
-  function isItemActive(href: string) {
-    const [targetPath, targetQuery] = href.split("?")
-    if (targetQuery) {
-      const statusParam = searchParams.get("status")
-      const tabParam = searchParams.get("tab")
-      if (statusParam && targetQuery.includes(`status=${statusParam}`)) return true
-      if (tabParam && targetQuery.includes(`tab=${tabParam}`)) return true
-      return false
+  function isItemActive(item: NavItem) {
+    if (item.exact) {
+      return pathname === item.href
     }
-    if (href === "/admin") return pathname === "/admin"
-    return pathname === targetPath && !searchParams.get("status") && !searchParams.get("tab")
+    return pathname.startsWith(item.href)
   }
 
   return (
-    <nav className="flex-1 overflow-y-auto overflow-x-hidden p-3 space-y-4 scrollbar-thin">
-      {ADMIN_NAVIGATION.map((group) => {
-        const isOpen = openGroups[group.id] ?? true
-        const GroupIcon = group.icon
+    <nav className="flex-1 overflow-y-auto overflow-x-hidden px-3.5 py-4 space-y-1 scrollbar-thin">
+      {NAV_ITEMS.map((item) => {
+        const active = isItemActive(item)
+        const Icon = item.icon
 
         return (
-          <div key={group.id} className="space-y-1">
-            {/* Group Header Button */}
-            {!collapsed ? (
-              <button
-                type="button"
-                onClick={() => toggleGroup(group.id)}
-                className="w-full flex items-center justify-between px-2.5 py-1.5 text-xs font-bold text-slate-500 uppercase tracking-wider hover:text-slate-800 transition-colors"
-              >
-                <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 rounded-md bg-slate-100 flex items-center justify-center text-slate-600">
-                    <GroupIcon className="w-3.5 h-3.5" strokeWidth={1.75} />
-                  </div>
-                  <span>{group.title}</span>
-                </div>
-                {group.items.length > 1 && (
-                  <ChevronDown
-                    className={cn(
-                      "w-3.5 h-3.5 text-slate-400 transition-transform duration-200",
-                      isOpen ? "rotate-0" : "-rotate-90"
-                    )}
-                    strokeWidth={2}
-                  />
+          <Link
+            key={item.href}
+            href={item.href}
+            onClick={onCloseMobile}
+            className={cn(
+              "group relative flex items-center rounded-2xl text-[13px] font-medium transition-all duration-200 cursor-pointer",
+              collapsed ? "p-3 justify-center" : "px-4 py-3 gap-3.5",
+              active
+                ? "bg-[#8C1A2B]/10 text-[#8C1A2B] font-bold shadow-2xs"
+                : "text-slate-500 hover:text-[#8C1A2B] hover:bg-[#8C1A2B]/5"
+            )}
+            title={collapsed ? item.title : undefined}
+          >
+            {/* ── Active Left Indicator Bar (Sedap Style) ──────── */}
+            {active && (
+              <span
+                className={cn(
+                  "absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-7 bg-[#8C1A2B] rounded-r-full transition-all duration-200",
+                  collapsed ? "-left-1 h-5" : "-left-3.5"
                 )}
-              </button>
-            ) : (
-              <div className="w-full flex justify-center py-1">
-                <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600">
-                  <GroupIcon className="w-4 h-4" strokeWidth={1.75} />
-                </div>
-              </div>
+              />
             )}
 
-            {/* Sub-items List */}
-            {(isOpen || collapsed) && (
-              <div className={cn("space-y-0.5", !collapsed && "pl-2")}>
-                {group.items.map((item) => {
-                  const active = isItemActive(item.href)
+            {/* Icon */}
+            <Icon
+              className={cn(
+                "w-5 h-5 shrink-0 transition-colors duration-200",
+                active
+                  ? "text-[#8C1A2B]"
+                  : "text-slate-400 group-hover:text-[#8C1A2B]"
+              )}
+              strokeWidth={active ? 2.25 : 1.75}
+            />
 
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={onCloseMobile}
-                      className={cn(
-                        "group flex items-center justify-between rounded-xl text-xs font-semibold transition-all duration-300",
-                        collapsed ? "p-2.5 justify-center" : "px-3.5 py-2.5",
-                        active
-                          ? "bg-[#8C1A2B] text-white shadow-sm font-bold"
-                          : "text-slate-600 hover:text-red-800 hover:bg-red-50/70 hover:translate-x-1"
-                      )}
-                      title={collapsed ? item.title : undefined}
-                    >
-                      <span className="truncate">{item.title}</span>
-
-                      {active && !collapsed ? (
-                        <ChevronRight className="w-3.5 h-3.5 text-white/90 shrink-0 ml-1.5" strokeWidth={2.5} />
-                      ) : item.badge && !collapsed ? (
-                        <span
-                          className={cn(
-                            "text-[10px] font-extrabold px-1.5 py-0.5 rounded-full",
-                            item.badgeColor ?? "bg-slate-200 text-slate-700"
-                          )}
-                        >
-                          {item.badge}
-                        </span>
-                      ) : null}
-                    </Link>
-                  )
-                })}
-              </div>
+            {/* Label */}
+            {!collapsed && (
+              <span className="truncate flex-1 tracking-tight">
+                {item.title}
+              </span>
             )}
-          </div>
+
+            {/* Optional Badge */}
+            {!collapsed && item.badge && (
+              <span
+                className={cn(
+                  "text-[10px] font-extrabold px-2 py-0.5 rounded-full shrink-0",
+                  item.badgeColor ?? "bg-slate-100 text-slate-700"
+                )}
+              >
+                {item.badge}
+              </span>
+            )}
+          </Link>
         )
       })}
     </nav>
@@ -166,8 +196,8 @@ export function AdminSidebar({
         collapsed ? "w-20" : "w-64"
       )}
     >
-      {/* ── Top Brand Header ─────────────────────────────────── */}
-      <div className="h-16 border-b border-[#E2E8F0] flex items-center justify-between px-4 shrink-0">
+      {/* ── Top Brand Header (Sedap Style) ───────────────────── */}
+      <div className="h-20 border-b border-[#E2E8F0] flex items-center justify-between px-5 shrink-0">
         <Link
           href="/admin"
           className="flex items-center gap-3 overflow-hidden group"
@@ -183,13 +213,17 @@ export function AdminSidebar({
               priority
             />
           </div>
+
           {!collapsed && (
             <div className="flex flex-col min-w-0">
-              <span className="font-sans font-bold text-sm text-slate-900 tracking-tight leading-tight truncate">
-                ProExcel
-              </span>
-              <span className="text-[10px] uppercase font-bold tracking-wider text-[#8C1A2B]">
-                Admin Portal
+              <div className="flex items-center">
+                <span className="font-sans font-extrabold text-xl text-slate-900 tracking-tight leading-none">
+                  ProExcel
+                </span>
+                <span className="text-[#8C1A2B] font-extrabold text-xl leading-none">.</span>
+              </div>
+              <span className="text-[11px] font-medium text-slate-400 mt-1 leading-none">
+                Admin Dashboard
               </span>
             </div>
           )}
@@ -200,17 +234,40 @@ export function AdminSidebar({
             type="button"
             onClick={onToggleCollapse}
             className="hidden lg:flex w-7 h-7 rounded-lg border border-[#E2E8F0] items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-50 transition-colors"
-            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            aria-label={collapsed ? "Agrandir le menu" : "Réduire le menu"}
           >
             {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
           </button>
         )}
       </div>
 
-      {/* ── Navigation Items (Wrapped in Suspense) ───────────── */}
-      <Suspense fallback={<div className="flex-1 p-4 text-xs text-slate-400">Chargement menu…</div>}>
+      {/* ── Navigation Items ─────────────────────────────────── */}
+      <Suspense fallback={<div className="flex-1 p-4 text-xs text-slate-400">Chargement du menu…</div>}>
         <SidebarNavList collapsed={collapsed} onCloseMobile={onCloseMobile} />
       </Suspense>
+
+      {/* ── Bottom Promotional Card (Sedap Style) ─────────────── */}
+      {!collapsed && (
+        <div className="px-3.5 pb-2 shrink-0">
+          <div className="p-4 rounded-2xl bg-gradient-to-br from-[#8C1A2B] to-[#5E0F1D] text-white shadow-sm relative overflow-hidden">
+            <div className="relative z-10 space-y-2">
+              <p className="text-[11px] font-medium leading-relaxed text-white/90">
+                Besoin d&apos;ajouter un produit rapidement à votre catalogue ?
+              </p>
+              <Link
+                href="/admin/products/new"
+                onClick={onCloseMobile}
+                className="inline-flex items-center justify-center w-full py-2 px-3 rounded-xl bg-white text-[#8C1A2B] text-xs font-bold shadow-2xs hover:bg-slate-50 transition-colors"
+              >
+                + Nouveau Produit
+              </Link>
+            </div>
+            {/* Soft decorative background circles */}
+            <div className="absolute -bottom-6 -right-6 w-20 h-20 bg-white/10 rounded-full blur-xs pointer-events-none" />
+            <div className="absolute -top-6 -left-6 w-16 h-16 bg-white/5 rounded-full blur-xs pointer-events-none" />
+          </div>
+        </div>
+      )}
 
       {/* ── Bottom Storefront Quick Link ─────────────────────── */}
       <div className="p-3 border-t border-[#E2E8F0] shrink-0">
@@ -219,8 +276,8 @@ export function AdminSidebar({
           target="_blank"
           rel="noopener noreferrer"
           className={cn(
-            "flex items-center gap-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-[#8C1A2B] hover:bg-slate-50 border border-[#E2E8F0] transition-all",
-            collapsed ? "p-2.5 justify-center" : "px-3 py-2.5"
+            "flex items-center gap-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-[#8C1A2B] hover:bg-slate-50 border border-[#E2E8F0] transition-all",
+            collapsed ? "p-2.5 justify-center" : "px-3.5 py-2.5"
           )}
         >
           <ExternalLink className="w-4 h-4 shrink-0" strokeWidth={1.75} />
