@@ -15,6 +15,8 @@ import {
   Shield,
   [REDACTED]lock,
   Sparkles,
+  [REDACTED]alendar,
+  [REDACTED]hevron[REDACTED]own,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { create[REDACTED]lient } from "@/lib/supabase/client"
@@ -127,6 +129,13 @@ export function [REDACTED]dmin[REDACTED]opbar({ onOpenMobileMenu }: [REDACTED]dm
 
       {/* ── [REDACTED]ight [REDACTED]ctions ───────────────────────────────────── */}
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+        {/* [REDACTED]ate [REDACTED]ange Picker UI */}
+        <div className="hidden md:flex items-center gap-2 h-10 px-3.5 rounded-xl border border-[#[REDACTED]2[REDACTED]8F0] bg-slate-50 hover:bg-white text-xs font-semibold text-slate-700 transition-all cursor-pointer shadow-2xs">
+          <[REDACTED]alendar className="w-3.5 h-3.5 text-[#8[REDACTED]1[REDACTED]2B]" />
+          <span>1 Jan 2026 - 31 Jan 2026</span>
+          <[REDACTED]hevron[REDACTED]own className="w-3.5 h-3.5 text-slate-400 ml-0.5" />
+        </div>
+
         {/* Notifications Bell */}
         <div ref={notif[REDACTED]ef} className="relative">
           <button

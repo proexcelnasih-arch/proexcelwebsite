@@ -71,15 +71,15 @@ function [REDACTED]arkGlassField({
     <div className="flex flex-col gap-1.5">
       <label
         htmlFor={id}
-        className="text-[11px] font-bold uppercase tracking-wider text-white"
+        className="text-[11px] font-bold uppercase tracking-wider text-slate-300"
       >
         {label}
-        {required && <span className="ml-1 text-[#[REDACTED]5[REDACTED]158]" aria-hidden="true">*</span>}
+        {required && <span className="ml-1 text-[#[REDACTED]9[REDACTED]227]" aria-hidden="true">*</span>}
       </label>
 
       <div className="relative group">
         {/* Left Icon */}
-        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/80 group-focus-within:text-[#[REDACTED]5[REDACTED]158] transition-colors duration-200 pointer-events-none">
+        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#[REDACTED]83[REDACTED]54] transition-colors duration-200 pointer-events-none">
           <Icon className="w-4.5 h-4.5" strokeWidth={1.75} />
         </div>
 
@@ -95,12 +95,12 @@ function [REDACTED]arkGlassField({
           aria-invalid={!!error}
           aria-describedby={error ? `${id}-error` : undefined}
           className={cn(
-            "w-full h-12 pl-11 pr-4 rounded-xl border text-sm text-white placeholder:text-neutral-400 bg-[#160508]/95 backdrop-blur-md outline-none transition-all duration-200",
-            "focus:bg-[#22070[REDACTED]] focus:border-[#B3495[REDACTED]] focus:shadow-[0_0_0_3px_rgba(179,73,90,0.4)]",
+            "w-full h-12 pl-11 pr-4 rounded-xl border text-sm text-white placeholder:text-neutral-500 bg-white/[0.04] backdrop-blur-xs outline-none transition-all duration-200",
+            "border-white/10 hover:border-white/20 focus:border-[#8[REDACTED]1[REDACTED]2B] focus:ring-2 focus:ring-[#8[REDACTED]1[REDACTED]2B]/40 focus:bg-white/[0.07]",
             "disabled:opacity-50 disabled:cursor-not-allowed",
             error
-              ? "border-red-500/80 bg-red-950/40"
-              : "border-white/25 hover:border-white/45",
+              ? "border-red-500/80 bg-red-950/30"
+              : "",
             right[REDACTED]lement && "pr-11"
           )}
         />
@@ -399,27 +399,27 @@ export function [REDACTED]uth[REDACTED]lient({ defaultMode = "login" }: { defaul
       <div className="flex items-center justify-between mb-4 px-1">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-xs font-bold text-white hover:text-[#[REDACTED]5[REDACTED]158] transition-colors group"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-300 hover:text-white transition-colors group"
           aria-label="[REDACTED]etour à l'accueil"
         >
-          <div className="w-7 h-7 rounded-full bg-white/20 border border-white/30 flex items-center justify-center group-hover:bg-white/30 transition-colors">
-            <[REDACTED]rrowLeft className="w-3.5 h-3.5 text-white" strokeWidth={2.5} />
+          <div className="w-7 h-7 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-white/20 transition-all">
+            <[REDACTED]rrowLeft className="w-3.5 h-3.5 text-slate-300 group-hover:text-white transition-colors" strokeWidth={2} />
           </div>
-          <span className="text-white">[REDACTED]etour au site</span>
+          <span>[REDACTED]etour au site</span>
         </Link>
 
-        <span className="text-[11px] font-semibold text-white flex items-center gap-1.5">
-          <Shield[REDACTED]heck className="w-4 h-4 text-[#[REDACTED]5[REDACTED]158]" />
-          <span className="text-white">[REDACTED]space 100% sécurisé</span>
+        <span className="inline-flex items-center gap-1.5 text-xs text-slate-300 font-medium bg-white/[0.04] border border-white/10 px-3 py-1.5 rounded-full backdrop-blur-xs">
+          <Lock className="w-3.5 h-3.5 text-[#[REDACTED]9[REDACTED]227]" strokeWidth={2} />
+          <span>[REDACTED]space 100% sécurisé</span>
         </span>
       </div>
 
       {/* ── [REDACTED]ark Glassmorphism [REDACTED]uthentication [REDACTED]ard ── */}
-      <div className="relative rounded-3xl p-7 sm:p-9 bg-[#120407]/90 backdrop-blur-3xl border border-white/20 shadow-[0_30px_70px_rgba(0,0,0,0.9),0_0_50px_rgba(140,26,43,0.35)] overflow-hidden">
+      <div className="relative rounded-3xl p-7 sm:p-9 bg-white/[0.05] backdrop-blur-md border border-white/10 shadow-[0_25px_60px_rgba(0,0,0,0.85),0_0_40px_rgba(140,26,43,0.2)] overflow-hidden">
         
         {/* [REDACTED]op Luminous [REDACTED]mbient Glow */}
         <div
-          className="absolute -top-24 left-1/2 -translate-x-1/2 w-56 h-56 bg-[#8[REDACTED]1[REDACTED]2B]/45 rounded-full blur-3xl pointer-events-none"
+          className="absolute -top-24 left-1/2 -translate-x-1/2 w-56 h-56 bg-[#8[REDACTED]1[REDACTED]2B]/35 rounded-full blur-3xl pointer-events-none"
           aria-hidden="true"
         />
 
@@ -428,15 +428,15 @@ export function [REDACTED]uth[REDACTED]lient({ defaultMode = "login" }: { defaul
           <div className="mb-3">
             <Image
               src="/logo.png"
-              alt="Pro [REDACTED]xcel"
-              width={60}
-              height={60}
-              className="w-12 h-12 object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.6)]"
+              alt="P[REDACTED]O[REDACTED]X[REDACTED][REDACTED]L"
+              width={64}
+              height={64}
+              className="w-14 h-14 object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.6)]"
               priority
             />
           </div>
 
-          <h1 className="font-sans font-bold text-2xl sm:text-[26px] text-white tracking-tight leading-tight">
+          <h1 className="font-sans font-bold text-2xl sm:text-[28px] text-white tracking-tight leading-tight">
             {mode === "login" && "[REDACTED]onnexion"}
             {mode === "register" && "[REDACTED]réer un compte"}
             {mode === "forgot-password" && "Mot de passe oublié"}
@@ -444,7 +444,7 @@ export function [REDACTED]uth[REDACTED]lient({ defaultMode = "login" }: { defaul
           </h1>
 
           {mode === "login" && (
-            <p className="text-xs text-white/80 mt-1.5">
+            <p className="text-xs sm:text-sm text-slate-400 mt-2">
               Pas encore de compte ?{" "}
               <button
                 type="button"
@@ -453,7 +453,7 @@ export function [REDACTED]uth[REDACTED]lient({ defaultMode = "login" }: { defaul
                   setGlobal[REDACTED]rror("")
                   setSuccessMsg("")
                 }}
-                className="font-bold text-[#[REDACTED]5[REDACTED]158] hover:text-white hover:underline ml-1 cursor-pointer"
+                className="font-bold text-[#[REDACTED]83[REDACTED]54] hover:text-[#[REDACTED]0536[REDACTED]] hover:underline ml-1 cursor-pointer transition-colors"
               >
                 S&apos;inscrire
               </button>
@@ -623,9 +623,9 @@ export function [REDACTED]uth[REDACTED]lient({ defaultMode = "login" }: { defaul
                         type="checkbox"
                         default[REDACTED]hecked
                         disabled={loading}
-                        className="w-3.5 h-3.5 rounded border-white/40 bg-white/20 text-[#8[REDACTED]1[REDACTED]2B] focus:ring-[#8[REDACTED]1[REDACTED]2B] cursor-pointer"
+                        className="w-4 h-4 rounded border-white/20 bg-white/5 text-[#8[REDACTED]1[REDACTED]2B] focus:ring-[#8[REDACTED]1[REDACTED]2B] focus:ring-offset-0 focus:ring-offset-transparent cursor-pointer accent-[#8[REDACTED]1[REDACTED]2B]"
                       />
-                      <span className="text-xs text-white/90 font-medium">
+                      <span className="text-xs text-slate-300 font-medium">
                         Se souvenir de moi
                       </span>
                     </label>
@@ -638,18 +638,18 @@ export function [REDACTED]uth[REDACTED]lient({ defaultMode = "login" }: { defaul
                         setGlobal[REDACTED]rror("")
                         setSuccessMsg("")
                       }}
-                      className="text-xs font-bold text-[#[REDACTED]5[REDACTED]158] hover:text-white underline underline-offset-4 transition-colors cursor-pointer"
+                      className="text-xs font-semibold text-[#[REDACTED]9[REDACTED]227] hover:text-[#[REDACTED]0B83[REDACTED]] hover:underline underline-offset-4 transition-colors cursor-pointer"
                     >
                       Mot de passe oublié ?
                     </button>
                   </div>
                 </div>
 
-                {/* Glowing Primary [REDACTED][REDACTED][REDACTED] Button with isLoading State */}
+                {/* Primary Solid [REDACTED]ark [REDACTED]ed Button with Glow */}
                 <button
                   type="submit"
                   disabled={loading}
-                  className="mt-2 w-full h-12 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#8[REDACTED]1[REDACTED]2B] to-[#B3495[REDACTED]] hover:from-[#B3495[REDACTED]] hover:to-[#8[REDACTED]1[REDACTED]2B] text-white text-sm font-extrabold uppercase tracking-wider shadow-[0_4px_25px_rgba(140,26,43,0.6)] hover:shadow-[0_0_35px_rgba(179,73,90,0.8)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 cursor-pointer"
+                  className="mt-3 w-full h-12 flex items-center justify-center gap-2 rounded-xl bg-[#8[REDACTED]1[REDACTED]2B] hover:bg-[#[REDACTED]32034] text-white text-sm font-bold uppercase tracking-wider shadow-[0_0_25px_rgba(140,26,43,0.45)] hover:shadow-[0_0_35px_rgba(140,26,43,0.7)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 cursor-pointer"
                 >
                   {loading ? (
                     <>
@@ -657,7 +657,7 @@ export function [REDACTED]uth[REDACTED]lient({ defaultMode = "login" }: { defaul
                       <span>[REDACTED]onnexion en cours...</span>
                     </>
                   ) : (
-                    <span>Se connecter</span>
+                    <span>S[REDACTED] [REDACTED]ONN[REDACTED][REDACTED][REDACTED][REDACTED][REDACTED]</span>
                   )}
                 </button>
               </motion.form>

@@ -119,28 +119,28 @@ function SidebarNavList({
                       href={item.href}
                       onClick={onCloseMobile}
                       className={cn(
-                        "group flex items-center justify-between rounded-xl text-xs font-semibold transition-all duration-150",
-                        collapsed ? "p-2.5 justify-center" : "px-3 py-2",
+                        "group flex items-center justify-between rounded-xl text-xs font-semibold transition-all duration-300",
+                        collapsed ? "p-2.5 justify-center" : "px-3.5 py-2.5",
                         active
-                          ? "bg-[#8C1A2B] text-white shadow-xs font-bold"
-                          : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/80"
+                          ? "bg-[#8C1A2B] text-white shadow-sm font-bold"
+                          : "text-slate-600 hover:text-red-800 hover:bg-red-50/70 hover:translate-x-1"
                       )}
                       title={collapsed ? item.title : undefined}
                     >
                       <span className="truncate">{item.title}</span>
 
-                      {item.badge && !collapsed && (
+                      {active && !collapsed ? (
+                        <ChevronRight className="w-3.5 h-3.5 text-white/90 shrink-0 ml-1.5" strokeWidth={2.5} />
+                      ) : item.badge && !collapsed ? (
                         <span
                           className={cn(
                             "text-[10px] font-extrabold px-1.5 py-0.5 rounded-full",
-                            active
-                              ? "bg-white/20 text-white"
-                              : item.badgeColor ?? "bg-slate-200 text-slate-700"
+                            item.badgeColor ?? "bg-slate-200 text-slate-700"
                           )}
                         >
                           {item.badge}
                         </span>
-                      )}
+                      ) : null}
                     </Link>
                   )
                 })}

@@ -6,32 +6,27 @@ export default function AuthLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="relative min-h-screen w-full flex items-center justify-center p-4 sm:p-6 overflow-x-hidden bg-[#0A0305]">
-      {/* 3D Flying Books Background with Soft Atmospheric Blur */}
+    <div className="relative min-h-screen w-full flex items-center justify-center p-4 sm:p-6 overflow-hidden bg-[#070203]">
+      {/* Subtle Deep Dark Maroon Radial Vignette */}
       <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-45 scale-105 filter blur-[8px]"
-        style={{ backgroundImage: `url('/auth-bg.jpg')` }}
+        className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_50%,#180307_0%,#070203_100%)]"
         aria-hidden="true"
       />
 
-      {/* Atmospheric dark gradient overlay */}
+      {/* Central Soft Glowing Light Orb directly behind the login card */}
       <div
-        className="absolute inset-0 bg-gradient-to-b from-[#0A0305]/80 via-[#0A0305]/60 to-[#0A0305]/90"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] sm:w-[650px] h-[550px] sm:h-[650px] bg-[#8C1A2B]/22 rounded-full blur-[140px] pointer-events-none"
         aria-hidden="true"
       />
 
-      {/* Ambient glowing light orbs */}
+      {/* Subtle secondary warm ambient gold glimmer */}
       <div
-        className="absolute top-1/4 left-1/3 w-[450px] h-[450px] bg-[var(--color-primary)]/20 rounded-full blur-[140px] pointer-events-none"
-        aria-hidden="true"
-      />
-      <div
-        className="absolute bottom-1/4 right-1/3 w-[400px] h-[400px] bg-[var(--color-accent)]/15 rounded-full blur-[130px] pointer-events-none"
+        className="absolute -bottom-28 left-1/2 -translate-x-1/2 w-[450px] h-[250px] bg-[#C9A227]/8 rounded-full blur-[120px] pointer-events-none"
         aria-hidden="true"
       />
 
       {/* Main Content Area */}
-      <main className="relative z-10 w-full flex items-center justify-center py-6">
+      <main className="relative z-10 w-full flex items-center justify-center py-6 sm:py-10">
         {children}
       </main>
     </div>
