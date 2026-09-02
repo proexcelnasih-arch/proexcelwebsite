@@ -9,7 +9,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-[#F6F8FA] text-slate-800 flex flex-col lg:flex-row antialiased">
+    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col lg:flex-row antialiased selection:bg-[#8C1A2B]/10 selection:text-[#8C1A2B]">
       {/* ── Desktop Sidebar ───────────────────────────────────── */}
       <div className="hidden lg:block shrink-0">
         <AdminSidebar
