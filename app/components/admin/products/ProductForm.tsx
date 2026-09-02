@@ -11,23 +11,23 @@ import {
   Trash2,
   Image as ImageIcon,
   Check,
-  Sparkles,
-  Layers,
-  Tag,
-  Boxes,
   UploadCloud,
-  GraduationCap,
+  Layers,
   BookOpen,
-  Info,
   DollarSign,
   Package,
   Loader2,
+  X,
+  Sparkles,
+  HelpCircle,
+  Tag,
+  GraduationCap,
 } from "lucide-react"
-import { createClient } from "@/lib/supabase/client"
+import { cn } from "@/lib/utils"
 
 export interface VariantItem {
   id?: string
-  variant_type: string // "Taille" | "Couleur" | "Goût" | "Format" | "Pack" | "size" | "color" | string
+  variant_type: string
   label: string
   price_delta: number
   stock_quantity: number
@@ -120,13 +120,28 @@ const SCHOOL_SUBJECTS = [
   "Arts Plastiques & Musique",
 ]
 
-const VARIANT_TYPE_PRESETS = [
-  { label: "Format / Dimension", value: "Format" },
-  { label: "Couleur / Teinte", value: "Couleur" },
-  { label: "Conditionnement / Pack", value: "Pack" },
-  { label: "Réglure / Quadrillage", value: "Réglure" },
-  { label: "Taille", value: "Taille" },
-  { label: "Autre option", value: "Option" },
+const CATEGORY_CHOICES = [
+  "Papeterie",
+  "Fournitures Scolaires",
+  "Livres Scolaires",
+  "Arts & Créativité",
+  "Livres",
+  "Bureau",
+  "Kits Scolaires",
+]
+
+const BRAND_CHOICES = [
+  "Clairefontaine",
+  "Oxford",
+  "BIC",
+  "Maped",
+  "Faber-Castell",
+  "Stabilo",
+  "Casio",
+  "Éditions Officielles",
+  "Hachette",
+  "Nathan",
+  "Générique",
 ]
 
 export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
@@ -230,8 +245,8 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
       }
     } catch (uploadErr: any) {
       console.warn("[ProductForm] Storage upload failed, falling back to local preview:", uploadErr)
-      setFormError(uploadErr?.message || "Erreur lors du transfert de l'image. Veuillez réessayer.")
-      
+      setFormError(uploadErr?.message || "Erreur lors du transfert de l'image. Aperçu local activé.")
+
       // Fallback to local FileReader if storage route is offline
       validFiles.forEach((file) => {
         const reader = new FileReader()
@@ -289,32 +304,35 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
     setVariants((prev) => prev.filter((_, i) => i !== index))
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
+  // Submission handler (Publish or Save Draft)
+  async function submitProduct(publishState: boolean) {
     setIsSubmitting(true)
     setFormError("")
 
+    const payloadData = {
+      ...formData,
+      is_active: publishState,
+    }
+
     try {
-      // 1. Save product via server API (using admin service role client to bypass RLS issues)
       const res = await fetch("/api/admin/products", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          formData,
+          formData: payloadData,
           variants,
           isEdit,
         }),
       })
 
-      // Safely read response text to prevent JSON parse crashes on HTML/413 errors
       const text = await res.text()
       let result: any = null
       try {
         result = JSON.parse(text)
-      } catch (parseErr) {
+      } catch {
         if (!res.ok) {
           if (res.status === 413 || text.toLowerCase().includes("too large")) {
-            throw new Error("L'image ou les données envoyées dépassent la limite de taille autorisée. Veuillez importer une image plus légère.")
+            throw new Error("Les données ou photos envoyées dépassent la limite de taille autorisée.")
           }
           throw new Error(`Erreur serveur (${res.status}): ${text.slice(0, 150)}`)
         }
@@ -322,16 +340,16 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
       }
 
       if (!res.ok || !result?.success) {
-        throw new Error(result?.error || `Erreur (${res.status}) lors de l'enregistrement du produit`)
+        throw new Error(result?.error || `Erreur (${res.status}) lors de l'enregistrement`)
       }
 
       const categorySlug = result.categorySlug || formData.category_name.toLowerCase().replace(/\s+/g, "-")
 
-      // 2. Revalidate storefront cache so new/updated products appear immediately
+      // Revalidate storefront
       try {
         await fetch(`/api/revalidate?slug=${encodeURIComponent(formData.slug)}&category=${encodeURIComponent(categorySlug)}`)
       } catch {
-        // Non-blocking
+        // non-blocking
       }
 
       setSavedSuccess(true)
@@ -341,17 +359,24 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
       }, 1000)
     } catch (err: any) {
       console.warn("[ProductForm] Save error:", err)
-      setFormError(err?.message || "Erreur lors de l'enregistrement. Vérifiez votre image et vos permissions.")
-      setIsSubmitting(false)
-      return
+      setFormError(err?.message || "Erreur lors de l'enregistrement. Vérifiez les champs obligatoires.")
     } finally {
       setIsSubmitting(false)
     }
   }
 
+  function handlePublish(e: React.FormEvent) {
+    e.preventDefault()
+    submitProduct(true)
+  }
+
+  function handleSaveDraft() {
+    submitProduct(false)
+  }
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Hidden file input for PC upload */}
+    <form onSubmit={handlePublish} className="space-y-6 max-w-[1500px] mx-auto antialiased">
+      {/* Hidden file input for PC image upload */}
       <input
         ref={fileInputRef}
         type="file"
@@ -361,40 +386,66 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
         onChange={(e) => handleFilesUpload(e.target.files)}
       />
 
-      {/* ── Top Bar ───────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E2E8F0]">
-        <div className="flex items-center gap-3">
+      {/* ── 1. Header (Add New Product + Save Draft + Publish) ────────── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-200">
+        <div className="flex items-center gap-3.5">
           <Link
             href="/admin/products"
-            className="w-9 h-9 rounded-xl border border-[#E2E8F0] bg-white flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors"
+            className="w-10 h-10 rounded-xl border border-gray-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-600 transition-colors shadow-2xs"
             aria-label="Retour aux produits"
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
           <div>
-            <h1 className="text-xl font-bold text-slate-900">
-              {isEdit ? `Modifier : ${formData.name}` : "Ajouter un Nouveau Produit"}
-            </h1>
+            <div className="flex items-center gap-2.5">
+              <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+                {isEdit ? `Modifier : ${formData.name}` : "Ajouter un Nouveau Produit"}
+              </h1>
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200">
+                {isEdit ? "Mode Édition" : "Catalogue Live"}
+              </span>
+            </div>
             <p className="text-xs text-slate-500 mt-0.5">
-              Renseignez les détails techniques, tarifs, variantes et photos du produit.
+              Renseignez les détails, prix, variantes et images de votre produit.
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* Action Buttons on Right */}
+        <div className="flex items-center gap-2.5 self-start sm:self-auto">
           {savedSuccess && (
-            <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
-              <Check className="w-4 h-4" /> Produit enregistré !
+            <span className="text-xs font-bold text-emerald-600 flex items-center gap-1 mr-2">
+              <Check className="w-4 h-4" /> Enregistré avec succès !
             </span>
           )}
 
+          {/* Save Draft Button */}
+          <button
+            type="button"
+            onClick={handleSaveDraft}
+            disabled={isSubmitting}
+            className="h-10 px-4 rounded-xl border border-gray-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold shadow-2xs transition-colors cursor-pointer disabled:opacity-60"
+          >
+            Enregistrer Brouillon
+          </button>
+
+          {/* Prominent Publish Product Button in Dark Red/Maroon */}
           <button
             type="submit"
             disabled={isSubmitting}
-            className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-[#8C1A2B] hover:bg-[#5E0F1D] text-white text-xs font-bold shadow-xs hover:shadow-sm transition-all disabled:opacity-60 cursor-pointer"
+            className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-[#8C1A2B] hover:bg-[#701422] text-white text-xs font-bold shadow-sm shadow-[#8C1A2B]/25 hover:shadow-md hover:shadow-[#8C1A2B]/35 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer disabled:opacity-60"
           >
-            <Save className="w-4 h-4" />
-            <span>{isSubmitting ? "Enregistrement..." : isEdit ? "Mettre à jour" : "Publier le produit"}</span>
+            {isSubmitting ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Publication en cours…</span>
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4" />
+                <span>{isEdit ? "Mettre à jour le produit" : "Publier le produit"}</span>
+              </>
+            )}
           </button>
         </div>
       </div>
@@ -407,115 +458,213 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
         </div>
       )}
 
-      {/* ── 2 Columns Form Layout ─────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* Left Column: General Info, Variants & Images (2 cols) */}
+      {/* ── 2. Grid Layout: Main Column (2/3) + Sidebar Column (1/3) ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        {/* ═════════════════════════════════════════════════════════════
+            MAIN COLUMN (LEFT - 2/3)
+           ═════════════════════════════════════════════════════════════ */}
         <div className="lg:col-span-2 space-y-6">
-          
-          {/* Basic Info */}
-          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
-            <h3 className="font-bold text-sm text-slate-900">Informations Générales</h3>
+          {/* Card 1: General Information */}
+          <div className="bg-white rounded-2xl border border-gray-200/80 p-6 shadow-sm space-y-5">
+            <div>
+              <h2 className="font-extrabold text-base text-slate-900 tracking-tight">
+                Informations Générales
+              </h2>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Intitulé commercial, slug URL et description détaillée du produit.
+              </p>
+            </div>
 
+            {/* Name Input */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700">Nom du produit *</label>
+              <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
+                <span>Nom du produit *</span>
+                <span className="text-[11px] text-slate-400 font-normal">Requis</span>
+              </label>
               <input
                 type="text"
                 required
                 value={formData.name}
                 onChange={(e) => handleNameChange(e.target.value)}
-                placeholder="Ex: Taille crayon Staedtler / Cahier Séyès 96p"
-                className="w-full h-10 px-3.5 rounded-xl border border-[#E2E8F0] text-xs font-medium text-slate-800 outline-none focus:border-[#8C1A2B]"
+                placeholder="Ex: Cahier Spirale Oxford Polypro A4 200p / Boîte 50 Stylos BIC"
+                className="w-full h-11 px-3.5 rounded-lg bg-gray-50 border border-gray-200 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:bg-white focus:border-[#8C1A2B] focus:ring-2 focus:ring-[#8C1A2B]/15 transition-all"
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700">Slug URL *</label>
+            {/* Slug URL Input */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-700">
+                Slug URL (Lien public du produit) *
+              </label>
+              <div className="flex items-center rounded-lg bg-gray-50 border border-gray-200 overflow-hidden focus-within:bg-white focus-within:border-[#8C1A2B] focus-within:ring-2 focus-within:ring-[#8C1A2B]/15 transition-all">
+                <span className="px-3 text-xs text-slate-400 select-none font-mono bg-gray-100/70 py-3 border-r border-gray-200">
+                  /product/
+                </span>
                 <input
                   type="text"
                   required
                   value={formData.slug}
                   onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                  className="w-full h-10 px-3.5 rounded-xl border border-[#E2E8F0] text-xs font-mono text-slate-600 outline-none focus:border-[#8C1A2B]"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700">Référence / SKU</label>
-                <input
-                  type="text"
-                  value={formData.sku}
-                  onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
-                  placeholder="Ex: LIV-CP-FR-01"
-                  className="w-full h-10 px-3.5 rounded-xl border border-[#E2E8F0] text-xs font-medium text-slate-800 outline-none focus:border-[#8C1A2B]"
+                  placeholder="cahier-spirale-oxford-a4"
+                  className="w-full h-11 px-3 bg-transparent text-xs font-mono text-slate-700 outline-none"
                 />
               </div>
             </div>
 
+            {/* Description Textarea */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700">Description détaillée</label>
+              <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
+                <span>Description détaillée</span>
+                <span className="text-[11px] text-slate-400 font-normal">Présentation & caractéristiques</span>
+              </label>
               <textarea
-                rows={4}
+                rows={5}
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Description complète, caractéristiques, matériaux, usage..."
-                className="w-full p-3 rounded-xl border border-[#E2E8F0] text-xs font-medium text-slate-800 outline-none focus:border-[#8C1A2B] resize-none"
+                placeholder="Rédigez ici une description claire : caractéristiques, format, grammage, réglure, usages recommandés…"
+                className="w-full p-3.5 rounded-lg bg-gray-50 border border-gray-200 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:bg-white focus:border-[#8C1A2B] focus:ring-2 focus:ring-[#8C1A2B]/15 transition-all resize-none leading-relaxed"
               />
             </div>
           </div>
 
-          {/* ══════════════════════════════════════════════════════
-              DYNAMIC PRODUCT VARIANTS SECTION
-              Allows adding, editing, and deleting variant options
-              (Size, Color, Flavor, Pack, etc.) with custom prices & stock
-             ══════════════════════════════════════════════════════ */}
-          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 sm:p-6 shadow-xs space-y-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-[#8C1A2B]/10 text-[#8C1A2B] flex items-center justify-center">
-                  <Layers className="w-4.5 h-4.5" strokeWidth={2} />
-                </div>
-                <div>
-                  <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
-                    <span>Variantes &amp; Options</span>
-                    <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[11px] font-extrabold">
-                      {variants.length}
-                    </span>
-                  </h3>
-                  <p className="text-[11px] text-slate-500">
-                    Définissez les options au choix (format, couleur, pack, réglure) avec prix et stock dédiés.
-                  </p>
+          {/* Card 2: Pricing & Stock (2-column grid inside) */}
+          <div className="bg-white rounded-2xl border border-gray-200/80 p-6 shadow-sm space-y-5">
+            <div>
+              <h2 className="font-extrabold text-base text-slate-900 tracking-tight">
+                Tarification &amp; Inventaire
+              </h2>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Fixez le prix de vente, les remises éventuelles et les quantités en stock.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Base Price */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700">
+                  Prix de base (DH) *
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    step="0.5"
+                    min="0"
+                    required
+                    value={formData.price}
+                    onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })}
+                    placeholder="0.00"
+                    className="w-full h-11 pl-3.5 pr-12 rounded-lg bg-gray-50 border border-gray-200 text-sm font-bold text-slate-900 placeholder:text-slate-400 outline-none focus:bg-white focus:border-[#8C1A2B] focus:ring-2 focus:ring-[#8C1A2B]/15 transition-all"
+                  />
+                  <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-extrabold text-slate-400 select-none">
+                    DH
+                  </span>
                 </div>
               </div>
 
-              {/* Quick Add Buttons */}
+              {/* Discount / Compare-at Price */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
+                  <span>Prix barré (DH)</span>
+                  <span className="text-[11px] text-slate-400 font-normal">Optionnel</span>
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    step="0.5"
+                    min="0"
+                    value={formData.compare_at_price ?? ""}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        compare_at_price: e.target.value ? parseFloat(e.target.value) : null,
+                      })
+                    }
+                    placeholder="Ex: 35.00"
+                    className="w-full h-11 pl-3.5 pr-12 rounded-lg bg-gray-50 border border-gray-200 text-sm font-medium text-slate-700 placeholder:text-slate-400 outline-none focus:bg-white focus:border-[#8C1A2B] focus:ring-2 focus:ring-[#8C1A2B]/15 transition-all"
+                  />
+                  <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-extrabold text-slate-400 select-none">
+                    DH
+                  </span>
+                </div>
+              </div>
+
+              {/* Stock Quantity */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700">
+                  Quantité en stock global *
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  required
+                  value={formData.stock}
+                  onChange={(e) => setFormData({ ...formData, stock: parseInt(e.target.value, 10) || 0 })}
+                  placeholder="10"
+                  className="w-full h-11 px-3.5 rounded-lg bg-gray-50 border border-gray-200 text-sm font-bold text-slate-900 placeholder:text-slate-400 outline-none focus:bg-white focus:border-[#8C1A2B] focus:ring-2 focus:ring-[#8C1A2B]/15 transition-all"
+                />
+              </div>
+
+              {/* SKU / Barcode */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
+                  <span>Référence / SKU</span>
+                  <span className="text-[11px] text-slate-400 font-normal">Code article</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.sku}
+                  onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
+                  placeholder="Ex: OXF-A4-200"
+                  className="w-full h-11 px-3.5 rounded-lg bg-gray-50 border border-gray-200 text-xs font-mono text-slate-800 placeholder:text-slate-400 outline-none focus:bg-white focus:border-[#8C1A2B] focus:ring-2 focus:ring-[#8C1A2B]/15 transition-all"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Card 3: Variants / Options Card (Pill-Style Buttons) */}
+          <div className="bg-white rounded-2xl border border-gray-200/80 p-6 shadow-sm space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-gray-100">
+              <div>
+                <div className="flex items-center gap-2">
+                  <h2 className="font-extrabold text-base text-slate-900 tracking-tight">
+                    Variantes &amp; Options de Produit
+                  </h2>
+                  <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">
+                    {variants.length}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Proposez différentes tailles, formats, couleurs ou packs avec ajustement de prix.
+                </p>
+              </div>
+
+              {/* Quick Preset Pill Buttons (Shopify / Modern Reference Style) */}
               <div className="flex items-center gap-1.5 flex-wrap">
                 <button
                   type="button"
                   onClick={() => handleAddVariant("Format", "Grand Format (24x32 cm)", 5, 20)}
-                  className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold transition-colors cursor-pointer"
+                  className="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
                 >
                   + Format
                 </button>
                 <button
                   type="button"
                   onClick={() => handleAddVariant("Couleur", "Bleu", 0, 25)}
-                  className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold transition-colors cursor-pointer"
+                  className="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
                 >
                   + Couleur
                 </button>
                 <button
                   type="button"
                   onClick={() => handleAddVariant("Pack", "Lot de 3", 10, 15)}
-                  className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold transition-colors cursor-pointer"
+                  className="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
                 >
                   + Pack
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleAddVariant("Option", "Standard", 0, 10)}
-                  className="px-3 py-1 rounded-lg bg-[#8C1A2B] hover:bg-[#5E0F1D] text-white text-[11px] font-bold flex items-center gap-1 shadow-xs transition-all cursor-pointer"
+                  onClick={() => handleAddVariant("Taille", "Taille Standard", 0, 10)}
+                  className="px-3.5 py-1.5 rounded-full bg-[#8C1A2B] hover:bg-[#701422] text-white text-xs font-bold transition-all shadow-xs cursor-pointer flex items-center gap-1"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Ajouter</span>
@@ -523,72 +672,54 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
               </div>
             </div>
 
-            {/* Variants List Table / Grid */}
+            {/* Variants Table / Grid */}
             {variants.length === 0 ? (
-              <div className="text-center py-8 px-4 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50 space-y-2">
-                <Boxes className="w-8 h-8 text-slate-400 mx-auto stroke-[1.5]" />
+              <div className="text-center py-8 px-4 border-2 border-dashed border-gray-200 rounded-xl bg-gray-50/50 space-y-2">
+                <Layers className="w-8 h-8 text-slate-400 mx-auto stroke-[1.5]" />
                 <p className="text-xs font-bold text-slate-700">Aucune variante configurée pour ce produit</p>
                 <p className="text-[11px] text-slate-500 max-w-md mx-auto">
-                  Le produit sera vendu en option unique. Ajoutez des variantes si vous souhaitez proposer plusieurs tailles, couleurs, saveurs ou packs.
+                  Le produit sera vendu en option unique. Utilisez les boutons ci-dessus pour ajouter des variantes avec prix spécifique.
                 </p>
-                <div className="pt-2">
-                  <button
-                    type="button"
-                    onClick={() => handleAddVariant("Taille", "Format Standard", 0, 10)}
-                    className="px-3.5 py-1.5 rounded-xl bg-white border border-slate-300 text-xs font-bold text-slate-800 hover:border-[#8C1A2B] shadow-2xs transition-colors cursor-pointer"
-                  >
-                    + Créer ma première variante
-                  </button>
-                </div>
               </div>
             ) : (
               <div className="space-y-3">
-                <div className="hidden sm:grid sm:grid-cols-12 gap-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider px-2">
-                  <div className="col-span-3">Type d&apos;option</div>
-                  <div className="col-span-4">Nom / Intitulé</div>
-                  <div className="col-span-2">Ajustement Prix (DH)</div>
-                  <div className="col-span-2">Stock disponible</div>
-                  <div className="col-span-1 text-center">Action</div>
+                <div className="hidden sm:grid sm:grid-cols-12 gap-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2">
+                  <div className="col-span-3">Type</div>
+                  <div className="col-span-4">Intitulé de la variante</div>
+                  <div className="col-span-2">Écart Prix (DH)</div>
+                  <div className="col-span-2">Stock</div>
+                  <div className="col-span-1 text-right">Suppr.</div>
                 </div>
 
                 {variants.map((v, index) => (
                   <div
                     key={v.id || index}
-                    className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 p-3 sm:p-2 bg-slate-50/80 rounded-xl border border-slate-200 items-center hover:border-slate-300 transition-colors"
+                    className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 p-3 bg-gray-50/80 rounded-xl border border-gray-200 items-center hover:border-gray-300 transition-colors"
                   >
-                    {/* Option Type */}
+                    {/* Variant Type */}
                     <div className="sm:col-span-3">
-                      <label className="sm:hidden text-[10px] font-bold text-slate-500 uppercase block mb-1">
-                        Type d&apos;option
-                      </label>
                       <input
                         type="text"
                         value={v.variant_type}
                         onChange={(e) => handleUpdateVariant(index, "variant_type", e.target.value)}
-                        placeholder="Ex: Taille, Couleur, Goût"
-                        className="w-full h-8 px-2.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-800 outline-none focus:border-[#8C1A2B]"
+                        placeholder="Format / Couleur"
+                        className="w-full h-9 px-3 rounded-lg bg-white border border-gray-200 text-xs font-semibold text-slate-800 outline-none focus:border-[#8C1A2B]"
                       />
                     </div>
 
                     {/* Variant Label */}
                     <div className="sm:col-span-4">
-                      <label className="sm:hidden text-[10px] font-bold text-slate-500 uppercase block mb-1">
-                        Intitulé de l&apos;option
-                      </label>
                       <input
                         type="text"
                         value={v.label}
                         onChange={(e) => handleUpdateVariant(index, "label", e.target.value)}
-                        placeholder="Ex: Pouch 250g, Bleu, Chocolat"
-                        className="w-full h-8 px-2.5 rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-800 outline-none focus:border-[#8C1A2B]"
+                        placeholder="Ex: 24x32 cm / Bleu"
+                        className="w-full h-9 px-3 rounded-lg bg-white border border-gray-200 text-xs font-medium text-slate-800 outline-none focus:border-[#8C1A2B]"
                       />
                     </div>
 
                     {/* Price Delta */}
                     <div className="sm:col-span-2">
-                      <label className="sm:hidden text-[10px] font-bold text-slate-500 uppercase block mb-1">
-                        Ajustement Prix (DH)
-                      </label>
                       <div className="relative">
                         <input
                           type="number"
@@ -597,10 +728,9 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
                           onChange={(e) =>
                             handleUpdateVariant(index, "price_delta", parseFloat(e.target.value) || 0)
                           }
-                          placeholder="0"
-                          className="w-full h-8 px-2.5 pr-6 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-800 outline-none focus:border-[#8C1A2B]"
+                          className="w-full h-9 px-2.5 pr-6 rounded-lg bg-white border border-gray-200 text-xs font-bold text-slate-900 outline-none focus:border-[#8C1A2B]"
                         />
-                        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">
+                        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 font-bold">
                           DH
                         </span>
                       </div>
@@ -608,9 +738,6 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
 
                     {/* Stock Quantity */}
                     <div className="sm:col-span-2">
-                      <label className="sm:hidden text-[10px] font-bold text-slate-500 uppercase block mb-1">
-                        Stock
-                      </label>
                       <input
                         type="number"
                         min="0"
@@ -618,74 +745,56 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
                         onChange={(e) =>
                           handleUpdateVariant(index, "stock_quantity", parseInt(e.target.value, 10) || 0)
                         }
-                        placeholder="10"
-                        className="w-full h-8 px-2.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-800 outline-none focus:border-[#8C1A2B]"
+                        className="w-full h-9 px-2.5 rounded-lg bg-white border border-gray-200 text-xs font-bold text-slate-900 outline-none focus:border-[#8C1A2B]"
                       />
                     </div>
 
-                    {/* Delete Variant Button */}
-                    <div className="sm:col-span-1 flex justify-end sm:justify-center pt-1 sm:pt-0">
+                    {/* Remove Variant */}
+                    <div className="sm:col-span-1 text-right">
                       <button
                         type="button"
                         onClick={() => handleRemoveVariant(index)}
-                        className="w-8 h-8 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-colors cursor-pointer"
-                        aria-label="Supprimer cette variante"
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                        title="Supprimer la variante"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
                 ))}
-
-                {/* Summary bar */}
-                <div className="flex items-center justify-between text-xs text-slate-500 pt-2 px-1">
-                  <span>
-                    Total des variantes : <strong className="text-slate-800">{variants.length}</strong>
-                  </span>
-                  <span>
-                    Stock total combiné :{" "}
-                    <strong className="text-slate-800">
-                      {variants.reduce((acc, v) => acc + (Number(v.stock_quantity) || 0), 0)} unités
-                    </strong>
-                  </span>
-                </div>
               </div>
             )}
           </div>
 
-          {/* ── Dynamic Academic Level (Appears for Livres / Kits) ── */}
+          {/* Card 4 (Optional): Academic Level & Subject (For Books & Kits) */}
           {isBookOrKitCategory && (
-            <div className="bg-white border-2 border-[#8C1A2B]/20 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4 animate-in fade-in duration-200">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                <div className="flex items-center gap-2">
+            <div className="bg-white rounded-2xl border border-gray-200/80 p-6 shadow-sm space-y-4 animate-in fade-in">
+              <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+                <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-lg bg-[#8C1A2B]/10 text-[#8C1A2B] flex items-center justify-center">
                     <GraduationCap className="w-4.5 h-4.5" strokeWidth={2} />
                   </div>
                   <div>
-                    <h3 className="font-bold text-sm text-slate-900">
+                    <h2 className="font-extrabold text-base text-slate-900 tracking-tight">
                       Niveau Scolaire &amp; Matière (Programme Marocain)
-                    </h3>
-                    <p className="text-[11px] text-slate-500">
-                      Sélectionnez la classe et la discipline pour classer ce manuel dans les filtres de recherche.
+                    </h2>
+                    <p className="text-xs text-slate-400">
+                      Classez ce manuel scolaire dans les filtres de niveau pour les parents et élèves.
                     </p>
                   </div>
                 </div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#8C1A2B] bg-[#8C1A2B]/10 px-2 py-0.5 rounded-full">
-                  Spécial Livres
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#8C1A2B] bg-[#8C1A2B]/10 px-2.5 py-0.5 rounded-full">
+                  Spécial Manuels
                 </span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* School Level Selector */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                    <BookOpen className="w-3.5 h-3.5 text-[#8C1A2B]" />
-                    <span>Niveau / Classe *</span>
-                  </label>
+                  <label className="text-xs font-bold text-slate-700">Niveau / Classe *</label>
                   <select
                     value={formData.school_level ?? "cp"}
                     onChange={(e) => setFormData({ ...formData, school_level: e.target.value })}
-                    className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] text-xs font-bold text-slate-800 bg-slate-50 focus:bg-white outline-none focus:border-[#8C1A2B] cursor-pointer"
+                    className="w-full h-11 px-3 rounded-lg bg-gray-50 border border-gray-200 text-xs font-bold text-slate-800 outline-none focus:bg-white focus:border-[#8C1A2B] cursor-pointer"
                   >
                     {SCHOOL_LEVELS.map((grp) => (
                       <optgroup key={grp.group} label={grp.group}>
@@ -699,13 +808,12 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
                   </select>
                 </div>
 
-                {/* Subject Selector */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700">Matière / Discipline</label>
+                  <label className="text-xs font-bold text-slate-700">Matière</label>
                   <select
                     value={formData.subject ?? "Toutes matières / Général"}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                    className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] text-xs font-bold text-slate-800 bg-slate-50 focus:bg-white outline-none focus:border-[#8C1A2B] cursor-pointer"
+                    className="w-full h-11 px-3 rounded-lg bg-gray-50 border border-gray-200 text-xs font-bold text-slate-800 outline-none focus:bg-white focus:border-[#8C1A2B] cursor-pointer"
                   >
                     {SCHOOL_SUBJECTS.map((subj) => (
                       <option key={subj} value={subj}>
@@ -717,36 +825,25 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
               </div>
             </div>
           )}
+        </div>
 
-          {/* ── Media Images & PC Upload ─────────────────────────── */}
-          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
-                <ImageIcon className="w-4 h-4 text-[#8C1A2B]" />
-                <span>Photos du Produit ({formData.images.length})</span>
-              </h3>
-
-              <button
-                type="button"
-                disabled={isUploadingImages}
-                onClick={() => fileInputRef.current?.click()}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#8C1A2B] hover:bg-[#5E0F1D] disabled:opacity-60 text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
-              >
-                {isUploadingImages ? (
-                  <>
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    <span>Téléchargement...</span>
-                  </>
-                ) : (
-                  <>
-                    <UploadCloud className="w-3.5 h-3.5" />
-                    <span>Importer depuis PC</span>
-                  </>
-                )}
-              </button>
+        {/* ═════════════════════════════════════════════════════════════
+            SIDEBAR COLUMN (RIGHT - 1/3)
+           ═════════════════════════════════════════════════════════════ */}
+        <div className="space-y-6">
+          {/* Card 1: Upload Image Card (Drag-and-drop Zone + Thumbnails Row) */}
+          <div className="bg-white rounded-2xl border border-gray-200/80 p-6 shadow-sm space-y-4">
+            <div>
+              <h2 className="font-extrabold text-base text-slate-900 tracking-tight flex items-center gap-2">
+                <ImageIcon className="w-4.5 h-4.5 text-[#8C1A2B]" />
+                <span>Photos du Produit</span>
+              </h2>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Image principale et galerie de présentation.
+              </p>
             </div>
 
-            {/* Drag & Drop Zone */}
+            {/* Large Square Drag-and-Drop Zone */}
             <div
               onDragOver={(e) => {
                 e.preventDefault()
@@ -758,203 +855,206 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
                 setIsDragging(false)
                 handleFilesUpload(e.dataTransfer.files)
               }}
-              onClick={() => {
-                if (!isUploadingImages) fileInputRef.current?.click()
-              }}
-              className={`border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all flex flex-col items-center justify-center ${
+              onClick={() => fileInputRef.current?.click()}
+              className={cn(
+                "relative w-full aspect-square rounded-xl border-2 border-dashed flex flex-col items-center justify-center p-6 text-center cursor-pointer transition-all duration-200 overflow-hidden",
                 isDragging
                   ? "border-[#8C1A2B] bg-[#8C1A2B]/5 scale-[0.99]"
-                  : "border-slate-200 hover:border-[#8C1A2B] bg-slate-50/50 hover:bg-slate-50"
-              }`}
+                  : "border-gray-300 hover:border-[#8C1A2B] bg-gray-50/70 hover:bg-gray-50"
+              )}
             >
-              <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200 shadow-xs flex items-center justify-center text-[#8C1A2B] mb-2.5">
-                {isUploadingImages ? (
-                  <Loader2 className="w-6 h-6 animate-spin" />
-                ) : (
-                  <UploadCloud className="w-6 h-6" strokeWidth={1.75} />
-                )}
-              </div>
-              <p className="text-xs font-bold text-slate-800">
-                {isUploadingImages
-                  ? "Téléchargement de vos photos vers le stockage..."
-                  : "Glissez-déposez vos photos ici ou "}
-                {!isUploadingImages && (
-                  <span className="text-[#8C1A2B] underline">parcourez votre ordinateur</span>
-                )}
-              </p>
-              <p className="text-[11px] text-slate-400 mt-1">
-                Formats acceptés : JPG, PNG, WEBP, GIF (les photos sont automatiquement optimisées et hébergées)
-              </p>
+              {formData.images.length > 0 ? (
+                <div className="relative w-full h-full rounded-lg overflow-hidden group">
+                  <Image
+                    src={formData.images[0]}
+                    alt="Photo principale"
+                    fill
+                    unoptimized
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white text-xs font-bold gap-1">
+                    <UploadCloud className="w-5 h-5" />
+                    <span>Changer l&apos;image</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center space-y-2.5">
+                  <div className="w-12 h-12 rounded-full bg-white border border-gray-200 shadow-2xs flex items-center justify-center text-[#8C1A2B]">
+                    <UploadCloud className="w-6 h-6" strokeWidth={1.75} />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-slate-800">
+                      Glissez votre image ici
+                    </p>
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      ou <span className="text-[#8C1A2B] underline">parcourez vos fichiers</span>
+                    </p>
+                  </div>
+                  <span className="text-[10px] text-slate-400 font-medium">
+                    PNG, JPG, WebP jusqu&apos;à 5MB
+                  </span>
+                </div>
+              )}
             </div>
 
-            {/* Image Preview Grid */}
-            {formData.images.length > 0 && (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-                {formData.images.map((url, idx) => (
-                  <div
-                    key={idx}
-                    className="relative aspect-square rounded-xl bg-slate-50 border border-slate-200 overflow-hidden group shadow-2xs"
-                  >
-                    <Image src={url} alt="Photo produit" fill unoptimized className="object-cover" />
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveImage(idx)}
-                      className="absolute top-2 right-2 w-7 h-7 rounded-lg bg-rose-600 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm cursor-pointer"
-                      aria-label="Supprimer photo"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                    {idx === 0 && (
-                      <span className="absolute bottom-2 left-2 text-[9px] font-extrabold uppercase bg-slate-900/85 text-white px-2 py-0.5 rounded shadow-sm">
-                        Principale
-                      </span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
+            {/* Row of 3 Small Square Placeholders for Extra Images */}
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+                Galerie additionnelle (3 emplacements)
+              </p>
+              <div className="grid grid-cols-3 gap-2.5">
+                {[1, 2, 3].map((slotIdx) => {
+                  const img = formData.images[slotIdx]
 
-            {/* Add Image via URL (Alternative) */}
-            <div className="flex gap-2 pt-2 border-t border-slate-100">
+                  return (
+                    <div
+                      key={slotIdx}
+                      className="relative aspect-square rounded-lg border border-gray-200 overflow-hidden bg-gray-50 flex items-center justify-center group"
+                    >
+                      {img ? (
+                        <>
+                          <Image
+                            src={img}
+                            alt={`Photo ${slotIdx}`}
+                            fill
+                            unoptimized
+                            className="object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleRemoveImage(slotIdx)
+                            }}
+                            className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 hover:bg-rose-600 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-xs"
+                            title="Supprimer cette photo"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          className="w-full h-full flex flex-col items-center justify-center text-slate-400 hover:text-[#8C1A2B] hover:bg-gray-100 transition-colors"
+                          title="Ajouter une image"
+                        >
+                          <Plus className="w-4 h-4 mb-0.5" />
+                          <span className="text-[10px] font-semibold">Photo {slotIdx}</span>
+                        </button>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* External URL Input */}
+            <div className="pt-2 border-t border-gray-100 flex items-center gap-2">
               <input
                 type="url"
                 value={imageUrlInput}
                 onChange={(e) => setImageUrlInput(e.target.value)}
-                placeholder="Ou coller une URL d'image externe (HTTPS)…"
-                className="flex-1 h-9.5 px-3.5 rounded-xl border border-[#E2E8F0] text-xs text-slate-800 outline-none focus:border-[#8C1A2B]"
+                placeholder="Ou coller une URL image HTTPS…"
+                className="flex-1 h-9 px-3 rounded-lg bg-gray-50 border border-gray-200 text-xs text-slate-800 placeholder:text-slate-400 outline-none focus:bg-white focus:border-[#8C1A2B]"
               />
               <button
                 type="button"
                 onClick={handleAddImageUrl}
-                className="h-9.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-colors shrink-0 cursor-pointer"
+                className="h-9 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
               >
-                Ajouter URL
+                Ajouter
               </button>
             </div>
           </div>
-        </div>
 
-        {/* Right Column: Pricing, Inventory, Organization & Flags (1 col) */}
-        <div className="space-y-6">
-          {/* Pricing & Stock */}
-          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 shadow-xs space-y-4">
-            <h3 className="font-bold text-sm text-slate-900">Tarification &amp; Stock de Base</h3>
-
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700">Prix de vente (DH) *</label>
-              <input
-                type="number"
-                step="0.5"
-                required
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })}
-                className="w-full h-10 px-3.5 rounded-xl border border-[#E2E8F0] text-xs font-bold text-slate-900 outline-none focus:border-[#8C1A2B]"
-              />
+          {/* Card 2: Category & Brand Card */}
+          <div className="bg-white rounded-2xl border border-gray-200/80 p-6 shadow-sm space-y-4">
+            <div>
+              <h2 className="font-extrabold text-base text-slate-900 tracking-tight flex items-center gap-2">
+                <Tag className="w-4 h-4 text-[#8C1A2B]" />
+                <span>Organisation &amp; Rayon</span>
+              </h2>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Classez votre article pour la navigation du site.
+              </p>
             </div>
 
+            {/* Category Dropdown */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700">Prix barré (DH)</label>
-              <input
-                type="number"
-                step="0.5"
-                value={formData.compare_at_price ?? ""}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    compare_at_price: e.target.value ? parseFloat(e.target.value) : null,
-                  })
-                }
-                placeholder="Optionnel (pour afficher promo)"
-                className="w-full h-10 px-3.5 rounded-xl border border-[#E2E8F0] text-xs text-slate-600 outline-none focus:border-[#8C1A2B]"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700">Quantité en Stock Global *</label>
-              <input
-                type="number"
-                required
-                value={formData.stock}
-                onChange={(e) => setFormData({ ...formData, stock: parseInt(e.target.value, 10) || 0 })}
-                className="w-full h-10 px-3.5 rounded-xl border border-[#E2E8F0] text-xs font-bold text-slate-900 outline-none focus:border-[#8C1A2B]"
-              />
-            </div>
-          </div>
-
-          {/* Categorization */}
-          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 shadow-xs space-y-4">
-            <h3 className="font-bold text-sm text-slate-900">Rayon &amp; Marque</h3>
-
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700">Catégorie *</label>
+              <label className="text-xs font-bold text-slate-700">Catégorie / Rayon *</label>
               <select
                 value={formData.category_name}
                 onChange={(e) => setFormData({ ...formData, category_name: e.target.value })}
-                className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] text-xs font-bold text-slate-800 bg-white outline-none focus:border-[#8C1A2B] cursor-pointer"
+                className="w-full h-11 px-3 rounded-lg bg-gray-50 border border-gray-200 text-sm font-semibold text-slate-800 outline-none focus:bg-white focus:border-[#8C1A2B] focus:ring-2 focus:ring-[#8C1A2B]/15 cursor-pointer"
               >
-                <option value="Livres Scolaires">Livres Scolaires (Manuels)</option>
-                <option value="Papeterie">Papeterie</option>
-                <option value="Fournitures Scolaires">Fournitures Scolaires</option>
-                <option value="Arts & Créativité">Arts &amp; Créativité</option>
-                <option value="Livres">Livres &amp; Romans</option>
-                <option value="Bureau">Bureau</option>
-                <option value="Kits Scolaires">Kits Scolaires</option>
+                {CATEGORY_CHOICES.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
               </select>
             </div>
 
+            {/* Brand / Publisher Dropdown */}
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700">Marque / Éditeur</label>
               <select
                 value={formData.brand_name}
                 onChange={(e) => setFormData({ ...formData, brand_name: e.target.value })}
-                className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] text-xs font-bold text-slate-800 bg-white outline-none focus:border-[#8C1A2B] cursor-pointer"
+                className="w-full h-11 px-3 rounded-lg bg-gray-50 border border-gray-200 text-sm font-semibold text-slate-800 outline-none focus:bg-white focus:border-[#8C1A2B] focus:ring-2 focus:ring-[#8C1A2B]/15 cursor-pointer"
               >
-                <option value="Éditions Officielles">Éditions Officielles (Ministère)</option>
-                <option value="Hachette">Hachette</option>
-                <option value="Nathan">Nathan</option>
-                <option value="Clairefontaine">Clairefontaine</option>
-                <option value="BIC">BIC</option>
-                <option value="Faber-Castell">Faber-Castell</option>
-                <option value="Maped">Maped</option>
-                <option value="Oxford">Oxford</option>
-                <option value="Casio">Casio</option>
-                <option value="Stabilo">Stabilo</option>
-                <option value="Générique">Autre / Générique</option>
+                {BRAND_CHOICES.map((b) => (
+                  <option key={b} value={b}>
+                    {b}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
 
-          {/* Visibility & Badges */}
-          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 shadow-xs space-y-3">
-            <h3 className="font-bold text-sm text-slate-900">Visibilité &amp; Badges</h3>
+          {/* Card 3: Visibility & Badges */}
+          <div className="bg-white rounded-2xl border border-gray-200/80 p-6 shadow-sm space-y-3.5">
+            <h2 className="font-extrabold text-base text-slate-900 tracking-tight">
+              Visibilité &amp; Badges
+            </h2>
 
-            <label className="flex items-center justify-between p-2 rounded-xl bg-slate-50 hover:bg-slate-100 cursor-pointer transition-colors">
-              <span className="text-xs font-bold text-slate-800">Actif sur la boutique</span>
+            <label className="flex items-center justify-between p-3 rounded-xl bg-gray-50 hover:bg-slate-100/80 cursor-pointer transition-colors">
+              <div>
+                <span className="text-xs font-bold text-slate-800 block">Actif sur la boutique</span>
+                <span className="text-[11px] text-slate-400 block">Visible et achetable par les clients</span>
+              </div>
               <input
                 type="checkbox"
                 checked={formData.is_active}
                 onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                className="w-4 h-4 rounded text-[#8C1A2B] focus:ring-[#8C1A2B]"
+                className="w-4 h-4 rounded text-[#8C1A2B] focus:ring-[#8C1A2B] accent-[#8C1A2B] cursor-pointer"
               />
             </label>
 
-            <label className="flex items-center justify-between p-2 rounded-xl bg-slate-50 hover:bg-slate-100 cursor-pointer transition-colors">
-              <span className="text-xs font-bold text-slate-800">Badge Meilleure Vente</span>
+            <label className="flex items-center justify-between p-3 rounded-xl bg-gray-50 hover:bg-slate-100/80 cursor-pointer transition-colors">
+              <div>
+                <span className="text-xs font-bold text-slate-800 block">Badge Meilleure Vente</span>
+                <span className="text-[11px] text-slate-400 block">Met en avant l&apos;article en top produit</span>
+              </div>
               <input
                 type="checkbox"
                 checked={formData.is_bestseller}
                 onChange={(e) => setFormData({ ...formData, is_bestseller: e.target.checked })}
-                className="w-4 h-4 rounded text-[#8C1A2B] focus:ring-[#8C1A2B]"
+                className="w-4 h-4 rounded text-[#8C1A2B] focus:ring-[#8C1A2B] accent-[#8C1A2B] cursor-pointer"
               />
             </label>
 
-            <label className="flex items-center justify-between p-2 rounded-xl bg-slate-50 hover:bg-slate-100 cursor-pointer transition-colors">
-              <span className="text-xs font-bold text-slate-800">Badge Nouveauté 2026</span>
+            <label className="flex items-center justify-between p-3 rounded-xl bg-gray-50 hover:bg-slate-100/80 cursor-pointer transition-colors">
+              <div>
+                <span className="text-xs font-bold text-slate-800 block">Badge Nouveauté 2026</span>
+                <span className="text-[11px] text-slate-400 block">Affiche l&apos;étiquette &apos;Nouveau&apos;</span>
+              </div>
               <input
                 type="checkbox"
                 checked={formData.is_new_arrival}
                 onChange={(e) => setFormData({ ...formData, is_new_arrival: e.target.checked })}
-                className="w-4 h-4 rounded text-[#8C1A2B] focus:ring-[#8C1A2B]"
+                className="w-4 h-4 rounded text-[#8C1A2B] focus:ring-[#8C1A2B] accent-[#8C1A2B] cursor-pointer"
               />
             </label>
           </div>
