@@ -412,27 +412,30 @@ export async function getCatalogProducts(params: CatalogQueryParams): Promise<Ca
         break
     }
 
-    // Apply exact pagination range: from -> to
-    const from = (page - 1) * pageSize
-    const to = from + pageSize - 1
-    query = query.range(from, to)
+    // Apply exact pagination range: from -> to (only when a positive pageSize is requested)
+    if (pageSize && pageSize > 0) {
+      const from = (page - 1) * pageSize
+      const to = from + pageSize - 1
+      query = query.range(from, to)
+    }
 
     const { data, count, error } = await query
 
     if (error) {
       console.warn("[queries] getCatalogProducts error:", error.message)
-      return { products: [], totalCount: 0, page, pageSize, totalPages: 1 }
+      return { products: [], totalCount: 0, page, pageSize: pageSize || 16, totalPages: 1 }
     }
 
-    const totalCount = count ?? 0
-    const totalPages = Math.ceil(totalCount / pageSize) || 1
+    const totalCount = count ?? (data?.length || 0)
+    const effectivePageSize = pageSize && pageSize > 0 ? pageSize : totalCount || 1
+    const totalPages = Math.ceil(totalCount / effectivePageSize) || 1
     const products = (data || []).map((p) => formatProductListItem(p as any))
 
     return {
       products,
       totalCount,
       page,
-      pageSize,
+      pageSize: effectivePageSize,
       totalPages,
     }
   } catch (err) {

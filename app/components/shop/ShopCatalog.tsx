@@ -59,14 +59,22 @@ export function ShopCatalog({
   const [selectedBrands, setSelectedBrands] = useState<string[]>(
     initialBrand ? [initialBrand] : []
   )
-  const [inStockOnly, setInStockOnly] = useState(false)
-  const [maxPrice, setMaxPrice] = useState<number>(500)
-  const [sortBy, setSortBy] = useState<string>("popular")
-  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
-  const [currentPage, setCurrentPage] = useState(1)
-  
   // 16 products per page (4x4 on desktop)
   const pageSize = 16
+
+  // Dynamically calculate the highest price in the catalog (rounded up to nearest 100)
+  const dynamicMaxPrice = useMemo(() => {
+    if (!allProducts || allProducts.length === 0) return 2000
+    const highest = Math.max(...allProducts.map((p) => Number(p.price) || 0))
+    return Math.max(500, Math.ceil(highest / 100) * 100)
+  }, [allProducts])
+
+  const [maxPrice, setMaxPrice] = useState<number>(dynamicMaxPrice)
+
+  // Sync maxPrice when allProducts loads
+  useEffect(() => {
+    setMaxPrice(dynamicMaxPrice)
+  }, [dynamicMaxPrice])
 
   const categoryOptions = availableCategories && availableCategories.length > 0
     ? availableCategories
@@ -128,7 +136,7 @@ export function ShopCatalog({
     setSelectedCategories([])
     setSelectedBrands([])
     setInStockOnly(false)
-    setMaxPrice(500)
+    setMaxPrice(dynamicMaxPrice)
     setSortBy("popular")
     setCurrentPage(1)
   }
@@ -137,7 +145,7 @@ export function ShopCatalog({
     selectedCategories.length > 0 ||
     selectedBrands.length > 0 ||
     inStockOnly ||
-    maxPrice < 500
+    maxPrice < dynamicMaxPrice
 
   // ── Filter Sidebar Content (Shared between desktop and mobile) ──
   const filterControls = (
@@ -263,8 +271,8 @@ export function ShopCatalog({
         <input
           type="range"
           min="10"
-          max="500"
-          step="5"
+          max={dynamicMaxPrice}
+          step="10"
           value={maxPrice}
           onChange={(e) => {
             setMaxPrice(Number(e.target.value))
@@ -274,7 +282,7 @@ export function ShopCatalog({
         />
         <div className="flex justify-between text-[10px] text-slate-400 font-semibold mt-1.5">
           <span>10 DH</span>
-          <span>500+ DH</span>
+          <span>{dynamicMaxPrice} DH</span>
         </div>
       </div>
     </div>

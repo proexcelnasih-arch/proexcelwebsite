@@ -18,7 +18,7 @@ export default async function BoutiquePage({
   const { brand, category } = await searchParams
 
   const [catalogResult, categories, brands] = await Promise.all([
-    getCatalogProducts({ pageSize: 100 }),
+    getCatalogProducts({ pageSize: 0 }),
     getAllCategories(),
     getBrands(),
   ])

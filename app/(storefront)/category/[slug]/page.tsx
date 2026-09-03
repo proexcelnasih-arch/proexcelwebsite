@@ -34,7 +34,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   const [categories, brands, catalogResult] = await Promise.all([
     getAllCategories(),
     getBrands(),
-    getCatalogProducts({ categorySlugs: [slug], pageSize: 100 }),
+    getCatalogProducts({ categorySlugs: [slug], pageSize: 0 }),
   ])
 
   const category = categories.find((c) => c.slug === slug)

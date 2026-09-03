@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic"
 
 export default async function ShopPage() {
   const [catalogResult, categories, brands] = await Promise.all([
-    getCatalogProducts({ pageSize: 100 }), // Load products
+    getCatalogProducts({ pageSize: 0 }), // Load all products
     getAllCategories(),
     getBrands(),
   ])
