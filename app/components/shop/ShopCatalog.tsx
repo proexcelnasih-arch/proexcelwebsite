@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useEffect } from "react"
+import React, { useState, useMemo } from "react"
 import { Filter, X, SlidersHorizontal, ArrowUpDown, Check, RotateCcw } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Breadcrumb } from "@/components/ui/Breadcrumb"
@@ -74,12 +74,9 @@ export function ShopCatalog({
     return Math.max(500, Math.ceil(highest / 100) * 100)
   }, [allProducts])
 
-  const [maxPrice, setMaxPrice] = useState<number>(dynamicMaxPrice)
-
-  // Sync maxPrice when allProducts loads
-  useEffect(() => {
-    setMaxPrice(dynamicMaxPrice)
-  }, [dynamicMaxPrice])
+  // Custom user-selected max price (null = default to dynamicMaxPrice)
+  const [userMaxPrice, setUserMaxPrice] = useState<number | null>(null)
+  const effectiveMaxPrice = userMaxPrice ?? dynamicMaxPrice
 
   const categoryOptions = availableCategories && availableCategories.length > 0
     ? availableCategories
@@ -115,7 +112,7 @@ export function ShopCatalog({
           return false
         }
         // Price Filter
-        if (product.price > maxPrice) {
+        if (product.price > effectiveMaxPrice) {
           return false
         }
         return true
@@ -128,7 +125,7 @@ export function ShopCatalog({
         // Default popular / bestseller
         return (b.is_bestseller ? 1 : 0) - (a.is_bestseller ? 1 : 0)
       })
-  }, [allProducts, selectedCategories, selectedBrands, inStockOnly, maxPrice, sortBy])
+  }, [allProducts, selectedCategories, selectedBrands, inStockOnly, effectiveMaxPrice, sortBy])
 
   // Pagination slice (16 items)
   const totalPages = Math.ceil(filteredProducts.length / pageSize) || 1
@@ -141,7 +138,7 @@ export function ShopCatalog({
     setSelectedCategories([])
     setSelectedBrands([])
     setInStockOnly(false)
-    setMaxPrice(dynamicMaxPrice)
+    setUserMaxPrice(null)
     setSortBy("popular")
     setCurrentPage(1)
   }
@@ -150,7 +147,7 @@ export function ShopCatalog({
     selectedCategories.length > 0 ||
     selectedBrands.length > 0 ||
     inStockOnly ||
-    maxPrice < dynamicMaxPrice
+    (userMaxPrice !== null && userMaxPrice < dynamicMaxPrice)
 
   // ── Filter Sidebar Content (Shared between desktop and mobile) ──
   const filterControls = (
@@ -270,7 +267,7 @@ export function ShopCatalog({
             Prix maximum
           </h3>
           <span className="text-xs font-bold text-[var(--color-primary)]">
-            {maxPrice} DH
+            {effectiveMaxPrice} DH
           </span>
         </div>
         <input
@@ -278,9 +275,9 @@ export function ShopCatalog({
           min="10"
           max={dynamicMaxPrice}
           step="10"
-          value={maxPrice}
+          value={effectiveMaxPrice}
           onChange={(e) => {
-            setMaxPrice(Number(e.target.value))
+            setUserMaxPrice(Number(e.target.value))
             setCurrentPage(1)
           }}
           className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[var(--color-primary)]"
@@ -423,12 +420,12 @@ export function ShopCatalog({
                     </button>
                   </span>
                 )}
-                {maxPrice < 500 && (
+                {userMaxPrice !== null && (
                   <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 text-slate-800 text-xs font-bold">
-                    <span>Max {maxPrice} DH</span>
+                    <span>Max {userMaxPrice} DH</span>
                     <button
                       type="button"
-                      onClick={() => setMaxPrice(500)}
+                      onClick={() => setUserMaxPrice(null)}
                       className="hover:opacity-75 cursor-pointer"
                     >
                       <X className="w-3 h-3" />
