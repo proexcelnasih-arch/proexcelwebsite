@@ -252,8 +252,8 @@ export function ProductCard({
   // ── GRID VIEW MODE (4/3 Aspect Ratio Image Frame) ────────────
   return (
     <div className={cn("group relative flex flex-col", className)}>
-      {/* Product Image Frame: Aspect Ratio 4/3 */}
-      <div className="relative aspect-[4/3] w-full rounded-2xl bg-[#F4EFEA] overflow-hidden flex items-center justify-center transition-shadow duration-300">
+      {/* Product Image Frame: Aspect Ratio 4/4 (Square 1:1) */}
+      <div className="relative aspect-square w-full rounded-2xl bg-[#F4EFEA] overflow-hidden flex items-center justify-center transition-shadow duration-300">
         <Link
           href={`/product/${product.slug}`}
           className="absolute inset-0 flex items-center justify-center"
@@ -376,7 +376,7 @@ export function ProductCard({
 export function ProductCardSkeleton() {
   return (
     <div className="flex flex-col gap-3">
-      <div className="aspect-[4/3] w-full rounded-2xl bg-stone-200/60 animate-pulse" />
+      <div className="aspect-square w-full rounded-2xl bg-stone-200/60 animate-pulse" />
       <div className="flex flex-col gap-2 px-0.5">
         <div className="h-3 w-1/3 bg-stone-200/70 rounded animate-pulse" />
         <div className="h-4 w-full bg-stone-200/70 rounded animate-pulse" />
