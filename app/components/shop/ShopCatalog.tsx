@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { Filter, X, SlidersHorizontal, ArrowUpDown, Check, RotateCcw } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Breadcrumb } from "@/components/ui/Breadcrumb"
