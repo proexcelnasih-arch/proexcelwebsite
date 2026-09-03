@@ -186,9 +186,9 @@ export function ShopCatalog({
     setCurrentPage(1)
   }
 
-  // ── Filter Sidebar Content (Minimalist & Warm) ────────────────
+  // ── Filter Sidebar Content (Minimalist & Clean White) ─────────
   const filterControls = (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-7">
       {/* Reset Filter Button */}
       {hasActiveFilters && (
         <button
@@ -198,7 +198,7 @@ export function ShopCatalog({
         >
           <RotateCcw className="w-3.5 h-3.5" strokeWidth={1.75} />
           <span>
-            Réinitialiser tous les filtres (
+            Réinitialiser les filtres (
             {selectedCategories.length +
               selectedBrands.length +
               (inStockOnly ? 1 : 0) +
@@ -210,23 +210,23 @@ export function ShopCatalog({
 
       {/* Categories Group */}
       <div>
-        <div className="flex items-center justify-between mb-3.5">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-[#1A1A1A]">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-stone-900">
             Catégories
           </h3>
           {selectedCategories.length > 0 && (
-            <span className="text-[10px] font-medium text-[#8C1A2B] bg-[#8C1A2B]/10 px-2 py-0.5 rounded-full">
+            <span className="text-[10px] font-semibold text-[#8C1A2B] bg-[#8C1A2B]/10 px-2 py-0.5 rounded-full">
               {selectedCategories.length}
             </span>
           )}
         </div>
-        <div className="space-y-2.5 max-h-64 overflow-y-auto pr-1 scrollbar-thin">
+        <div className="space-y-2 max-h-60 overflow-y-auto pr-1 scrollbar-thin">
           {categoryOptions.map((cat) => {
             const isChecked = selectedCategories.includes(cat)
             return (
               <label
                 key={cat}
-                className="flex items-center gap-2.5 text-xs text-[#525252] hover:text-[#1A1A1A] cursor-pointer select-none group transition-colors"
+                className="flex items-center gap-2.5 text-xs text-stone-600 hover:text-stone-950 cursor-pointer select-none group transition-colors"
               >
                 <input
                   type="checkbox"
@@ -237,12 +237,12 @@ export function ShopCatalog({
                     )
                     setCurrentPage(1)
                   }}
-                  className="w-4 h-4 rounded-[5px] border-stone-300 text-[#1A1A1A] focus:ring-[#1A1A1A] accent-[#1A1A1A] cursor-pointer"
+                  className="w-4 h-4 rounded-[4px] border-stone-300 text-stone-900 focus:ring-stone-900 accent-stone-900 cursor-pointer"
                 />
                 <span
                   className={cn(
                     "transition-colors",
-                    isChecked ? "font-semibold text-[#1A1A1A]" : "font-normal"
+                    isChecked ? "font-semibold text-stone-950" : "font-normal"
                   )}
                 >
                   {cat}
@@ -255,23 +255,23 @@ export function ShopCatalog({
 
       {/* Brands Group */}
       <div>
-        <div className="flex items-center justify-between mb-3.5">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-[#1A1A1A]">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-stone-900">
             Marques
           </h3>
           {selectedBrands.length > 0 && (
-            <span className="text-[10px] font-medium text-[#8C1A2B] bg-[#8C1A2B]/10 px-2 py-0.5 rounded-full">
+            <span className="text-[10px] font-semibold text-[#8C1A2B] bg-[#8C1A2B]/10 px-2 py-0.5 rounded-full">
               {selectedBrands.length}
             </span>
           )}
         </div>
-        <div className="space-y-2.5 max-h-52 overflow-y-auto pr-1 scrollbar-thin">
+        <div className="space-y-2 max-h-52 overflow-y-auto pr-1 scrollbar-thin">
           {brandOptions.map((brand) => {
             const isChecked = selectedBrands.includes(brand)
             return (
               <label
                 key={brand}
-                className="flex items-center gap-2.5 text-xs text-[#525252] hover:text-[#1A1A1A] cursor-pointer select-none group transition-colors"
+                className="flex items-center gap-2.5 text-xs text-stone-600 hover:text-stone-950 cursor-pointer select-none group transition-colors"
               >
                 <input
                   type="checkbox"
@@ -282,12 +282,12 @@ export function ShopCatalog({
                     )
                     setCurrentPage(1)
                   }}
-                  className="w-4 h-4 rounded-[5px] border-stone-300 text-[#1A1A1A] focus:ring-[#1A1A1A] accent-[#1A1A1A] cursor-pointer"
+                  className="w-4 h-4 rounded-[4px] border-stone-300 text-stone-900 focus:ring-stone-900 accent-stone-900 cursor-pointer"
                 />
                 <span
                   className={cn(
                     "transition-colors",
-                    isChecked ? "font-semibold text-[#1A1A1A]" : "font-normal"
+                    isChecked ? "font-semibold text-stone-950" : "font-normal"
                   )}
                 >
                   {brand}
@@ -301,7 +301,7 @@ export function ShopCatalog({
       {/* In Stock Filter */}
       <div>
         <label className="flex items-center justify-between cursor-pointer select-none group">
-          <span className="text-xs font-semibold uppercase tracking-wider text-[#1A1A1A]">
+          <span className="text-xs font-bold uppercase tracking-wider text-stone-900">
             En stock uniquement
           </span>
           <input
@@ -311,18 +311,18 @@ export function ShopCatalog({
               setInStockOnly(e.target.checked)
               setCurrentPage(1)
             }}
-            className="w-4 h-4 rounded-[5px] border-stone-300 text-[#1A1A1A] focus:ring-[#1A1A1A] accent-[#1A1A1A] cursor-pointer"
+            className="w-4 h-4 rounded-[4px] border-stone-300 text-stone-900 focus:ring-stone-900 accent-stone-900 cursor-pointer"
           />
         </label>
       </div>
 
       {/* Price Range Slider */}
       <div>
-        <div className="flex items-center justify-between mb-2.5">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-[#1A1A1A]">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-stone-900">
             Prix maximum
           </h3>
-          <span className="text-xs font-semibold text-[#1A1A1A]">
+          <span className="text-xs font-bold text-stone-950">
             {effectiveMaxPrice} DH
           </span>
         </div>
@@ -336,9 +336,9 @@ export function ShopCatalog({
             setUserMaxPrice(Number(e.target.value))
             setCurrentPage(1)
           }}
-          className="w-full h-1 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-[#1A1A1A]"
+          className="w-full h-1 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-stone-900"
         />
-        <div className="flex justify-between text-[11px] text-[#8C827A] mt-2">
+        <div className="flex justify-between text-[11px] text-stone-400 mt-2 font-medium">
           <span>10 DH</span>
           <span>{dynamicMaxPrice} DH</span>
         </div>
@@ -363,15 +363,15 @@ export function ShopCatalog({
   }, [currentPage, totalPages])
 
   return (
-    <div className="bg-[#FAF8F5] min-h-screen py-8 lg:py-12 w-full">
-      {/* FULL SCREEN WIDTH CONTAINER (Takes the entire width with elegant margins) */}
-      <div className="w-full px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16">
+    <div className="bg-white min-h-screen py-6 sm:py-8 lg:py-10 w-full">
+      {/* Centered, Clean Container with Balanced Margins (Keeps Cards Compact & Classy) */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* ── 1. Page Header (Breadcrumbs + Title + Subtitle) ───── */}
         <div className="mb-6">
           {/* Breadcrumbs */}
-          <nav aria-label="Fil d'Ariane" className="mb-3">
-            <ol className="flex items-center gap-2 text-xs text-[#8C827A] flex-wrap">
+          <nav aria-label="Fil d'Ariane" className="mb-2.5">
+            <ol className="flex items-center gap-2 text-xs text-stone-400 flex-wrap">
               {breadcrumbItems.map((item, index) => {
                 const isLast = index === breadcrumbItems.length - 1
                 return (
@@ -380,12 +380,12 @@ export function ShopCatalog({
                     {item.href && !isLast ? (
                       <Link
                         href={item.href}
-                        className="hover:text-[#1A1A1A] transition-colors"
+                        className="hover:text-stone-900 transition-colors"
                       >
                         {item.label}
                       </Link>
                     ) : (
-                      <span className={cn(isLast ? "text-[#1A1A1A] font-medium" : "")}>
+                      <span className={cn(isLast ? "text-stone-900 font-medium" : "")}>
                         {item.label}
                       </span>
                     )}
@@ -396,32 +396,32 @@ export function ShopCatalog({
           </nav>
 
           {/* Large, Elegant Title */}
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-light text-[#1A1A1A] tracking-tight font-display">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-light text-stone-900 tracking-tight font-display">
             {title}
           </h1>
 
           {/* Subtle Subtitle */}
           {subtitle && (
-            <p className="text-sm sm:text-base text-[#737373] mt-2 max-w-3xl font-normal leading-relaxed">
+            <p className="text-xs sm:text-sm text-stone-500 mt-1.5 max-w-2xl font-normal leading-relaxed">
               {subtitle}
             </p>
           )}
         </div>
 
-        {/* ── 2. Top Toolbar & Quick Categories (Luma & Living layout) ── */}
-        <div className="flex flex-wrap items-center justify-between gap-4 py-4 mb-8 border-y border-stone-200/60">
+        {/* ── 2. Top Toolbar & Quick Categories (Clean White Row) ── */}
+        <div className="flex flex-wrap items-center justify-between gap-3 py-3 mb-6 border-y border-stone-100">
           
-          {/* Left: [ Filters ] Pill + Category Pills Row */}
+          {/* Left: [ Filtres ] Pill + Category Pills Row */}
           <div className="flex items-center gap-2 overflow-x-auto pb-1 max-w-full scrollbar-none">
-            {/* [ Filters ] Button */}
+            {/* [ Filtres ] Button */}
             <button
               type="button"
               onClick={() => setIsFilterDrawerOpen(true)}
               className={cn(
-                "inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all shrink-0 cursor-pointer shadow-xs",
+                "inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all shrink-0 cursor-pointer",
                 hasActiveFilters
-                  ? "bg-[#1A1A1A] text-white"
-                  : "bg-white border border-stone-200/80 text-[#1A1A1A] hover:bg-stone-50"
+                  ? "bg-stone-900 text-white shadow-xs"
+                  : "bg-stone-50 border border-stone-200 text-stone-800 hover:bg-stone-100"
               )}
             >
               <SlidersHorizontal className="w-3.5 h-3.5" />
@@ -436,10 +436,10 @@ export function ShopCatalog({
               type="button"
               onClick={() => handleQuickCategoryPill(null)}
               className={cn(
-                "px-4 py-2 rounded-full text-xs font-medium transition-all shrink-0 cursor-pointer",
+                "px-3.5 py-1.5 rounded-full text-xs font-medium transition-all shrink-0 cursor-pointer",
                 selectedCategories.length === 0
-                  ? "bg-[#1A1A1A] text-white shadow-xs"
-                  : "bg-white/80 hover:bg-white text-[#525252] hover:text-[#1A1A1A] border border-stone-200/80"
+                  ? "bg-stone-900 text-white shadow-xs"
+                  : "bg-stone-50 hover:bg-stone-100 text-stone-600 hover:text-stone-900 border border-stone-200/80"
               )}
             >
               Tous
@@ -455,10 +455,10 @@ export function ShopCatalog({
                   type="button"
                   onClick={() => handleQuickCategoryPill(cat)}
                   className={cn(
-                    "px-4 py-2 rounded-full text-xs font-medium transition-all shrink-0 cursor-pointer",
+                    "px-3.5 py-1.5 rounded-full text-xs font-medium transition-all shrink-0 cursor-pointer",
                     isSelected
-                      ? "bg-[#1A1A1A] text-white shadow-xs"
-                      : "bg-white/80 hover:bg-white text-[#525252] hover:text-[#1A1A1A] border border-stone-200/80"
+                      ? "bg-stone-900 text-white shadow-xs"
+                      : "bg-stone-50 hover:bg-stone-100 text-stone-600 hover:text-stone-900 border border-stone-200/80"
                   )}
                 >
                   {cat}
@@ -468,24 +468,24 @@ export function ShopCatalog({
           </div>
 
           {/* Right: Results Count + Sort by + Grid/List Icons */}
-          <div className="flex items-center gap-4 sm:gap-6 shrink-0 ml-auto">
+          <div className="flex items-center gap-4 sm:gap-5 shrink-0 ml-auto">
             {/* Results Count Text */}
-            <p className="text-xs sm:text-sm text-[#737373] hidden md:block">
+            <p className="text-xs text-stone-500 hidden md:block">
               Affichage de{" "}
-              <span className="font-semibold text-[#1A1A1A]">
+              <span className="font-semibold text-stone-900">
                 {filteredProducts.length === 0 ? 0 : (currentPage - 1) * pageSize + 1}
               </span>
               -
-              <span className="font-semibold text-[#1A1A1A]">
+              <span className="font-semibold text-stone-900">
                 {Math.min(currentPage * pageSize, filteredProducts.length)}
               </span>{" "}
               sur{" "}
-              <span className="font-semibold text-[#1A1A1A]">{filteredProducts.length}</span> résultats
+              <span className="font-semibold text-stone-900">{filteredProducts.length}</span> résultats
             </p>
 
             {/* Minimalist Sort by dropdown */}
             <div className="relative flex items-center">
-              <span className="text-xs text-[#737373] mr-2 hidden sm:inline font-normal">
+              <span className="text-xs text-stone-500 mr-2 hidden sm:inline font-normal">
                 Trier par :
               </span>
               <div className="relative">
@@ -496,7 +496,7 @@ export function ShopCatalog({
                     setSortBy(e.target.value)
                     setCurrentPage(1)
                   }}
-                  className="appearance-none bg-transparent text-xs font-semibold text-[#1A1A1A] pr-6 pl-1 py-1 cursor-pointer outline-none focus:ring-0 transition-colors"
+                  className="appearance-none bg-transparent text-xs font-semibold text-stone-900 pr-5 pl-1 py-1 cursor-pointer outline-none focus:ring-0 transition-colors"
                 >
                   <option value="popular">Popularité &amp; Ventes</option>
                   <option value="rating">Mieux notés</option>
@@ -504,21 +504,21 @@ export function ShopCatalog({
                   <option value="price-desc">Prix : Décroissant</option>
                   <option value="newest">Nouveautés</option>
                 </select>
-                <ChevronDown className="w-3.5 h-3.5 text-[#737373] absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <ChevronDown className="w-3.5 h-3.5 text-stone-400 absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
             </div>
 
             {/* Grid / List View Toggle Icons */}
-            <div className="flex items-center gap-1 pl-3 border-l border-stone-200">
+            <div className="flex items-center gap-1 pl-2.5 border-l border-stone-200">
               <button
                 type="button"
                 onClick={() => setViewMode("grid")}
                 aria-label="Vue grille"
                 className={cn(
-                  "w-8 h-8 rounded-lg flex items-center justify-center transition-colors cursor-pointer",
+                  "w-7.5 h-7.5 rounded-lg flex items-center justify-center transition-colors cursor-pointer",
                   viewMode === "grid"
-                    ? "bg-[#1A1A1A] text-white shadow-2xs"
-                    : "text-stone-400 hover:text-[#1A1A1A] hover:bg-stone-100/60"
+                    ? "bg-stone-900 text-white shadow-2xs"
+                    : "text-stone-400 hover:text-stone-900 hover:bg-stone-100"
                 )}
               >
                 <LayoutGrid className="w-3.5 h-3.5" />
@@ -528,13 +528,13 @@ export function ShopCatalog({
                 onClick={() => setViewMode("list")}
                 aria-label="Vue liste"
                 className={cn(
-                  "w-8 h-8 rounded-lg flex items-center justify-center transition-colors cursor-pointer",
+                  "w-7.5 h-7.5 rounded-lg flex items-center justify-center transition-colors cursor-pointer",
                   viewMode === "list"
-                    ? "bg-[#1A1A1A] text-white shadow-2xs"
-                    : "text-stone-400 hover:text-[#1A1A1A] hover:bg-stone-100/60"
+                    ? "bg-stone-900 text-white shadow-2xs"
+                    : "text-stone-400 hover:text-stone-900 hover:bg-stone-100"
                 )}
               >
-                <List className="w-4 h-4" />
+                <List className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
@@ -542,12 +542,12 @@ export function ShopCatalog({
 
         {/* Active Filter Badges */}
         {hasActiveFilters && (
-          <div className="flex flex-wrap items-center gap-2 mb-8">
-            <span className="text-xs text-[#8C827A]">Filtres actifs :</span>
+          <div className="flex flex-wrap items-center gap-2 mb-6">
+            <span className="text-xs text-stone-400">Filtres actifs :</span>
             {selectedCategories.map((cat) => (
               <span
                 key={cat}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-stone-200 text-xs font-medium text-[#1A1A1A] shadow-2xs"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-stone-50 border border-stone-200 text-xs font-medium text-stone-800"
               >
                 <span>{cat}</span>
                 <button
@@ -564,7 +564,7 @@ export function ShopCatalog({
             {selectedBrands.map((brand) => (
               <span
                 key={brand}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-stone-200 text-xs font-medium text-[#1A1A1A] shadow-2xs"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-stone-50 border border-stone-200 text-xs font-medium text-stone-800"
               >
                 <span>{brand}</span>
                 <button
@@ -579,7 +579,7 @@ export function ShopCatalog({
               </span>
             ))}
             {inStockOnly && (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/60 text-xs font-medium text-emerald-800 shadow-2xs">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-medium text-emerald-800">
                 <span>En stock</span>
                 <button
                   type="button"
@@ -591,7 +591,7 @@ export function ShopCatalog({
               </span>
             )}
             {userMaxPrice !== null && (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-stone-200 text-xs font-medium text-[#1A1A1A] shadow-2xs">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-stone-50 border border-stone-200 text-xs font-medium text-stone-800">
                 <span>Max {userMaxPrice} DH</span>
                 <button
                   type="button"
@@ -605,19 +605,19 @@ export function ShopCatalog({
           </div>
         )}
 
-        {/* ── 3. Product Grid (Full Screen Width: 4 Columns x 3 Rows = 12 Items) ── */}
+        {/* ── 3. Compact Product Grid (4 Columns x 3 Rows = 12 Items) ── */}
         <main className="w-full">
           {paginatedProducts.length > 0 ? (
             viewMode === "grid" ? (
-              /* 4 COLUMNS HORIZONTAL x 3 ROWS VERTICAL */
-              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 sm:gap-x-6 lg:gap-x-7 xl:gap-x-8 gap-y-10 sm:gap-y-12">
+              /* Compact 4-Column Grid with refined spacing */
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-4 sm:gap-x-5 lg:gap-x-6 gap-y-7 sm:gap-y-8">
                 {paginatedProducts.map((product) => (
                   <ProductCard key={product.id} product={product} viewMode="grid" />
                 ))}
               </div>
             ) : (
               /* List Mode */
-              <div className="flex flex-col gap-4 max-w-5xl mx-auto">
+              <div className="flex flex-col gap-3.5 max-w-4xl mx-auto">
                 {paginatedProducts.map((product) => (
                   <ProductCard key={product.id} product={product} viewMode="list" />
                 ))}
@@ -625,20 +625,20 @@ export function ShopCatalog({
             )
           ) : (
             /* Empty State */
-            <div className="bg-white/80 rounded-2xl p-16 text-center border border-stone-200/60 shadow-xs flex flex-col items-center max-w-lg mx-auto">
-              <div className="w-16 h-16 rounded-full bg-[#F4EFEA] flex items-center justify-center text-stone-400 mb-4">
-                <SlidersHorizontal className="w-7 h-7 stroke-[1.5]" />
+            <div className="bg-stone-50 rounded-2xl p-12 text-center border border-stone-200/60 flex flex-col items-center max-w-md mx-auto">
+              <div className="w-12 h-12 rounded-full bg-white border border-stone-200 flex items-center justify-center text-stone-400 mb-3 shadow-2xs">
+                <SlidersHorizontal className="w-5 h-5 stroke-[1.5]" />
               </div>
-              <h3 className="text-base font-semibold text-[#1A1A1A] mb-1">
+              <h3 className="text-sm font-semibold text-stone-900 mb-1">
                 Aucun produit trouvé
               </h3>
-              <p className="text-xs text-[#737373] max-w-sm mb-6 leading-relaxed">
-                Aucun article ne correspond exactement à vos critères. Essayez d&apos;élargir vos filtres ou de réinitialiser vos choix.
+              <p className="text-xs text-stone-500 max-w-xs mb-5 leading-relaxed">
+                Aucun article ne correspond exactement à vos critères. Essayez d&apos;élargir vos filtres.
               </p>
               <button
                 type="button"
                 onClick={resetFilters}
-                className="px-6 py-2.5 rounded-full bg-[#1A1A1A] text-white text-xs font-semibold hover:bg-[#8C1A2B] transition-colors shadow-xs"
+                className="px-5 py-2 rounded-full bg-stone-900 text-white text-xs font-semibold hover:bg-[#8C1A2B] transition-colors shadow-2xs cursor-pointer"
               >
                 Réinitialiser les filtres
               </button>
@@ -649,7 +649,7 @@ export function ShopCatalog({
           {totalPages > 1 && (
             <nav
               aria-label="Pagination du catalogue"
-              className="mt-14 pt-8 border-t border-stone-200/60 flex items-center justify-center gap-1.5 sm:gap-2"
+              className="mt-12 pt-6 border-t border-stone-100 flex items-center justify-center gap-1 sm:gap-1.5"
             >
               {/* Previous Page Arrow */}
               <button
@@ -662,7 +662,7 @@ export function ShopCatalog({
                 }}
                 disabled={currentPage === 1}
                 aria-label="Page précédente"
-                className="w-9 h-9 rounded-full flex items-center justify-center text-[#525252] hover:text-[#1A1A1A] hover:bg-stone-200/50 disabled:opacity-20 disabled:pointer-events-none transition-colors cursor-pointer"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-stone-500 hover:text-stone-950 hover:bg-stone-100 disabled:opacity-20 disabled:pointer-events-none transition-colors cursor-pointer"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -672,7 +672,7 @@ export function ShopCatalog({
                 page === "..." ? (
                   <span
                     key={`ellipsis-${index}`}
-                    className="w-9 h-9 flex items-center justify-center text-xs text-[#8C827A]"
+                    className="w-8 h-8 flex items-center justify-center text-xs text-stone-400"
                   >
                     …
                   </span>
@@ -687,10 +687,10 @@ export function ShopCatalog({
                     aria-label={`Page ${page}`}
                     aria-current={currentPage === page ? "page" : undefined}
                     className={cn(
-                      "w-9 h-9 rounded-full text-xs transition-all flex items-center justify-center cursor-pointer",
+                      "w-8 h-8 rounded-full text-xs transition-all flex items-center justify-center cursor-pointer",
                       currentPage === page
-                        ? "bg-[#1A1A1A] text-white font-semibold shadow-xs"
-                        : "text-[#525252] hover:text-[#1A1A1A] hover:bg-stone-200/50 font-medium"
+                        ? "bg-stone-900 text-white font-semibold shadow-xs"
+                        : "text-stone-600 hover:text-stone-950 hover:bg-stone-100 font-medium"
                     )}
                   >
                     {page}
@@ -709,7 +709,7 @@ export function ShopCatalog({
                 }}
                 disabled={currentPage === totalPages}
                 aria-label="Page suivante"
-                className="w-9 h-9 rounded-full flex items-center justify-center text-[#525252] hover:text-[#1A1A1A] hover:bg-stone-200/50 disabled:opacity-20 disabled:pointer-events-none transition-colors cursor-pointer"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-stone-500 hover:text-stone-950 hover:bg-stone-100 disabled:opacity-20 disabled:pointer-events-none transition-colors cursor-pointer"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
@@ -718,7 +718,7 @@ export function ShopCatalog({
         </main>
       </div>
 
-      {/* ── 5. Slide-Over Filters Drawer (Opens via [ Filtres ] Pill) ── */}
+      {/* ── 5. Clean White Slide-Over Filters Drawer ────────────── */}
       <AnimatePresence>
         {isFilterDrawerOpen && (
           <>
@@ -727,27 +727,27 @@ export function ShopCatalog({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsFilterDrawerOpen(false)}
-              className="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-50"
+              className="fixed inset-0 bg-stone-950/30 backdrop-blur-xs z-50"
             />
             <motion.div
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 250 }}
-              className="fixed inset-y-0 right-0 w-full max-w-sm bg-[#FAF8F5] shadow-2xl z-50 flex flex-col"
+              className="fixed inset-y-0 right-0 w-full max-w-sm bg-white shadow-2xl z-50 flex flex-col"
             >
               {/* Drawer Header */}
-              <div className="px-6 py-5 border-b border-stone-200/60 flex items-center justify-between bg-white">
+              <div className="px-6 py-4 border-b border-stone-100 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <SlidersHorizontal className="w-4 h-4 text-[#1A1A1A]" />
-                  <h2 className="text-xs font-semibold uppercase tracking-wider text-[#1A1A1A]">
+                  <SlidersHorizontal className="w-4 h-4 text-stone-900" />
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-stone-900">
                     Filtres du catalogue
                   </h2>
                 </div>
                 <button
                   type="button"
                   onClick={() => setIsFilterDrawerOpen(false)}
-                  className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-stone-500 hover:text-stone-900 transition-colors cursor-pointer"
+                  className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-stone-500 hover:text-stone-950 transition-colors cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -759,21 +759,21 @@ export function ShopCatalog({
               </div>
 
               {/* Drawer Footer */}
-              <div className="p-5 border-t border-stone-200/60 bg-white flex gap-3">
+              <div className="p-4 border-t border-stone-100 bg-stone-50 flex gap-2.5">
                 <button
                   type="button"
                   onClick={() => {
                     resetFilters()
                     setIsFilterDrawerOpen(false)
                   }}
-                  className="flex-1 py-2.5 rounded-full border border-stone-300 text-stone-700 text-xs font-semibold hover:bg-stone-50 transition-colors cursor-pointer"
+                  className="flex-1 py-2.5 rounded-full border border-stone-300 text-stone-700 text-xs font-semibold hover:bg-white transition-colors cursor-pointer"
                 >
                   Réinitialiser
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsFilterDrawerOpen(false)}
-                  className="flex-1 py-2.5 rounded-full bg-[#1A1A1A] text-white text-xs font-semibold hover:bg-[#8C1A2B] transition-colors cursor-pointer"
+                  className="flex-1 py-2.5 rounded-full bg-stone-900 text-white text-xs font-semibold hover:bg-[#8C1A2B] transition-colors cursor-pointer"
                 >
                   Voir ({filteredProducts.length})
                 </button>
