@@ -26,6 +26,8 @@ export interface ShopCatalogProps {
   availableCategories?: string[]
   availableBrands?: string[]
   breadcrumbItems: { label: string; href?: string }[]
+  subcategories?: { name: string; slug: string }[]
+  parentCategory?: { name: string; slug: string }
 }
 
 const DEFAULT_CATEGORIES = [
@@ -59,6 +61,8 @@ export function ShopCatalog({
   availableCategories,
   availableBrands,
   breadcrumbItems,
+  subcategories,
+  parentCategory,
 }: ShopCatalogProps) {
   // Multi-select categories state
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
@@ -100,13 +104,23 @@ export function ShopCatalog({
     return allProducts
       .filter((product) => {
         // Multi-select Category (OR Logic)
-        if (
-          selectedCategories.length > 0 &&
-          !selectedCategories.some(
-            (cat) => cat.toLowerCase() === product.category_name?.toLowerCase()
-          )
-        ) {
-          return false
+        if (selectedCategories.length > 0) {
+          const matchesCategory = selectedCategories.some((cat) => {
+            const catLower = cat.toLowerCase()
+            const prodCatLower = product.category_name?.toLowerCase()
+            if (prodCatLower === catLower) return true
+            // If the selected category is the current page title/parent and product belongs to one of its subcategories
+            if (
+              subcategories &&
+              subcategories.length > 0 &&
+              catLower === title.toLowerCase() &&
+              subcategories.some((s) => s.name.toLowerCase() === prodCatLower)
+            ) {
+              return true
+            }
+            return false
+          })
+          if (!matchesCategory) return false
         }
         // Brand Filter
         if (
@@ -405,6 +419,37 @@ export function ShopCatalog({
             <p className="text-xs sm:text-sm text-stone-500 mt-1.5 max-w-2xl font-normal leading-relaxed">
               {subtitle}
             </p>
+          )}
+
+          {/* Subcategories Navigation Chips */}
+          {subcategories && subcategories.length > 0 && (
+            <div className="flex items-center gap-2 mt-4 flex-wrap">
+              <span className="text-xs font-semibold text-stone-500 shrink-0">
+                Sous-catégories :
+              </span>
+              {subcategories.map((sub) => (
+                <Link
+                  key={sub.slug}
+                  href={`/category/${sub.slug}`}
+                  className="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-medium bg-stone-50 hover:bg-[#8C1A2B] text-stone-700 hover:text-white border border-stone-200 hover:border-[#8C1A2B] transition-all shadow-2xs"
+                >
+                  {sub.name}
+                </Link>
+              ))}
+            </div>
+          )}
+
+          {/* Parent Category Link if viewing a subcategory */}
+          {parentCategory && (
+            <div className="mt-3">
+              <Link
+                href={`/category/${parentCategory.slug}`}
+                className="text-xs font-medium text-[#8C1A2B] hover:text-[#5E0F1D] hover:underline inline-flex items-center gap-1.5 transition-colors"
+              >
+                <span>←</span>
+                <span>Voir tout dans {parentCategory.name}</span>
+              </Link>
+            </div>
           )}
         </div>
 

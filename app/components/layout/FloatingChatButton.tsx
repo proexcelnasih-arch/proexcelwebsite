@@ -1,12 +1,18 @@
 "use client"
 
 import { useState } from "react"
+import { usePathname } from "next/navigation"
 import { MessageCircle } from "lucide-react"
 import { motion } from "framer-motion"
 import { STORE_INFO } from "@/lib/navigation"
+import { cn } from "@/lib/utils"
 
 export function FloatingChatButton() {
+  const pathname = usePathname()
   const [hasInteracted, setHasInteracted] = useState(false)
+
+  // Detect product page where mobile sticky "Ajouter au panier" bar is present
+  const isProductPage = pathname?.startsWith("/product/")
 
   // Real WhatsApp number configured in STORE_INFO
   const cleanPhone = STORE_INFO.whatsapp.replace(/[^0-9]/g, "")
@@ -18,7 +24,12 @@ export function FloatingChatButton() {
         initial={{ x: 80, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 260, damping: 18, delay: 0.5 }}
-        className="fixed bottom-6 right-6 z-[var(--z-drawer)]"
+        className={cn(
+          "fixed right-4 sm:right-6 z-[var(--z-drawer)] transition-all duration-300 ease-out",
+          isProductPage
+            ? "bottom-[calc(88px+env(safe-area-inset-bottom,0px))] lg:bottom-6"
+            : "bottom-6"
+        )}
       >
         <a
           href={whatsappUrl}

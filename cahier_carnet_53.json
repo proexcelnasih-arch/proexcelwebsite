@@ -1,0 +1,1469 @@
+[
+  {
+    "name": "cahier petit format 100 pages",
+    "price": 10,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/42-large_default/cahier-petit-format-100-pages.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/43-cahier-petit-format-100-pages.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "bloc note broché 300pages 17 x 22",
+    "price": 39,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/3112-large_default/bloc-note-broche-300pages-17-x-22.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/3423-bloc-note-broche-300pages-17-x-22.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "cahier grand format 100 pages",
+    "price": 32,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/2631-large_default/cahier-grand-format-100-pages-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/2926-cahier-grand-format-100-pages-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "BLOC ENFANT 30FEUILLES A4 COULEUR",
+    "price": 59,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/3041-large_default/bloc-enfant-30feuilles-a4-couleur.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/3357-bloc-enfant-30feuilles-a4-couleur.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "NOTEBOOK LE COLOR 17*24 / 192 P",
+    "price": 56,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/13347-large_default/notebook-le-color-1724-192-p-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/13861-notebook-le-color-1724-192-p-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Canson Kids Papier à dessin 30 feuilles A3 29,7 x 42 cm Blanc",
+    "price": 59,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/3201-large_default/canson-kids-papier-a-dessin-30-feuilles-a3-297-x-42-cm-blanc.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/3517-canson-kids-papier-a-dessin-30-feuilles-a3-297-x-42-cm-blanc.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Deli Sticky Notes",
+    "price": 30,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/7889-large_default/deli-sticky-notes.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/8299-deli-sticky-notes.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "NOTEBOOK LE COLOR17*24/192P",
+    "price": 56,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/13352-large_default/notebook-le-color1724192p.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/13867-notebook-le-color1724192p.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "FICHE BRISTOLE 2.0 , 5 x 5 30fiches",
+    "price": 85,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/3047-large_default/fiche-bristole-20-5-x-5-30fiches.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/3361-fiche-bristole-20-5-x-5-30fiches.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "BLOC ENFANT 30FEUILLES A5 BLANC",
+    "price": 33,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/3027-large_default/bloc-enfant-30feuilles-a5-blanc-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/3347-bloc-enfant-30feuilles-a5-blanc-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "cahier grand format TP 100 pages 24*32",
+    "price": 25,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/2614-large_default/cahier-grand-format-tp-100-page-2432.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/2907-cahier-grand-format-tp-100-page-2432.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Pro notebook 13×21 flexible turquoise",
+    "price": 33,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/17489-large_default/pro-notebook-1321-flexible-turquoise-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/18225-pro-notebook-1321-flexible-turquoise-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Notebook PARADISE jaune à rayures",
+    "price": 58,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/17499-large_default/notebook-paradise-jaune-a-rayures.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/18234-notebook-paradise-jaune-a-rayures.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CARNET PIQU OXFORD 9*14 5*5 96P",
+    "price": 22,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/27136-large_default/carnet-piqu-oxford-914-55-96p-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/27925-carnet-piqu-oxford-914-55-96p-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "cahier petit format 150 pages",
+    "price": 29,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/2632-large_default/cahier-petit-format-150-pages.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/2927-cahier-petit-format-150-pages.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER PIQUE 96P SEYES A5 90GRS C/POLY BLEU",
+    "price": 19,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/14737-large_default/cahier-pique-96p-seyes-a5-90grs-cpoly-bleu-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/15304-cahier-pique-96p-seyes-a5-90grs-cpoly-bleu-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "cahier petit format 50 pages",
+    "price": 13,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/2634-large_default/cahier-petit-format-50-pages.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/2929-cahier-petit-format-50-pages.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "notebook LE COLOR TROPICAL 80gr 17*24 192p",
+    "price": 58,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/23387-large_default/notebook-le-color-tropical-80gr-1724-192p-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/24217-notebook-le-color-tropical-80gr-1724-192p-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CARNET REPERTOIRE 11/17 96P 70G",
+    "price": 14,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/27139-large_default/carnet-repertoire-1117-96p-70g-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/27927-carnet-repertoire-1117-96p-70g-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "BLOC-NOTE BULLET JOURNAL KOALA",
+    "price": 65,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/22621-large_default/bloc-note-bullet-journal-koala.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/23465-bloc-note-bullet-journal-koala.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CARNET PIQURE 11X17cm 96P 70G 5X5 CALLIGRAPHE",
+    "price": 15,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29449-large_default/carnet-piqure-11x17cm-96p-70g-5x5-calligraphe.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30165-carnet-piqure-11x17cm-96p-70g-5x5-calligraphe.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "BLOC-NOTE BULLET JOURNAL ELEPHANT",
+    "price": 65,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/22620-large_default/bloc-note-bullet-journal-elephant.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/23464-bloc-note-bullet-journal-elephant.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CARNET REPERTOIRE 11*17CM ECOLO",
+    "price": 14,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29671-large_default/carnet-repertoire-1117cm-ecolo-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30358-carnet-repertoire-1117cm-ecolo-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "cahier grand format polypro 200 pages",
+    "price": 35,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/2605-large_default/cahier-grand-format-polypro-200-page-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/2897-cahier-grand-format-polypro-200-page-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "BLOC-NOTE BULLET JOURNAL GAZELLE",
+    "price": 65,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/22619-large_default/bloc-note-bullet-journal-gazelle.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/23463-bloc-note-bullet-journal-gazelle.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Carnet ecolo pique 5x5 160p 21x14cm",
+    "price": 15,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29672-large_default/carnet-ecolo-pique-5x5-160p-21x14cm.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30359-carnet-ecolo-pique-5x5-160p-21x14cm.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Carnet de dessin A5 - 100g/m² - 54 Feuilles Blanche",
+    "price": 71,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/19660-large_default/carnet-de-dessin-a5-100gm-54-feuilles-blanche.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/20557-carnet-de-dessin-a5-100gm-54-feuilles-blanche.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "cahier 17X22 TP petit format 100 pages",
+    "price": 18,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/2595-large_default/-cahier-tp-petite-format-100-page.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/2887--cahier-tp-petite-format-100-page.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "BLOC-NOTE BULLET JOURNAL PENGUIN",
+    "price": 65,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/22622-large_default/bloc-note-bullet-journal-penguin.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/23466-bloc-note-bullet-journal-penguin.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "cahier petit format 200 page 70 g",
+    "price": 18,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/2584-large_default/cahier-petit-format-200-page-70-g.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/2877-cahier-petit-format-200-page-70-g.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Bloc Note REPLAY Lignes Pointues 192P 17x24",
+    "price": 58,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/22623-large_default/bloc-note-replay-lignes-pointues-192p-17x24.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/23467-bloc-note-replay-lignes-pointues-192p-17x24.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Bloc Note MERMER Surligné 192P 17x24",
+    "price": 58,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/22624-large_default/bloc-note-mermer-surligne-192p-17x24.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/23468-bloc-note-mermer-surligne-192p-17x24.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "cahier petit format 100 pages 70 g",
+    "price": 10,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/2579-large_default/cahier-petit-format-100-page-70-g.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/2872-cahier-petit-format-100-page-70-g.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "PLANNER 17/24 SHINE CORAL",
+    "price": 75,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/23388-large_default/planner-1724-shine-coral-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/24219-planner-1724-shine-coral-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "cahier petit format 400 pages",
+    "price": 34,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/45-large_default/cahier-petit-format-400-pages-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/47-cahier-petit-format-400-pages-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "cahier grand format 300 pages (21*29.7)",
+    "price": 45,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/47-large_default/cahier-grand-format-300-pages-21297.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/49-cahier-grand-format-300-pages-21297.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "cahier grand format 100 pages (21*29.7)",
+    "price": 17,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/46-large_default/cahier-grand-format-100-pages-21297.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/48-cahier-grand-format-100-pages-21297.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "cahier grand format travaux pratiques (T.P) 100 pages (21*29.7)",
+    "price": 24,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/48-large_default/cahier-grand-format-travaux-pratiques-tp-100-pages-21297.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/50-cahier-grand-format-travaux-pratiques-tp-100-pages-21297.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "cahier petit format travaux pratiques (T.P) 100 pages",
+    "price": 9,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/49-large_default/cahier-petit-format-travaux-pratiques-tp-100-pages-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/51-cahier-petit-format-travaux-pratiques-tp-100-pages-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "cahier grand format travaux pratiques (T.P) 100 pages 24*32",
+    "price": 25,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/50-large_default/cahier-grand-format-travaux-pratiques-tp-100-pages-2432.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/52-cahier-grand-format-travaux-pratiques-tp-100-pages-2432.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "cahier grand format (travaux pratique) T.P 100pages 24*32 oxford",
+    "price": 76,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/377-large_default/cahier-grand-format-tp-travaux-pratique-open-flex-100pages-2432-oxford.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/376-cahier-grand-format-tp-travaux-pratique-open-flex-100pages-2432-oxford.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "cahier grand format 200 pages 21*29.7 oxford",
+    "price": 84,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/384-large_default/cahier-grand-format-200-pages-21297-oxford-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/380-cahier-grand-format-200-pages-21297-oxford-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "cahier grand format 100 pages 21*29.7 oxford",
+    "price": 44,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/389-large_default/cahier-grand-format-100-pages-21297-oxford-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/383-cahier-grand-format-100-pages-21297-oxford-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER BRO.OXFORD 17/22 192P SY",
+    "price": 59,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/398-large_default/cahier-petit-format-de-100-pages-oxford-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/391-cahier-petit-format-de-100-pages-oxford-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "cahier grand format 400 pages (21*29.7)",
+    "price": 59.5,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/52-large_default/cahier-grand-format-400-pages-21297.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/55-cahier-grand-format-400-pages-21297.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "cahier petit format travaux pratique (T.P) 100 pages oxford",
+    "price": 35,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/396-large_default/cahier-petit-format-travaux-pratique-tp-100-pages-oxford-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/390-cahier-petit-format-travaux-pratique-tp-100-pages-oxford-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "cahier petit format 150 pages oxford",
+    "price": 29,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/401-large_default/cahier-petit-format-150-pages-oxford-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/394-cahier-petit-format-150-pages-oxford-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "cahier petit format 50 pages oxford",
+    "price": 14.5,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/408-large_default/cahier-petit-format-50-pages-oxford-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/399-cahier-petit-format-50-pages-oxford-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Notebook 13×21 avec fermeture magnétique rouge",
+    "price": 45,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/17482-large_default/notebook-1321-avec-fermeture-magnetique-rouge-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/18219-notebook-1321-avec-fermeture-magnetique-rouge-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "cahier grand format 100 pages TP",
+    "price": 22,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/2610-large_default/cahier-grand-format-100-page-tp.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/2902-cahier-grand-format-100-page-tp.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "cahier grand format TP 150 pages 24*32",
+    "price": 37,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/2613-large_default/cahier-grand-format-tp-150-page-2432.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/2904-cahier-grand-format-tp-150-page-2432.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "cahier essentiel petit format 100 pages",
+    "price": 4,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/1342-large_default/cahier-essentiel-petit-format-100-pages.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/1364-cahier-essentiel-petit-format-100-pages.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "cahier maped pique 140 pages 17*22cm",
+    "price": 12,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/27073-large_default/cahier-maped-pique-140-pages-1722cm-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/27853-cahier-maped-pique-140-pages-1722cm-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "cahier maped broche 288 pages 17*22cm",
+    "price": 25,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/27074-large_default/cahier-maped-broche-288-pages-1722cm.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/27854-cahier-maped-broche-288-pages-1722cm.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER POLYPRO 17*22 CONQUERANT 96 P BLEU",
+    "price": 16,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/27082-large_default/cahier-polypro-1722-conquerant-96-p-bleu-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/27867-cahier-polypro-1722-conquerant-96-p-bleu-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER POLYPRO 17*22 CONQUERANT 96 P ROUGE",
+    "price": 16,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/27081-large_default/cahier-polypro-1722-conquerant-96-p-rouge-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/27866-cahier-polypro-1722-conquerant-96-p-rouge-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "cahier maped pique 96pages 24*32cm",
+    "price": 21,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/27080-large_default/cahier-maped-pique-96pages-2432cm.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/27864-cahier-maped-pique-96pages-2432cm.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER POLYPRO 17*22 CONQUERANT 96 P VERT",
+    "price": 16,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/27087-large_default/cahier-polypro-1722-conquerant-96-p-vert-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/27872-cahier-polypro-1722-conquerant-96-p-vert-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "blok note A4",
+    "price": 81.5,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/2363-large_default/block-not-a4.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/2633-block-not-a4.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER POLYPRO 17*22 CONQUERANT 96 P JAUNE",
+    "price": 16,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/27088-large_default/cahier-polypro-1722-conquerant-96-p-jaune-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/27874-cahier-polypro-1722-conquerant-96-p-jaune-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER POLYPRO 17*22 CONQUERANT 96P",
+    "price": 16,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/27089-large_default/cahier-polypro-1722-conquerant-96p-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/27875-cahier-polypro-1722-conquerant-96p-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "MARQUE PAGE DELI EA 11501 50*41",
+    "price": 17,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/7800-large_default/marque-page-deli-ea-11501-5041-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/8220-marque-page-deli-ea-11501-5041-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER 24*32 96P CONQUERANT POLYPRO BLEU",
+    "price": 36,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/27090-large_default/cahier-2432-96p-conquerant-polypro-bleu-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/27876-cahier-2432-96p-conquerant-polypro-bleu-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "sticky notes A022",
+    "price": 10,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/7886-large_default/sticky-notes-a022.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/8296-sticky-notes-a022.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER 24*32 96P CONQURANT POLYPRO JAUNE",
+    "price": 36,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/27091-large_default/cahier-2432-96p-conqurant-polypro-jaune-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/27877-cahier-2432-96p-conqurant-polypro-jaune-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER 24*32 96P CONQUERANT POLYPRO ROUGE",
+    "price": 36,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/27092-large_default/cahier-2432-96p-conquerant-polypro-rouge-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/27878-cahier-2432-96p-conquerant-polypro-rouge-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Cahier piqué 17x22 192p séyès 70g",
+    "price": 18,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/9450-large_default/cahier-pique-17x22-192p-seyes-70g.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/9879-cahier-pique-17x22-192p-seyes-70g.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER 24*32 96P CONQURANT POLYPRO VERT",
+    "price": 36,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/27093-large_default/cahier-2432-96p-conqurant-polypro-vert-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/27879-cahier-2432-96p-conqurant-polypro-vert-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "NOTE REPOSITIONNABLES 30*2-A55302",
+    "price": 13,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/7809-large_default/note-repositionnables-302-a55302-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/8229-note-repositionnables-302-a55302-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER ANCOR 17*22 POYLPRO 96P BLEU",
+    "price": 18,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/27097-large_default/cahier-ancor-1722-poylpro-96p-bleu-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/27884-cahier-ancor-1722-poylpro-96p-bleu-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "MARQUE PAGE DELI EA10202 44*12",
+    "price": 24,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/7808-large_default/marque-page-deli-ea10202-4412-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/8228-marque-page-deli-ea10202-4412-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER ANCOR 17*22 POYLPRO 96P JAUNE",
+    "price": 18,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/27099-large_default/cahier-ancor-1722-poylpro-96p-jaune-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/27885-cahier-ancor-1722-poylpro-96p-jaune-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "NOTE REPOSITIONNABLE-A55102",
+    "price": 8.5,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/7807-large_default/note-repositionnable-a55102-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/8227-note-repositionnable-a55102-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER ANCOR 17*22 POYLPRO 96P NOIR",
+    "price": 18,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/27100-large_default/cahier-ancor-1722-poylpro-96p-noir-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/27886-cahier-ancor-1722-poylpro-96p-noir-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "MARQUE PAGES DELI-A112",
+    "price": 20,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/7806-large_default/marque-pages-deli-a112-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/8226-marque-pages-deli-a112-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER ANCOR 17*22 POYLPRO 96P ROUGE",
+    "price": 18,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/27101-large_default/cahier-ancor-1722-poylpro-96p-rouge-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/27887-cahier-ancor-1722-poylpro-96p-rouge-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "NOTE REPOSITI DELI-A032",
+    "price": 15,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/7804-large_default/note-repositi-deli-a032-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/8224-note-repositi-deli-a032-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Bloc notes - 10 x 15 cm - 160 pages - petits carreaux - 80G - orange",
+    "price": 22.5,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29281-large_default/bloc-notes-10-x-15-cm-160-pages-petits-carreaux-80g-orange.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30043-bloc-notes-10-x-15-cm-160-pages-petits-carreaux-80g-orange.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "NOTE REPOSITI DELI-A031",
+    "price": 15,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/7803-large_default/note-repositi-deli-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/8223-note-repositi-deli-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Oxford - Bloc notes - A4 - 160 pages - petits carreaux - 80G - orange",
+    "price": 61,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29283-large_default/bloc-notes-10-x-15-cm-160-pages-petits-carreaux-80g-orange.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30044-bloc-notes-10-x-15-cm-160-pages-petits-carreaux-80g-orange.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "MARQUE PAGE DELI A10702",
+    "price": 10,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/7802-large_default/marque-page-deli-a10702-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/8222-marque-page-deli-a10702-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER SPIRALE 100 P SEYES 70 G 21*29.7 CALLIGRAPHE",
+    "price": 54,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29452-large_default/cahier-spirale-100-p-seyes-70-g-21297-calligraphe-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30166-cahier-spirale-100-p-seyes-70-g-21297-calligraphe-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "NOTES REPOSITIONNABLE A55002",
+    "price": 12,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/7805-large_default/notes-repositionnable-a55002-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/8225-notes-repositionnable-a55002-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER SPIRALE 100 P 5/5 70 G 21*29.7",
+    "price": 54,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29453-large_default/cahier-spirale-100-p-55-70-g-21297-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30168-cahier-spirale-100-p-55-70-g-21297-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "bloc note 120 pages 16.5*21 réelles",
+    "price": 33,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/3114-large_default/bloc-note-120-pages-16521.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/3426-bloc-note-120-pages-16521.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER PIQUE 17*22 CM 2.5MM POLYPRO BLEU",
+    "price": 15,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29454-large_default/cahier-pique-1722-cm-25mm-polypro-bleu-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30169-cahier-pique-1722-cm-25mm-polypro-bleu-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER PIQUE 17X22CM 32P 3MMI 90G - VERT",
+    "price": 15,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29455-large_default/cahier-pique-17x22cm-32p-3mmi-90g-vert-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30171-cahier-pique-17x22cm-32p-3mmi-90g-vert-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER PIQUE 96P SEYES A5 90GRS C/POLY TRANSP",
+    "price": 19,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29456-large_default/cahier-pique-96p-seyes-a5-90grs-cpoly-transp.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30173-cahier-pique-96p-seyes-a5-90grs-cpoly-transp.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "post-it couleur",
+    "price": 50,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/2824-large_default/post-it.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/3140-post-it.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER PIQUE 96P SEYES A5 90GRS C/POLY VERT",
+    "price": 19,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/14734-large_default/cahier-pique-96p-seyes-a5-90grs-cpoly-vert.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/15301-cahier-pique-96p-seyes-a5-90grs-cpoly-vert.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER PIQUE 96P SEYES A5 90GRS C/POLY GRIS",
+    "price": 19,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/14733-large_default/cahier-pique-96p-seyes-a5-90grs-cpoly-gris-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/15300-cahier-pique-96p-seyes-a5-90grs-cpoly-gris-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "post-it",
+    "price": 8,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/2822-large_default/post-it.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/3138-post-it.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER 17*22 VIOLET 96P CALLIGRAPHE",
+    "price": 19,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/14732-large_default/cahier-1722-violet-96p-calligraphe-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/15299-cahier-1722-violet-96p-calligraphe-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "POSTIT 76*76 MM OFFICE COUL ASS",
+    "price": 10,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/11218-large_default/postit-7676-mm-office-coul-ass-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/11737-351-postit-7676-mm-office-coul-ass-.html#/18-couleur-rose",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER 17*22 POLYPRO ORANGE 96P",
+    "price": 19,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/14731-large_default/cahier-1722-polypro-orange-96p-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/15298-cahier-1722-polypro-orange-96p-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER 24*32 96P POLYPRO ROSE",
+    "price": 36,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29460-large_default/cahier-2432-96p-polypro-rose-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30178-cahier-2432-96p-polypro-rose-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER CALLIGRAPHE 24*32 100 P ROSE",
+    "price": 36,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29461-large_default/cahier-calligraphe-2432-100-p-rose-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30179-cahier-calligraphe-2432-100-p-rose-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER 24*32 96P POLYPRO ORANGE",
+    "price": 36,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29462-large_default/cahier-2432-96p-polypro-orange-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30180-cahier-2432-96p-polypro-orange-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "UN CAHIER ANCOR 17*22 POLYPRO PASTEL 96P",
+    "price": 20,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29473-large_default/cahier-ancor-1722-polypro-pastel-96p.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30189-cahier-ancor-1722-polypro-pastel-96p.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER POLYPRO 17*22 CONQUERANT 96 P ROSE",
+    "price": 16,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29488-large_default/cahier-polypro-1722-conquerant-96-p-rose-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30204-cahier-polypro-1722-conquerant-96-p-rose-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER POLYPRO 17*22 CONQUERANT 96 P NOIR",
+    "price": 16,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29489-large_default/cahier-polypro-1722-conquerant-96-p-noir.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30205-cahier-polypro-1722-conquerant-96-p-noir.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER 21*29.70 926P 5*5 CONQURANT POLYPRO INCOL",
+    "price": 28,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29490-large_default/cahier-212970-926p-55-conqurant-polypro-incol-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30206-cahier-212970-926p-55-conqurant-polypro-incol-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Cahier polypro 24 x 32 cm - 96 pages - petits carreaux (5x5mm) - transparent",
+    "price": 36,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29491-large_default/cahier-polypro-24-x-32-cm-96-pages-petits-carreaux-5x5mm-transparent.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30207-cahier-polypro-24-x-32-cm-96-pages-petits-carreaux-5x5mm-transparent.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER 24*32 140P CONQURANT POLYPRO TRANSPARENT",
+    "price": 48,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29492-large_default/cahier-2432-140p-conqurant-polypro-transparent-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30208-cahier-2432-140p-conqurant-polypro-transparent-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER 24*32 192P CONQURANT POLYPRO BLEU",
+    "price": 56,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29493-large_default/cahier-2432-192p-conqurant-polypro-bleu-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30209-cahier-2432-192p-conqurant-polypro-bleu-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER 24*32 192P CONQURANT POLYPRO VERT",
+    "price": 56,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29494-large_default/cahier-2432-192p-conqurant-polypro-vert-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30210-cahier-2432-192p-conqurant-polypro-vert-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER 24*32 192P CONQURANT POLYPRO ROUGE",
+    "price": 56,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29495-large_default/cahier-2432-192p-conqurant-polypro-rouge-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30211-cahier-2432-192p-conqurant-polypro-rouge-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER 24*32 140P CONQURANT POLYPRO BLEU",
+    "price": 48,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29496-large_default/cahier-2432-140p-conqurant-polypro-bleu-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30212-cahier-2432-140p-conqurant-polypro-bleu-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER 24*32 140P CONQURANT POLYPRO VERT",
+    "price": 48,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29497-large_default/cahier-2432-140p-conqurant-polypro-vert-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30213-cahier-2432-140p-conqurant-polypro-vert-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER 24*32 140P CONQURANT POLYPRO JAUNE",
+    "price": 48,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29498-large_default/cahier-2432-140p-conqurant-polypro-jaune-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30214-cahier-2432-140p-conqurant-polypro-jaune-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Cahier polypro 24 x 32 cm - 96 pages - petits carreaux (5x5mm) - bleu",
+    "price": 36,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29499-large_default/-cahier-polypro-24-x-32-cm-96-pages-petits-carreaux-5x5mm-bleu.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30215--cahier-polypro-24-x-32-cm-96-pages-petits-carreaux-5x5mm-bleu.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Cahier polypro 24 x 32 cm - 96 pages - petits carreaux (5x5mm) - jaune",
+    "price": 36,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29502-large_default/cahier-polypro-24-x-32-cm-96-pages-petits-carreaux-5x5mm-jaune.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30216-cahier-polypro-24-x-32-cm-96-pages-petits-carreaux-5x5mm-jaune.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Cahier polypro 24 x 32 cm - 96 pages - petits carreaux (5x5mm) - rouge",
+    "price": 36,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29503-large_default/cahier-polypro-24-x-32-cm-96-pages-petits-carreaux-5x5mm-rouge.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30217-cahier-polypro-24-x-32-cm-96-pages-petits-carreaux-5x5mm-rouge.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "NOTEBOOK LUXOR 150*150 128P",
+    "price": 24,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/13370-large_default/notebook-luxor-150150-128p-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/13886-notebook-luxor-150150-128p-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Cahier polypro 24 x 32 cm - 96 pages - petits carreaux (5x5mm) - vert",
+    "price": 36,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29504-large_default/cahier-polypro-24-x-32-cm-96-pages-petits-carreaux-5x5mm-vert.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30218-cahier-polypro-24-x-32-cm-96-pages-petits-carreaux-5x5mm-vert.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "un Cahier polypro A4 (21x29,7cm) - 96 pages différentes couleurs",
+    "price": 28,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29505-large_default/-cahier-polypro-a4-21x297cm-96-pages-differentes-couleurs.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30219--cahier-polypro-a4-21x297cm-96-pages-differentes-couleurs.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER 24*32 192P CONQURANT POLYPRO TRANSPARENT",
+    "price": 56,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29506-large_default/cahier-2432-192p-conqurant-polypro-transparent.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30220-cahier-2432-192p-conqurant-polypro-transparent.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER 24*32 96P CONQURANT POLYPRO TURQUOISE",
+    "price": 36,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29507-large_default/cahier-2432-96p-conqurant-polypro-turquoise-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30221-cahier-2432-96p-conqurant-polypro-turquoise-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER 24*32 96P CONQURANT POLYPRO VERT TENDRE",
+    "price": 36,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29508-large_default/cahier-2432-96p-conqurant-polypro-vert-tendre.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30222-cahier-2432-96p-conqurant-polypro-vert-tendre.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER PIQUE 96P SEYES A5 90GRS C/POLY JAUNE",
+    "price": 19,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/14735-large_default/cahier-pique-96p-seyes-a5-90grs-cpoly-jaune-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/15302-cahier-pique-96p-seyes-a5-90grs-cpoly-jaune-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER 24*32 96P CONQURANT POLYPRO LILAS",
+    "price": 36,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29509-large_default/cahier-2432-96p-conqurant-polypro-lilas.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30223-cahier-2432-96p-conqurant-polypro-lilas.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER PIQUE 96P SEYES A5 90GRS C/POLY ROUGE",
+    "price": 19,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/14736-large_default/cahier-pique-96p-seyes-a5-90grs-cpoly-rouge-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/15303-cahier-pique-96p-seyes-a5-90grs-cpoly-rouge-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER POLYPRO 17*22 CONQUERANT BLEU CIEL",
+    "price": 16,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29510-large_default/cahier-polypro-1722-conquerant-bleu-ciel.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30224-cahier-polypro-1722-conquerant-bleu-ciel.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER 17*22 ROSE 96 P CALLIGRAPHE",
+    "price": 13,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/14738-large_default/cahier-1722-rose-96-p-calligraphe-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/15305-cahier-1722-rose-96-p-calligraphe-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER POLYPRO 17*22 CONQUERANT MARRON",
+    "price": 16,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29511-large_default/cahier-polypro-1722-conquerant-marron-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30225-cahier-polypro-1722-conquerant-marron-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Spiral Bound A3 Sketch Book",
+    "price": 110,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/16236-large_default/spiral-bound-a3-sketch-book-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/16884-spiral-bound-a3-sketch-book-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER 24*32 96P CONQURANT POLYPRO NOIR",
+    "price": 36,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29512-large_default/cahier-2432-96p-conqurant-polypro-noir-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30226-cahier-2432-96p-conqurant-polypro-noir-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Bloc Papier Aquarelle 12 Feuilles 190Gr A4",
+    "price": 73,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/17269-large_default/bloc-papier-aquarelle-12-feuilles-190gr-a4.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/17982-bloc-papier-aquarelle-12-feuilles-190gr-a4.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER 24*32 48P CONQURANT POLYPRO BLEU",
+    "price": 19,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29513-large_default/cahier-2432-48p-conqurant-polypro-bleu-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30227-cahier-2432-48p-conqurant-polypro-bleu-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Pro notebook 13×21 couverture solide gris",
+    "price": 40,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/17474-large_default/pro-notebook-1321-couverture-solide-gris.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/18212-pro-notebook-1321-couverture-solide-gris.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER 24*32 140P CONQURANT POLYPRO ROUGE",
+    "price": 48,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29514-large_default/cahier-2432-140p-conqurant-polypro-rouge-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30228-cahier-2432-140p-conqurant-polypro-rouge-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Pro notebook 13×21 couverture solide bleu",
+    "price": 40,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/17475-large_default/pro-notebook-1321-couverture-solide-bleu-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/18213-pro-notebook-1321-couverture-solide-bleu-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "UN CAHIER 24*32 48P CONQURANT POLYPRO COUL ASS",
+    "price": 19,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29518-large_default/cahier-2432-48p-conqurant-polypro-coul-ass.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30229-cahier-2432-48p-conqurant-polypro-coul-ass.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Pro notebook 13×21 couverture solide rouge",
+    "price": 40,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/17476-large_default/pro-notebook-1321-couverture-solide-rouge.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/18214-pro-notebook-1321-couverture-solide-rouge.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Cahier Piqué Séyès Polypro 24 x 32 90G ROUGE",
+    "price": 66,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29762-large_default/cahier-pique-seyes-polypro-24-x-32-90g-rouge.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30440-cahier-pique-seyes-polypro-24-x-32-90g-rouge.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Pro notebook 13×21 couverture solide bordeaux",
+    "price": 40,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/17477-large_default/pro-notebook-1321-couverture-solide-bordeaux.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/18215-pro-notebook-1321-couverture-solide-bordeaux.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Notebook KRAFT bleu à rayures",
+    "price": 56,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/17479-large_default/notebook-kraft-bleu-a-rayures.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/18216-notebook-kraft-bleu-a-rayures.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Notebook KRAFT violet à rayures",
+    "price": 56,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/17480-large_default/notebook-kraft-violet-a-rayures.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/18217-notebook-kraft-violet-a-rayures.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Pro notebook 13×21 fermeture magnétique noir",
+    "price": 45,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/17481-large_default/pro-notebook-1321-fermeture-magnetique-noir.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/18218-pro-notebook-1321-fermeture-magnetique-noir.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Notebook professionnels - Best Notes",
+    "price": 40,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/17483-large_default/notebook-professionnels-best-notes.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/18220-notebook-professionnels-best-notes.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Pro notebook 13×21 couverture solide",
+    "price": 40,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/17484-large_default/pro-notebook-1321-couverture-solide.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/18221-pro-notebook-1321-couverture-solide.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Pro notebook A6 turquoise - Best Notes",
+    "price": 20,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/17485-large_default/-pro-notebook-a6-turquoise-best-notes.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/18222--pro-notebook-a6-turquoise-best-notes.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Pro notebook A6 noir - Best Notes",
+    "price": 20,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/17488-large_default/pro-notebook-a6-noir-best-notes.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/18224-pro-notebook-a6-noir-best-notes.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Pro notebook 13×21 couverture cuir gris",
+    "price": 45,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/17492-large_default/pro-notebook-1321-couverture-cuir-gris.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/18227-pro-notebook-1321-couverture-cuir-gris.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Notebook professionnels rouge - Best Notes",
+    "price": 45,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/17493-large_default/notebook-professionnels-rouge-best-notes.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/18228-notebook-professionnels-rouge-best-notes.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Notebook professionnels noir - Best Notes",
+    "price": 45,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/17494-large_default/notebook-professionnels-noir-best-notes.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/18229-notebook-professionnels-noir-best-notes.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Pro notebook 13×21 flexible bleu",
+    "price": 33,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/17495-large_default/pro-notebook-1321-flexible-bleu.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/18230-pro-notebook-1321-flexible-bleu.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Pro notebook 13×21 flexible rouge",
+    "price": 33,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/17496-large_default/pro-notebook-1321-flexible-rouge.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/18231-pro-notebook-1321-flexible-rouge.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Pro notebook 13×21 flexible gris",
+    "price": 33,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/17497-large_default/pro-notebook-1321-flexible-gris.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/18232-pro-notebook-1321-flexible-gris.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Pro notebook 13×21 couverture cuir bleu",
+    "price": 45,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/17498-large_default/pro-notebook-1321-couverture-cuir-bleu.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/18233-pro-notebook-1321-couverture-cuir-bleu.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Pro notebook A6 bordeaux - Best Notes",
+    "price": 20,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/17500-large_default/-pro-notebook-a6-bordeaux-best-notes.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/18235--pro-notebook-a6-bordeaux-best-notes.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Pro notebook 13×21 solide gris",
+    "price": 40,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/17502-large_default/pro-notebook-1321-solide-gris.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/18236-pro-notebook-1321-solide-gris.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Pro notebook 13×21 couverture solid rouge",
+    "price": 40,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/17506-large_default/pro-notebook-1321-couverture-solid-rouge-.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/18238-pro-notebook-1321-couverture-solid-rouge-.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Pro notebook A6 gris - Best Notes",
+    "price": 20,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/17507-large_default/pro-notebook-a6-gris-best-notes.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/18239-pro-notebook-a6-gris-best-notes.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Notebook 13×21 avec fermeture magnétique noir",
+    "price": 33,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/17508-large_default/notebook-1321-avec-fermeture-magnetique-noir.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/18240-notebook-1321-avec-fermeture-magnetique-noir.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Le Color Replay Noktalı 17x24 Ciltli",
+    "price": 54,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/17509-large_default/le-color-replay-noktali-17x24-ciltli.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/18241-le-color-replay-noktali-17x24-ciltli.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "Bloc Note CAMOUFLAGE Uni 192P 17x24",
+    "price": 55,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/22629-large_default/bloc-note-camouflage-uni-192p-17x24.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/23472-bloc-note-camouflage-uni-192p-17x24.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER DE NOTES 9 SUJETS 432P SPIRAL SEYES",
+    "price": 68,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29230-large_default/cahier-de-notes-9-sujets-432p-spiral-seyes.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30001-cahier-de-notes-9-sujets-432p-spiral-seyes.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER DE NOTES 10 SUJETS 480P SPIRAL SEYES",
+    "price": 72,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29232-large_default/cahier-de-notes-9-sujets-432p-spiral-seyes.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30002-cahier-de-notes-9-sujets-432p-spiral-seyes.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER DE NOTES 8 SUJETS 384P SPIRAL SEYES",
+    "price": 61,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29234-large_default/cahier-de-notes-9-sujets-432p-spiral-seyes.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30003-cahier-de-notes-9-sujets-432p-spiral-seyes.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER DE NOTES 7 SUJETS 336P SPIRAL SEYES",
+    "price": 55,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29236-large_default/cahier-de-notes-9-sujets-432p-spiral-seyes.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30004-cahier-de-notes-9-sujets-432p-spiral-seyes.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER DE NOTES 6 SUJETS 288P SPIRAL SEYES",
+    "price": 49,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29238-large_default/cahier-de-notes-9-sujets-432p-spiral-seyes.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30005-cahier-de-notes-9-sujets-432p-spiral-seyes.html",
+    "needs_manual_image": true,
+    "is_active": false
+  },
+  {
+    "name": "CAHIER DE NOTES 5 SUJETS 240P SPIRAL SEYES",
+    "price": 40,
+    "category_slug": "cahier-carnet-bloc-note",
+    "source_image_url": "https://mylibrairie.ma/29240-large_default/cahier-de-notes-9-sujets-432p-spiral-seyes.jpg",
+    "source_product_url": "https://mylibrairie.ma/fr/accueil/30006-cahier-de-notes-9-sujets-432p-spiral-seyes.html",
+    "needs_manual_image": true,
+    "is_active": false
+  }
+]

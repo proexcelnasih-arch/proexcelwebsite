@@ -43,9 +43,9 @@ export const CATEGORY_MAP: Record<string, CategoryMapping> = {
     name: 'Papeterie & Classement',
   },
   '53-cahier-carnet-et-bloc-note': {
-    proexcelSlug: 'cahiers-blocs',
+    proexcelSlug: 'cahier-carnet-bloc-note',
     defaultType: 'stationery',
-    name: 'Cahiers, Carnets & Blocs',
+    name: 'Cahier, Carnet et Bloc-Note',
   },
   '54-feuille-copie-et-papier': {
     proexcelSlug: 'papeterie',

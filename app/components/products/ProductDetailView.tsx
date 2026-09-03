@@ -425,7 +425,7 @@ export function ProductDetailView({
         </div>
 
         {/* ── Pinned bottom buy bar ──────────────────────────── */}
-        <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 px-4 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+        <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
           <div className="flex items-center gap-3">
             {/* Quantity stepper */}
             <div className="flex items-center border border-slate-300 rounded-xl bg-slate-50 h-12 shrink-0">

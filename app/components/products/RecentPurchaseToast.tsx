@@ -1,10 +1,12 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { usePathname } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import { ShoppingBag, X, CheckCircle } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
+import { cn } from "@/lib/utils"
 import type { RecentPurchase } from "@/types"
 
 interface RecentPurchaseToastProps {
@@ -12,6 +14,8 @@ interface RecentPurchaseToastProps {
 }
 
 export function RecentPurchaseToast({ purchases }: RecentPurchaseToastProps) {
+  const pathname = usePathname()
+  const isProductPage = pathname?.startsWith("/product/")
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isVisible, setIsVisible] = useState(false)
   const [isDismissed, setIsDismissed] = useState(false)
@@ -56,7 +60,12 @@ export function RecentPurchaseToast({ purchases }: RecentPurchaseToastProps) {
             animate={{ opacity: 1, x: 0, scale: 1 }}
             exit={{ opacity: 0, x: -20, scale: 0.95 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="fixed bottom-6 left-4 sm:left-6 z-30 max-w-[320px] w-full bg-white/95 backdrop-blur-md rounded-2xl p-3.5 border border-slate-200/90 shadow-[0_10px_30px_rgba(0,0,0,0.12)] select-none"
+            className={cn(
+              "fixed left-4 sm:left-6 z-30 max-w-[320px] w-full bg-white/95 backdrop-blur-md rounded-2xl p-3.5 border border-slate-200/90 shadow-[0_10px_30px_rgba(0,0,0,0.12)] select-none transition-all duration-300",
+              isProductPage
+                ? "bottom-[calc(88px+env(safe-area-inset-bottom,0px))] lg:bottom-6"
+                : "bottom-6"
+            )}
           >
             <div className="flex items-start gap-3">
               {/* Product Thumbnail */}
