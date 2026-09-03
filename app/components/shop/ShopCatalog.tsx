@@ -59,6 +59,11 @@ export function ShopCatalog({
   const [selectedBrands, setSelectedBrands] = useState<string[]>(
     initialBrand ? [initialBrand] : []
   )
+  const [inStockOnly, setInStockOnly] = useState(false)
+  const [sortBy, setSortBy] = useState<string>("popular")
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  
   // 16 products per page (4x4 on desktop)
   const pageSize = 16
 
