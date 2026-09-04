@@ -40,16 +40,12 @@ export async function updateSession(request: NextRequest) {
 
   // Protect admin routes
   if (request.nextUrl.pathname.startsWith("/admin")) {
-    const isDev = process.env.NODE_ENV === "development"
-    const hasAdminCookie = request.cookies.get("proexcel_admin_session")?.value === "true"
-
-    if (!user && !isDev && !hasAdminCookie) {
+    if (!user) {
       const url = request.nextUrl.clone()
       url.pathname = "/login"
       url.searchParams.set("redirect", request.nextUrl.pathname)
       return NextResponse.redirect(url)
     }
-    // Admin role check is done per-page/action via RLS
   }
 
   // Protect account routes

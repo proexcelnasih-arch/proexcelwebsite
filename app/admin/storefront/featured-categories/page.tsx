@@ -66,6 +66,13 @@ export default function FeaturedCategoriesAdminPage() {
       }
       setSavedSuccess(true)
       setTimeout(() => setSavedSuccess(false), 2000)
+
+      // Revalidate storefront so homepage categories grid updates
+      fetch("/api/admin/revalidate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ path: "/", type: "page" }),
+      }).catch(() => {/* non-critical */})
     } catch (err) {
       console.warn("[featured-categories] Error saving:", err)
     }

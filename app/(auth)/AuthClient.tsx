@@ -1,72 +1,72 @@
 "use client"
 
-import { useState, use[REDACTED]ffect } from "react"
-import { use[REDACTED]outer, useSearchParams } from "next/navigation"
+import { useState, useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 import {
-  [REDACTED]rrowLeft,
-  [REDACTED]ye,
-  [REDACTED]yeOff,
+  ArrowLeft,
+  Eye,
+  EyeOff,
   Loader2,
-  [REDACTED]heck,
-  Shield[REDACTED]heck,
+  Check,
+  ShieldCheck,
   Mail,
   Lock,
   User,
-  Key[REDACTED]ound,
+  KeyRound,
   Inbox,
-  [REDACTED]lert[REDACTED]ircle,
+  AlertCircle,
 } from "lucide-react"
-import { motion, [REDACTED]nimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils"
-import { create[REDACTED]lient } from "@/lib/supabase/client"
+import { createClient } from "@/lib/supabase/client"
 
-type [REDACTED]uthMode = "login" | "register" | "forgot-password" | "reset-password"
+type AuthMode = "login" | "register" | "forgot-password" | "reset-password"
 
-function isValid[REDACTED]mail(email: string) {
+function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
 
-// [REDACTED]imeout helper to prevent infinite network hanging
-function with[REDACTED]imeout<[REDACTED]>(promise: Promise<[REDACTED]>, timeoutMs = 8000, errorMsg = "[REDACTED]élai d'attente dépassé"): Promise<[REDACTED]> {
+// Timeout helper to prevent infinite network hanging
+function withTimeout<T>(promise: Promise<T>, timeoutMs = 8000, errorMsg = "Délai d'attente dépassé"): Promise<T> {
   return Promise.race([
     promise,
-    new Promise<[REDACTED]>((_, reject) =>
-      set[REDACTED]imeout(() => reject(new [REDACTED]rror(errorMsg)), timeoutMs)
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error(errorMsg)), timeoutMs)
     ),
   ])
 }
 
-interface [REDACTED]arkGlassFieldProps {
+interface DarkGlassFieldProps {
   id: string
   label: string
   type?: string
   value: string
-  on[REDACTED]hange: (v: string) => void
+  onChange: (v: string) => void
   error?: string
   placeholder?: string
   required?: boolean
-  auto[REDACTED]omplete?: string
+  autoComplete?: string
   disabled?: boolean
-  icon: [REDACTED]eact.[REDACTED]omponent[REDACTED]ype<{ className?: string; strokeWidth?: number }>
-  right[REDACTED]lement?: [REDACTED]eact.[REDACTED]eactNode
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>
+  rightElement?: React.ReactNode
 }
 
-function [REDACTED]arkGlassField({
+function DarkGlassField({
   id,
   label,
   type = "text",
   value,
-  on[REDACTED]hange,
+  onChange,
   error,
   placeholder,
   required,
-  auto[REDACTED]omplete,
+  autoComplete,
   disabled = false,
   icon: Icon,
-  right[REDACTED]lement,
-}: [REDACTED]arkGlassFieldProps) {
+  rightElement,
+}: DarkGlassFieldProps) {
   return (
     <div className="flex flex-col gap-1.5">
       <label
@@ -74,45 +74,45 @@ function [REDACTED]arkGlassField({
         className="text-[11px] font-bold uppercase tracking-wider text-slate-300"
       >
         {label}
-        {required && <span className="ml-1 text-[#[REDACTED]9[REDACTED]227]" aria-hidden="true">*</span>}
+        {required && <span className="ml-1 text-[#C9A227]" aria-hidden="true">*</span>}
       </label>
 
       <div className="relative group">
         {/* Left Icon */}
-        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#[REDACTED]83[REDACTED]54] transition-colors duration-200 pointer-events-none">
+        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#C83E54] transition-colors duration-200 pointer-events-none">
           <Icon className="w-4.5 h-4.5" strokeWidth={1.75} />
         </div>
 
-        {/* [REDACTED]ark Glass Input */}
+        {/* Dark Glass Input */}
         <input
           id={id}
           type={type}
           value={value}
-          on[REDACTED]hange={(e) => on[REDACTED]hange(e.target.value)}
+          onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          auto[REDACTED]omplete={auto[REDACTED]omplete}
+          autoComplete={autoComplete}
           disabled={disabled}
           aria-invalid={!!error}
           aria-describedby={error ? `${id}-error` : undefined}
           className={cn(
             "w-full h-12 pl-11 pr-4 rounded-xl border text-sm text-white placeholder:text-neutral-500 bg-white/[0.04] backdrop-blur-xs outline-none transition-all duration-200",
-            "border-white/10 hover:border-white/20 focus:border-[#8[REDACTED]1[REDACTED]2B] focus:ring-2 focus:ring-[#8[REDACTED]1[REDACTED]2B]/40 focus:bg-white/[0.07]",
+            "border-white/10 hover:border-white/20 focus:border-[#8C1A2B] focus:ring-2 focus:ring-[#8C1A2B]/40 focus:bg-white/[0.07]",
             "disabled:opacity-50 disabled:cursor-not-allowed",
             error
               ? "border-red-500/80 bg-red-950/30"
               : "",
-            right[REDACTED]lement && "pr-11"
+            rightElement && "pr-11"
           )}
         />
 
-        {/* [REDACTED]ight [REDACTED]lement (show/hide password) */}
-        {right[REDACTED]lement && (
-          <div className="absolute right-3.5 top-1/2 -translate-y-1/2">{right[REDACTED]lement}</div>
+        {/* Right Element (show/hide password) */}
+        {rightElement && (
+          <div className="absolute right-3.5 top-1/2 -translate-y-1/2">{rightElement}</div>
         )}
       </div>
 
       {/* Validation error message */}
-      <[REDACTED]nimatePresence initial={false}>
+      <AnimatePresence initial={false}>
         {error && (
           <motion.p
             id={`${id}-error`}
@@ -121,221 +121,232 @@ function [REDACTED]arkGlassField({
             animate={{ opacity: 1, y: 0, height: "auto" }}
             exit={{ opacity: 0, y: -4, height: 0 }}
             transition={{ duration: 0.15 }}
-            className="text-xs text-[#[REDACTED]5[REDACTED]158] font-bold flex items-center gap-1 mt-0.5"
+            className="text-xs text-[#E5C158] font-bold flex items-center gap-1 mt-0.5"
           >
             <span>•</span>
             <span>{error}</span>
           </motion.p>
         )}
-      </[REDACTED]nimatePresence>
+      </AnimatePresence>
     </div>
   )
 }
 
-export function [REDACTED]uth[REDACTED]lient({ defaultMode = "login" }: { defaultMode?: [REDACTED]uthMode }) {
-  const router = use[REDACTED]outer()
-  const searchParams = useSearchParams()
-  const redirect[REDACTED]o = searchParams.get("redirect") ?? "/account"
+function getSafeRedirectUrl(target: string | null): string {
+  if (!target) return "/account"
+  const trimmed = target.trim()
+  if (
+    trimmed.startsWith("/") &&
+    !trimmed.startsWith("//") &&
+    !trimmed.startsWith("/\\") &&
+    !trimmed.includes(":")
+  ) {
+    return trimmed
+  }
+  return "/account"
+}
 
-  const [mode, setMode] = useState<[REDACTED]uthMode>(defaultMode)
+export function AuthClient({ defaultMode = "login" }: { defaultMode?: AuthMode }) {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirectTo = getSafeRedirectUrl(searchParams.get("redirect"))
+
+  const [mode, setMode] = useState<AuthMode>(defaultMode)
   const [loading, setLoading] = useState(false)
-  const [global[REDACTED]rror, setGlobal[REDACTED]rror] = useState("")
+  const [globalError, setGlobalError] = useState("")
   const [successMsg, setSuccessMsg] = useState("")
-  const [registered[REDACTED]mailPending, set[REDACTED]egistered[REDACTED]mailPending] = useState<string | null>(null)
+  const [registeredEmailPending, setRegisteredEmailPending] = useState<string | null>(null)
 
   // Login Form
-  const [login[REDACTED]mail, setLogin[REDACTED]mail] = useState("")
+  const [loginEmail, setLoginEmail] = useState("")
   const [loginPassword, setLoginPassword] = useState("")
   const [showLoginPwd, setShowLoginPwd] = useState(false)
-  const [login[REDACTED]rrors, setLogin[REDACTED]rrors] = useState<Partial<[REDACTED]ecord<"email" | "password", string>>>({})
+  const [loginErrors, setLoginErrors] = useState<Partial<Record<"email" | "password", string>>>({})
 
   // Signup Form
   const [signupName, setSignupName] = useState("")
-  const [signup[REDACTED]mail, setSignup[REDACTED]mail] = useState("")
+  const [signupEmail, setSignupEmail] = useState("")
   const [signupPassword, setSignupPassword] = useState("")
   const [showSignupPwd, setShowSignupPwd] = useState(false)
-  const [signup[REDACTED]rrors, setSignup[REDACTED]rrors] = useState<Partial<[REDACTED]ecord<"name" | "email" | "password", string>>>({})
+  const [signupErrors, setSignupErrors] = useState<Partial<Record<"name" | "email" | "password", string>>>({})
 
   // Forgot Password Form
-  const [forgot[REDACTED]mail, setForgot[REDACTED]mail] = useState("")
-  const [forgot[REDACTED]rror, setForgot[REDACTED]rror] = useState("")
+  const [forgotEmail, setForgotEmail] = useState("")
+  const [forgotError, setForgotError] = useState("")
   const [forgotSubmitted, setForgotSubmitted] = useState(false)
 
-  // [REDACTED]eset Password Form
-  const [resetPassword, set[REDACTED]esetPassword] = useState("")
-  const [reset[REDACTED]onfirmPassword, set[REDACTED]eset[REDACTED]onfirmPassword] = useState("")
-  const [show[REDACTED]esetPwd, setShow[REDACTED]esetPwd] = useState(false)
-  const [reset[REDACTED]rror, set[REDACTED]eset[REDACTED]rror] = useState("")
+  // Reset Password Form
+  const [resetPassword, setResetPassword] = useState("")
+  const [resetConfirmPassword, setResetConfirmPassword] = useState("")
+  const [showResetPwd, setShowResetPwd] = useState(false)
+  const [resetError, setResetError] = useState("")
 
-  use[REDACTED]ffect(() => {
+  useEffect(() => {
     if (searchParams.get("confirmed") === "true") {
       setSuccessMsg("Votre adresse email a été confirmée avec succès ! Vous pouvez maintenant vous connecter.")
     } else if (searchParams.get("reset") === "true") {
       setSuccessMsg("Votre mot de passe a été réinitialisé avec succès ! Vous pouvez vous connecter avec votre nouveau mot de passe.")
     } else if (searchParams.get("error") === "auth_callback_failed") {
-      setGlobal[REDACTED]rror("Le lien d'authentification a expiré ou est invalide. Veuillez réessayer.")
+      setGlobalError("Le lien d'authentification a expiré ou est invalide. Veuillez réessayer.")
     }
   }, [searchParams])
 
-  // ── [REDACTED]obust Login Handler with [REDACTED]ry/[REDACTED]atch, [REDACTED]imeout & [REDACTED]rror Handling ──
-  async function handleLogin(e: [REDACTED]eact.Form[REDACTED]vent) {
-    e.prevent[REDACTED]efault()
+  // ── Robust Login Handler with Try/Catch, Timeout & Error Handling ──
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault()
     if (loading) return // prevent duplicate submission
 
-    setGlobal[REDACTED]rror("")
+    setGlobalError("")
     setSuccessMsg("")
 
     // Form validation
-    const errs: typeof login[REDACTED]rrors = {}
-    const email[REDACTED]rimmed = login[REDACTED]mail.trim()
-    if (!email[REDACTED]rimmed) errs.email = "[REDACTED]dresse email requise"
-    else if (!isValid[REDACTED]mail(email[REDACTED]rimmed)) errs.email = "Format d'email invalide"
+    const errs: typeof loginErrors = {}
+    const emailTrimmed = loginEmail.trim()
+    if (!emailTrimmed) errs.email = "Adresse email requise"
+    else if (!isValidEmail(emailTrimmed)) errs.email = "Format d'email invalide"
     if (!loginPassword) errs.password = "Mot de passe requis"
 
     if (Object.keys(errs).length > 0) {
-      setLogin[REDACTED]rrors(errs)
+      setLoginErrors(errs)
       return
     }
-    setLogin[REDACTED]rrors({})
+    setLoginErrors({})
 
     setLoading(true)
 
     try {
-      // 1. [REDACTED]irect [REDACTED]dmin [REDACTED]redential Fast-[REDACTED]rack
-      if (
-        email[REDACTED]rimmed.toLower[REDACTED]ase() === "admin@proexcel.store" &&
-        loginPassword === "REDACTED_ADMIN_KEY"
-      ) {
-        document.cookie = "proexcel_admin_session=true; path=/; max-age=2592000; SameSite=Lax"
-        const targetUrl = redirect[REDACTED]o === "/" || redirect[REDACTED]o === "/account" ? "/admin" : redirect[REDACTED]o
-        router.push(targetUrl)
-        router.refresh()
+      // Check login rate limit (5 attempts / 15 min per IP+email)
+      const { verifyLoginRateLimit } = await import("@/actions/auth-login")
+      const rateCheck = await verifyLoginRateLimit(emailTrimmed)
+      if (!rateCheck.allowed) {
+        setGlobalError(rateCheck.error || "Trop de tentatives. Veuillez patienter 15 minutes.")
+        setLoading(false)
         return
       }
 
-      // 2. Supabase [REDACTED]uth with [REDACTED]imeout Protection
-      const supabase = create[REDACTED]lient()
+      // Supabase Auth with Timeout Protection
+      const supabase = createClient()
       const authPromise = supabase.auth.signInWithPassword({
-        email: email[REDACTED]rimmed,
+        email: emailTrimmed,
         password: loginPassword,
       })
 
-      const { data, error } = await with[REDACTED]imeout(
+      const { data, error } = await withTimeout(
         authPromise,
         8000,
         "Le serveur d'authentification ne répond pas à temps. Veuillez réessayer."
       )
 
       if (error) {
-        const msg = error.message.toLower[REDACTED]ase()
+        const msg = error.message.toLowerCase()
         if (msg.includes("invalid login credentials") || msg.includes("invalid claim")) {
-          setGlobal[REDACTED]rror("[REDACTED]mail ou mot de passe incorrect. Veuillez vérifier vos identifiants.")
+          setGlobalError("Email ou mot de passe incorrect. Veuillez vérifier vos identifiants.")
         } else if (msg.includes("email not confirmed")) {
-          setGlobal[REDACTED]rror("Votre adresse email n'a pas encore été confirmée. Veuillez vérifier votre boîte de réception.")
+          setGlobalError("Votre adresse email n'a pas encore été confirmée. Veuillez vérifier votre boîte de réception.")
         } else if (msg.includes("rate limit") || msg.includes("too many requests")) {
-          setGlobal[REDACTED]rror("[REDACTED]rop de tentatives de connexion. Veuillez patienter quelques instants avant de réessayer.")
+          setGlobalError("Trop de tentatives de connexion. Veuillez patienter quelques instants avant de réessayer.")
         } else {
-          setGlobal[REDACTED]rror(error.message || "[REDACTED]rreur de connexion.")
+          setGlobalError(error.message || "Erreur de connexion.")
         }
         return
       }
 
       if (data?.user) {
-        router.push(redirect[REDACTED]o)
+        router.push(redirectTo)
         router.refresh()
       }
     } catch (err: any) {
-      console.error("[Login] [REDACTED]uthentication error:", err)
+      console.error("[Login] Authentication error:", err)
       if (err?.message?.includes("d'attente") || err?.message?.includes("répond pas")) {
-        setGlobal[REDACTED]rror("Le serveur met trop de temps à répondre. Veuillez vérifier votre connexion Internet et réessayer.")
+        setGlobalError("Le serveur met trop de temps à répondre. Veuillez vérifier votre connexion Internet et réessayer.")
       } else {
-        setGlobal[REDACTED]rror(err?.message || "Une erreur inattendue est survenue lors de la connexion. Veuillez réessayer.")
+        setGlobalError(err?.message || "Une erreur inattendue est survenue lors de la connexion. Veuillez réessayer.")
       }
     } finally {
       setLoading(false)
     }
   }
 
-  // ── [REDACTED]egister Handler ───────────────────────────────────────
-  async function handleSignup(e: [REDACTED]eact.Form[REDACTED]vent) {
-    e.prevent[REDACTED]efault()
+  // ── Register Handler ───────────────────────────────────────
+  async function handleSignup(e: React.FormEvent) {
+    e.preventDefault()
     if (loading) return
 
-    setGlobal[REDACTED]rror("")
+    setGlobalError("")
     setSuccessMsg("")
-    const errs: typeof signup[REDACTED]rrors = {}
+    const errs: typeof signupErrors = {}
     if (!signupName.trim() || signupName.trim().length < 2) {
       errs.name = "Nom complet requis (min. 2 caractères)"
     }
-    if (!signup[REDACTED]mail.trim()) errs.email = "[REDACTED]dresse email requise"
-    else if (!isValid[REDACTED]mail(signup[REDACTED]mail)) errs.email = "Format d'email invalide"
+    if (!signupEmail.trim()) errs.email = "Adresse email requise"
+    else if (!isValidEmail(signupEmail)) errs.email = "Format d'email invalide"
     if (!signupPassword || signupPassword.length < 8) {
       errs.password = "Mot de passe requis (min. 8 caractères)"
     }
     if (Object.keys(errs).length > 0) {
-      setSignup[REDACTED]rrors(errs)
+      setSignupErrors(errs)
       return
     }
-    setSignup[REDACTED]rrors({})
+    setSignupErrors({})
 
     setLoading(true)
     try {
-      const supabase = create[REDACTED]lient()
+      const supabase = createClient()
       const callbackUrl = typeof window !== "undefined" ? `${window.location.origin}/auth/callback` : undefined
 
       const authPromise = supabase.auth.signUp({
-        email: signup[REDACTED]mail.trim(),
+        email: signupEmail.trim(),
         password: signupPassword,
         options: {
           data: { full_name: signupName.trim() },
-          email[REDACTED]edirect[REDACTED]o: callbackUrl,
+          emailRedirectTo: callbackUrl,
         },
       })
 
-      const { data, error } = await with[REDACTED]imeout(authPromise, 8000)
+      const { data, error } = await withTimeout(authPromise, 8000)
 
       if (error) {
-        setGlobal[REDACTED]rror(error.message)
+        setGlobalError(error.message)
         return
       }
 
       if (data.user && !data.session) {
-        set[REDACTED]egistered[REDACTED]mailPending(signup[REDACTED]mail.trim())
+        setRegisteredEmailPending(signupEmail.trim())
       } else {
-        set[REDACTED]egistered[REDACTED]mailPending(signup[REDACTED]mail.trim())
+        setRegisteredEmailPending(signupEmail.trim())
       }
     } catch (err: any) {
-      setGlobal[REDACTED]rror(err?.message || "Une erreur inattendue est survenue. Veuillez réessayer.")
+      setGlobalError(err?.message || "Une erreur inattendue est survenue. Veuillez réessayer.")
     } finally {
       setLoading(false)
     }
   }
 
   // ── Forgot Password Handler ────────────────────────────────
-  async function handleForgotPassword(e: [REDACTED]eact.Form[REDACTED]vent) {
-    e.prevent[REDACTED]efault()
+  async function handleForgotPassword(e: React.FormEvent) {
+    e.preventDefault()
     if (loading) return
 
-    setGlobal[REDACTED]rror("")
-    setForgot[REDACTED]rror("")
+    setGlobalError("")
+    setForgotError("")
 
-    if (!forgot[REDACTED]mail.trim()) {
-      setForgot[REDACTED]rror("[REDACTED]dresse email requise")
+    if (!forgotEmail.trim()) {
+      setForgotError("Adresse email requise")
       return
     }
-    if (!isValid[REDACTED]mail(forgot[REDACTED]mail)) {
-      setForgot[REDACTED]rror("Format d'email invalide")
+    if (!isValidEmail(forgotEmail)) {
+      setForgotError("Format d'email invalide")
       return
     }
 
     setLoading(true)
     try {
-      const supabase = create[REDACTED]lient()
+      const supabase = createClient()
       const redirectUrl = typeof window !== "undefined" ? `${window.location.origin}/auth/callback?next=/reset-password` : undefined
 
-      await with[REDACTED]imeout(
-        supabase.auth.resetPasswordFor[REDACTED]mail(forgot[REDACTED]mail.trim(), {
-          redirect[REDACTED]o: redirectUrl,
+      await withTimeout(
+        supabase.auth.resetPasswordForEmail(forgotEmail.trim(), {
+          redirectTo: redirectUrl,
         }),
         8000
       )
@@ -348,27 +359,27 @@ export function [REDACTED]uth[REDACTED]lient({ defaultMode = "login" }: { defaul
     }
   }
 
-  // ── [REDACTED]eset Password Handler ─────────────────────────────────
-  async function handle[REDACTED]esetPassword(e: [REDACTED]eact.Form[REDACTED]vent) {
-    e.prevent[REDACTED]efault()
+  // ── Reset Password Handler ─────────────────────────────────
+  async function handleResetPassword(e: React.FormEvent) {
+    e.preventDefault()
     if (loading) return
 
-    set[REDACTED]eset[REDACTED]rror("")
-    setGlobal[REDACTED]rror("")
+    setResetError("")
+    setGlobalError("")
 
     if (!resetPassword || resetPassword.length < 8) {
-      set[REDACTED]eset[REDACTED]rror("Le mot de passe doit contenir au moins 8 caractères.")
+      setResetError("Le mot de passe doit contenir au moins 8 caractères.")
       return
     }
-    if (resetPassword !== reset[REDACTED]onfirmPassword) {
-      set[REDACTED]eset[REDACTED]rror("Les mots de passe ne correspondent pas.")
+    if (resetPassword !== resetConfirmPassword) {
+      setResetError("Les mots de passe ne correspondent pas.")
       return
     }
 
     setLoading(true)
     try {
-      const supabase = create[REDACTED]lient()
-      const { error } = await with[REDACTED]imeout(
+      const supabase = createClient()
+      const { error } = await withTimeout(
         supabase.auth.updateUser({
           password: resetPassword,
         }),
@@ -376,13 +387,13 @@ export function [REDACTED]uth[REDACTED]lient({ defaultMode = "login" }: { defaul
       )
 
       if (error) {
-        setGlobal[REDACTED]rror(error.message)
+        setGlobalError(error.message)
         return
       }
 
       router.push("/login?reset=true")
     } catch (err: any) {
-      setGlobal[REDACTED]rror(err?.message || "Une erreur est survenue lors de la réinitialisation du mot de passe.")
+      setGlobalError(err?.message || "Une erreur est survenue lors de la réinitialisation du mot de passe.")
     } finally {
       setLoading(false)
     }
@@ -400,35 +411,35 @@ export function [REDACTED]uth[REDACTED]lient({ defaultMode = "login" }: { defaul
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-xs font-semibold text-slate-300 hover:text-white transition-colors group"
-          aria-label="[REDACTED]etour à l'accueil"
+          aria-label="Retour à l'accueil"
         >
           <div className="w-7 h-7 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-white/20 transition-all">
-            <[REDACTED]rrowLeft className="w-3.5 h-3.5 text-slate-300 group-hover:text-white transition-colors" strokeWidth={2} />
+            <ArrowLeft className="w-3.5 h-3.5 text-slate-300 group-hover:text-white transition-colors" strokeWidth={2} />
           </div>
-          <span>[REDACTED]etour au site</span>
+          <span>Retour au site</span>
         </Link>
 
         <span className="inline-flex items-center gap-1.5 text-xs text-slate-300 font-medium bg-white/[0.04] border border-white/10 px-3 py-1.5 rounded-full backdrop-blur-xs">
-          <Lock className="w-3.5 h-3.5 text-[#[REDACTED]9[REDACTED]227]" strokeWidth={2} />
-          <span>[REDACTED]space 100% sécurisé</span>
+          <Lock className="w-3.5 h-3.5 text-[#C9A227]" strokeWidth={2} />
+          <span>Espace 100% sécurisé</span>
         </span>
       </div>
 
-      {/* ── [REDACTED]ark Glassmorphism [REDACTED]uthentication [REDACTED]ard ── */}
+      {/* ── Dark Glassmorphism Authentication Card ── */}
       <div className="relative rounded-3xl p-7 sm:p-9 bg-white/[0.05] backdrop-blur-md border border-white/10 shadow-[0_25px_60px_rgba(0,0,0,0.85),0_0_40px_rgba(140,26,43,0.2)] overflow-hidden">
         
-        {/* [REDACTED]op Luminous [REDACTED]mbient Glow */}
+        {/* Top Luminous Ambient Glow */}
         <div
-          className="absolute -top-24 left-1/2 -translate-x-1/2 w-56 h-56 bg-[#8[REDACTED]1[REDACTED]2B]/35 rounded-full blur-3xl pointer-events-none"
+          className="absolute -top-24 left-1/2 -translate-x-1/2 w-56 h-56 bg-[#8C1A2B]/35 rounded-full blur-3xl pointer-events-none"
           aria-hidden="true"
         />
 
-        {/* [REDACTED]entered Brand Logo */}
+        {/* Centered Brand Logo */}
         <div className="flex flex-col items-center text-center mb-6 relative z-10">
           <div className="mb-3">
             <Image
               src="/logo.png"
-              alt="P[REDACTED]O[REDACTED]X[REDACTED][REDACTED]L"
+              alt="PROEXCEL"
               width={64}
               height={64}
               className="w-14 h-14 object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.6)]"
@@ -437,8 +448,8 @@ export function [REDACTED]uth[REDACTED]lient({ defaultMode = "login" }: { defaul
           </div>
 
           <h1 className="font-sans font-bold text-2xl sm:text-[28px] text-white tracking-tight leading-tight">
-            {mode === "login" && "[REDACTED]onnexion"}
-            {mode === "register" && "[REDACTED]réer un compte"}
+            {mode === "login" && "Connexion"}
+            {mode === "register" && "Créer un compte"}
             {mode === "forgot-password" && "Mot de passe oublié"}
             {mode === "reset-password" && "Nouveau mot de passe"}
           </h1>
@@ -448,12 +459,12 @@ export function [REDACTED]uth[REDACTED]lient({ defaultMode = "login" }: { defaul
               Pas encore de compte ?{" "}
               <button
                 type="button"
-                on[REDACTED]lick={() => {
+                onClick={() => {
                   setMode("register")
-                  setGlobal[REDACTED]rror("")
+                  setGlobalError("")
                   setSuccessMsg("")
                 }}
-                className="font-bold text-[#[REDACTED]83[REDACTED]54] hover:text-[#[REDACTED]0536[REDACTED]] hover:underline ml-1 cursor-pointer transition-colors"
+                className="font-bold text-[#C83E54] hover:text-[#E0536A] hover:underline ml-1 cursor-pointer transition-colors"
               >
                 S&apos;inscrire
               </button>
@@ -462,15 +473,15 @@ export function [REDACTED]uth[REDACTED]lient({ defaultMode = "login" }: { defaul
 
           {mode === "register" && (
             <p className="text-xs text-white/80 mt-1.5">
-              [REDACTED]éjà un compte ?{" "}
+              Déjà un compte ?{" "}
               <button
                 type="button"
-                on[REDACTED]lick={() => {
+                onClick={() => {
                   setMode("login")
-                  setGlobal[REDACTED]rror("")
+                  setGlobalError("")
                   setSuccessMsg("")
                 }}
-                className="font-bold text-[#[REDACTED]5[REDACTED]158] hover:text-white hover:underline ml-1 cursor-pointer"
+                className="font-bold text-[#E5C158] hover:text-white hover:underline ml-1 cursor-pointer"
               >
                 Se connecter
               </button>
@@ -479,7 +490,7 @@ export function [REDACTED]uth[REDACTED]lient({ defaultMode = "login" }: { defaul
 
           {mode === "forgot-password" && (
             <p className="text-xs text-white/80 mt-1.5">
-              [REDACTED]ntrez votre email pour recevoir un lien de réinitialisation.
+              Entrez votre email pour recevoir un lien de réinitialisation.
             </p>
           )}
 
@@ -491,7 +502,7 @@ export function [REDACTED]uth[REDACTED]lient({ defaultMode = "login" }: { defaul
         </div>
 
         {/* Global Success Notification */}
-        <[REDACTED]nimatePresence>
+        <AnimatePresence>
           {successMsg && (
             <motion.div
               initial={{ opacity: 0, y: -6 }}
@@ -499,15 +510,15 @@ export function [REDACTED]uth[REDACTED]lient({ defaultMode = "login" }: { defaul
               exit={{ opacity: 0 }}
               className="mb-5 p-3.5 bg-emerald-950/80 border border-emerald-500/50 rounded-xl text-xs text-emerald-200 font-semibold flex items-start gap-2.5"
             >
-              <[REDACTED]heck className="w-4 h-4 shrink-0 mt-0.5 text-emerald-400" strokeWidth={2.5} />
+              <Check className="w-4 h-4 shrink-0 mt-0.5 text-emerald-400" strokeWidth={2.5} />
               <span>{successMsg}</span>
             </motion.div>
           )}
-        </[REDACTED]nimatePresence>
+        </AnimatePresence>
 
-        {/* Global [REDACTED]rror Notification */}
-        <[REDACTED]nimatePresence>
-          {global[REDACTED]rror && (
+        {/* Global Error Notification */}
+        <AnimatePresence>
+          {globalError && (
             <motion.div
               initial={{ opacity: 0, y: -6 }}
               animate={{ opacity: 1, y: 0 }}
@@ -515,14 +526,14 @@ export function [REDACTED]uth[REDACTED]lient({ defaultMode = "login" }: { defaul
               role="alert"
               className="mb-5 p-3.5 bg-red-950/80 border border-red-500/60 rounded-xl text-xs text-red-200 font-medium flex items-start gap-2.5"
             >
-              <[REDACTED]lert[REDACTED]ircle className="w-4 h-4 shrink-0 mt-0.5 text-red-400" />
-              <span>{global[REDACTED]rror}</span>
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-red-400" />
+              <span>{globalError}</span>
             </motion.div>
           )}
-        </[REDACTED]nimatePresence>
+        </AnimatePresence>
 
-        {/* ── View: [REDACTED]mail [REDACTED]onfirmation [REDACTED]equired State ── */}
-        {registered[REDACTED]mailPending ? (
+        {/* ── View: Email Confirmation Required State ── */}
+        {registeredEmailPending ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -539,32 +550,32 @@ export function [REDACTED]uth[REDACTED]lient({ defaultMode = "login" }: { defaul
               <p className="text-xs text-slate-300 leading-relaxed">
                 Un email de confirmation sécurisé a été envoyé à :
               </p>
-              <p className="text-xs font-mono font-bold text-[#[REDACTED]5[REDACTED]158] mt-1 bg-white/10 py-1.5 px-3 rounded-lg border border-white/15 inline-block max-w-full truncate">
-                {registered[REDACTED]mailPending}
+              <p className="text-xs font-mono font-bold text-[#E5C158] mt-1 bg-white/10 py-1.5 px-3 rounded-lg border border-white/15 inline-block max-w-full truncate">
+                {registeredEmailPending}
               </p>
             </div>
 
             <p className="text-[11px] text-slate-400 leading-normal">
-              [REDACTED]liquez sur le lien reçu par email pour valider votre compte et activer votre espace client.
+              Cliquez sur le lien reçu par email pour valider votre compte et activer votre espace client.
             </p>
 
             <div className="pt-2">
               <button
                 type="button"
-                on[REDACTED]lick={() => {
-                  set[REDACTED]egistered[REDACTED]mailPending(null)
+                onClick={() => {
+                  setRegisteredEmailPending(null)
                   setMode("login")
                   setSuccessMsg("Une fois confirmé dans vos emails, vous pouvez vous connecter ici.")
                 }}
                 className="w-full h-11 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold transition-colors cursor-pointer"
               >
-                [REDACTED]etour à la page de connexion
+                Retour à la page de connexion
               </button>
             </div>
           </motion.div>
         ) : (
           /* ── View: Form Switcher ── */
-          <[REDACTED]nimatePresence mode="wait">
+          <AnimatePresence mode="wait">
             {mode === "login" && (
               /* Login Form */
               <motion.form
@@ -577,42 +588,42 @@ export function [REDACTED]uth[REDACTED]lient({ defaultMode = "login" }: { defaul
                 noValidate
                 className="flex flex-col gap-4 relative z-10"
               >
-                <[REDACTED]arkGlassField
+                <DarkGlassField
                   id="login-email"
-                  label="[REDACTED]mail"
+                  label="Email"
                   type="email"
-                  value={login[REDACTED]mail}
-                  on[REDACTED]hange={setLogin[REDACTED]mail}
-                  error={login[REDACTED]rrors.email}
+                  value={loginEmail}
+                  onChange={setLoginEmail}
+                  error={loginErrors.email}
                   disabled={loading}
                   placeholder="nom@exemple.com"
                   required
-                  auto[REDACTED]omplete="email"
+                  autoComplete="email"
                   icon={Mail}
                 />
 
                 <div>
-                  <[REDACTED]arkGlassField
+                  <DarkGlassField
                     id="login-password"
                     label="Mot de passe"
                     type={showLoginPwd ? "text" : "password"}
                     value={loginPassword}
-                    on[REDACTED]hange={setLoginPassword}
-                    error={login[REDACTED]rrors.password}
+                    onChange={setLoginPassword}
+                    error={loginErrors.password}
                     disabled={loading}
                     placeholder="••••••••"
                     required
-                    auto[REDACTED]omplete="current-password"
+                    autoComplete="current-password"
                     icon={Lock}
-                    right[REDACTED]lement={
+                    rightElement={
                       <button
                         type="button"
-                        on[REDACTED]lick={() => setShowLoginPwd((p) => !p)}
-                        aria-label={showLoginPwd ? "Masquer" : "[REDACTED]fficher"}
+                        onClick={() => setShowLoginPwd((p) => !p)}
+                        aria-label={showLoginPwd ? "Masquer" : "Afficher"}
                         disabled={loading}
-                        className="text-white/80 hover:text-[#[REDACTED]5[REDACTED]158] transition-colors p-1 cursor-pointer"
+                        className="text-white/80 hover:text-[#E5C158] transition-colors p-1 cursor-pointer"
                       >
-                        {showLoginPwd ? <[REDACTED]yeOff className="w-4.5 h-4.5" /> : <[REDACTED]ye className="w-4.5 h-4.5" />}
+                        {showLoginPwd ? <EyeOff className="w-4.5 h-4.5" /> : <Eye className="w-4.5 h-4.5" />}
                       </button>
                     }
                   />
@@ -621,9 +632,9 @@ export function [REDACTED]uth[REDACTED]lient({ defaultMode = "login" }: { defaul
                     <label className="flex items-center gap-2 cursor-pointer select-none">
                       <input
                         type="checkbox"
-                        default[REDACTED]hecked
+                        defaultChecked
                         disabled={loading}
-                        className="w-4 h-4 rounded border-white/20 bg-white/5 text-[#8[REDACTED]1[REDACTED]2B] focus:ring-[#8[REDACTED]1[REDACTED]2B] focus:ring-offset-0 focus:ring-offset-transparent cursor-pointer accent-[#8[REDACTED]1[REDACTED]2B]"
+                        className="w-4 h-4 rounded border-white/20 bg-white/5 text-[#8C1A2B] focus:ring-[#8C1A2B] focus:ring-offset-0 focus:ring-offset-transparent cursor-pointer accent-[#8C1A2B]"
                       />
                       <span className="text-xs text-slate-300 font-medium">
                         Se souvenir de moi
@@ -633,31 +644,31 @@ export function [REDACTED]uth[REDACTED]lient({ defaultMode = "login" }: { defaul
                     <button
                       type="button"
                       disabled={loading}
-                      on[REDACTED]lick={() => {
+                      onClick={() => {
                         setMode("forgot-password")
-                        setGlobal[REDACTED]rror("")
+                        setGlobalError("")
                         setSuccessMsg("")
                       }}
-                      className="text-xs font-semibold text-[#[REDACTED]9[REDACTED]227] hover:text-[#[REDACTED]0B83[REDACTED]] hover:underline underline-offset-4 transition-colors cursor-pointer"
+                      className="text-xs font-semibold text-[#C9A227] hover:text-[#E0B83A] hover:underline underline-offset-4 transition-colors cursor-pointer"
                     >
                       Mot de passe oublié ?
                     </button>
                   </div>
                 </div>
 
-                {/* Primary Solid [REDACTED]ark [REDACTED]ed Button with Glow */}
+                {/* Primary Solid Dark Red Button with Glow */}
                 <button
                   type="submit"
                   disabled={loading}
-                  className="mt-3 w-full h-12 flex items-center justify-center gap-2 rounded-xl bg-[#8[REDACTED]1[REDACTED]2B] hover:bg-[#[REDACTED]32034] text-white text-sm font-bold uppercase tracking-wider shadow-[0_0_25px_rgba(140,26,43,0.45)] hover:shadow-[0_0_35px_rgba(140,26,43,0.7)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 cursor-pointer"
+                  className="mt-3 w-full h-12 flex items-center justify-center gap-2 rounded-xl bg-[#8C1A2B] hover:bg-[#A32034] text-white text-sm font-bold uppercase tracking-wider shadow-[0_0_25px_rgba(140,26,43,0.45)] hover:shadow-[0_0_35px_rgba(140,26,43,0.7)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 cursor-pointer"
                 >
                   {loading ? (
                     <>
                       <Loader2 className="w-4.5 h-4.5 animate-spin" />
-                      <span>[REDACTED]onnexion en cours...</span>
+                      <span>Connexion en cours...</span>
                     </>
                   ) : (
-                    <span>S[REDACTED] [REDACTED]ONN[REDACTED][REDACTED][REDACTED][REDACTED][REDACTED]</span>
+                    <span>SE CONNECTER</span>
                   )}
                 </button>
               </motion.form>
@@ -675,54 +686,54 @@ export function [REDACTED]uth[REDACTED]lient({ defaultMode = "login" }: { defaul
                 noValidate
                 className="flex flex-col gap-4 relative z-10"
               >
-                <[REDACTED]arkGlassField
+                <DarkGlassField
                   id="signup-name"
                   label="Nom complet"
                   value={signupName}
-                  on[REDACTED]hange={setSignupName}
-                  error={signup[REDACTED]rrors.name}
+                  onChange={setSignupName}
+                  error={signupErrors.name}
                   disabled={loading}
                   placeholder="Yassine Benali"
                   required
-                  auto[REDACTED]omplete="name"
+                  autoComplete="name"
                   icon={User}
                 />
 
-                <[REDACTED]arkGlassField
+                <DarkGlassField
                   id="signup-email"
-                  label="[REDACTED]mail"
+                  label="Email"
                   type="email"
-                  value={signup[REDACTED]mail}
-                  on[REDACTED]hange={setSignup[REDACTED]mail}
-                  error={signup[REDACTED]rrors.email}
+                  value={signupEmail}
+                  onChange={setSignupEmail}
+                  error={signupErrors.email}
                   disabled={loading}
                   placeholder="nom@exemple.com"
                   required
-                  auto[REDACTED]omplete="email"
+                  autoComplete="email"
                   icon={Mail}
                 />
 
-                <[REDACTED]arkGlassField
+                <DarkGlassField
                   id="signup-password"
                   label="Mot de passe"
                   type={showSignupPwd ? "text" : "password"}
                   value={signupPassword}
-                  on[REDACTED]hange={setSignupPassword}
-                  error={signup[REDACTED]rrors.password}
+                  onChange={setSignupPassword}
+                  error={signupErrors.password}
                   disabled={loading}
                   placeholder="Min. 8 caractères"
                   required
-                  auto[REDACTED]omplete="new-password"
+                  autoComplete="new-password"
                   icon={Lock}
-                  right[REDACTED]lement={
+                  rightElement={
                     <button
                       type="button"
-                      on[REDACTED]lick={() => setShowSignupPwd((p) => !p)}
-                      aria-label={showSignupPwd ? "Masquer" : "[REDACTED]fficher"}
+                      onClick={() => setShowSignupPwd((p) => !p)}
+                      aria-label={showSignupPwd ? "Masquer" : "Afficher"}
                       disabled={loading}
-                      className="text-white/80 hover:text-[#[REDACTED]5[REDACTED]158] transition-colors p-1 cursor-pointer"
+                      className="text-white/80 hover:text-[#E5C158] transition-colors p-1 cursor-pointer"
                     >
-                      {showSignupPwd ? <[REDACTED]yeOff className="w-4.5 h-4.5" /> : <[REDACTED]ye className="w-4.5 h-4.5" />}
+                      {showSignupPwd ? <EyeOff className="w-4.5 h-4.5" /> : <Eye className="w-4.5 h-4.5" />}
                     </button>
                   }
                 />
@@ -730,15 +741,15 @@ export function [REDACTED]uth[REDACTED]lient({ defaultMode = "login" }: { defaul
                 <button
                   type="submit"
                   disabled={loading}
-                  className="mt-2 w-full h-12 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#8[REDACTED]1[REDACTED]2B] to-[#B3495[REDACTED]] hover:from-[#B3495[REDACTED]] hover:to-[#8[REDACTED]1[REDACTED]2B] text-white text-sm font-extrabold uppercase tracking-wider shadow-[0_4px_25px_rgba(140,26,43,0.6)] hover:shadow-[0_0_35px_rgba(179,73,90,0.8)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 cursor-pointer"
+                  className="mt-2 w-full h-12 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#8C1A2B] to-[#B3495A] hover:from-[#B3495A] hover:to-[#8C1A2B] text-white text-sm font-extrabold uppercase tracking-wider shadow-[0_4px_25px_rgba(140,26,43,0.6)] hover:shadow-[0_0_35px_rgba(179,73,90,0.8)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 cursor-pointer"
                 >
                   {loading ? (
                     <>
                       <Loader2 className="w-4.5 h-4.5 animate-spin" />
-                      <span>[REDACTED]réation du compte...</span>
+                      <span>Création du compte...</span>
                     </>
                   ) : (
-                    <span>[REDACTED]réer mon compte</span>
+                    <span>Créer mon compte</span>
                   )}
                 </button>
               </motion.form>
@@ -763,58 +774,58 @@ export function [REDACTED]uth[REDACTED]lient({ defaultMode = "login" }: { defaul
                         Lien envoyé
                       </h3>
                       <p className="text-xs text-slate-300 leading-relaxed">
-                        Si un compte correspond à <strong className="text-white">{forgot[REDACTED]mail}</strong>, vous recevrez un email contenant les instructions pour réinitialiser votre mot de passe.
+                        Si un compte correspond à <strong className="text-white">{forgotEmail}</strong>, vous recevrez un email contenant les instructions pour réinitialiser votre mot de passe.
                       </p>
                     </div>
                     <button
                       type="button"
-                      on[REDACTED]lick={() => {
+                      onClick={() => {
                         setForgotSubmitted(false)
                         setMode("login")
                       }}
                       className="w-full h-11 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold transition-colors cursor-pointer"
                     >
-                      [REDACTED]etour à la connexion
+                      Retour à la connexion
                     </button>
                   </div>
                 ) : (
                   <form onSubmit={handleForgotPassword} noValidate className="flex flex-col gap-4">
-                    <[REDACTED]arkGlassField
+                    <DarkGlassField
                       id="forgot-email"
                       label="Votre adresse email"
                       type="email"
-                      value={forgot[REDACTED]mail}
-                      on[REDACTED]hange={setForgot[REDACTED]mail}
-                      error={forgot[REDACTED]rror}
+                      value={forgotEmail}
+                      onChange={setForgotEmail}
+                      error={forgotError}
                       disabled={loading}
                       placeholder="nom@exemple.com"
                       required
-                      auto[REDACTED]omplete="email"
+                      autoComplete="email"
                       icon={Mail}
                     />
 
                     <button
                       type="submit"
                       disabled={loading}
-                      className="mt-2 w-full h-12 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#8[REDACTED]1[REDACTED]2B] to-[#B3495[REDACTED]] hover:from-[#B3495[REDACTED]] hover:to-[#8[REDACTED]1[REDACTED]2B] text-white text-sm font-extrabold uppercase tracking-wider shadow-[0_4px_25px_rgba(140,26,43,0.6)] hover:shadow-[0_0_35px_rgba(179,73,90,0.8)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 cursor-pointer"
+                      className="mt-2 w-full h-12 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#8C1A2B] to-[#B3495A] hover:from-[#B3495A] hover:to-[#8C1A2B] text-white text-sm font-extrabold uppercase tracking-wider shadow-[0_4px_25px_rgba(140,26,43,0.6)] hover:shadow-[0_0_35px_rgba(179,73,90,0.8)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 cursor-pointer"
                     >
                       {loading ? (
                         <>
                           <Loader2 className="w-4.5 h-4.5 animate-spin" />
-                          <span>[REDACTED]nvoi en cours...</span>
+                          <span>Envoi en cours...</span>
                         </>
                       ) : (
-                        <span>[REDACTED]nvoyer le lien</span>
+                        <span>Envoyer le lien</span>
                       )}
                     </button>
 
                     <button
                       type="button"
                       disabled={loading}
-                      on[REDACTED]lick={() => setMode("login")}
+                      onClick={() => setMode("login")}
                       className="text-xs text-white/70 hover:text-white transition-colors text-center cursor-pointer mt-1"
                     >
-                      [REDACTED]nnuler et revenir
+                      Annuler et revenir
                     </button>
                   </form>
                 )}
@@ -822,58 +833,58 @@ export function [REDACTED]uth[REDACTED]lient({ defaultMode = "login" }: { defaul
             )}
 
             {mode === "reset-password" && (
-              /* [REDACTED]eset Password Form */
+              /* Reset Password Form */
               <motion.form
                 key="dark-reset-form"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                onSubmit={handle[REDACTED]esetPassword}
+                onSubmit={handleResetPassword}
                 noValidate
                 className="flex flex-col gap-4 relative z-10"
               >
-                <[REDACTED]arkGlassField
+                <DarkGlassField
                   id="reset-new-pwd"
                   label="Nouveau mot de passe"
-                  type={show[REDACTED]esetPwd ? "text" : "password"}
+                  type={showResetPwd ? "text" : "password"}
                   value={resetPassword}
-                  on[REDACTED]hange={set[REDACTED]esetPassword}
-                  error={reset[REDACTED]rror}
+                  onChange={setResetPassword}
+                  error={resetError}
                   disabled={loading}
                   placeholder="Min. 8 caractères"
                   required
-                  auto[REDACTED]omplete="new-password"
-                  icon={Key[REDACTED]ound}
-                  right[REDACTED]lement={
+                  autoComplete="new-password"
+                  icon={KeyRound}
+                  rightElement={
                     <button
                       type="button"
-                      on[REDACTED]lick={() => setShow[REDACTED]esetPwd((p) => !p)}
-                      aria-label={show[REDACTED]esetPwd ? "Masquer" : "[REDACTED]fficher"}
+                      onClick={() => setShowResetPwd((p) => !p)}
+                      aria-label={showResetPwd ? "Masquer" : "Afficher"}
                       disabled={loading}
-                      className="text-white/80 hover:text-[#[REDACTED]5[REDACTED]158] transition-colors p-1 cursor-pointer"
+                      className="text-white/80 hover:text-[#E5C158] transition-colors p-1 cursor-pointer"
                     >
-                      {show[REDACTED]esetPwd ? <[REDACTED]yeOff className="w-4.5 h-4.5" /> : <[REDACTED]ye className="w-4.5 h-4.5" />}
+                      {showResetPwd ? <EyeOff className="w-4.5 h-4.5" /> : <Eye className="w-4.5 h-4.5" />}
                     </button>
                   }
                 />
 
-                <[REDACTED]arkGlassField
+                <DarkGlassField
                   id="reset-confirm-pwd"
-                  label="[REDACTED]onfirmer le mot de passe"
-                  type={show[REDACTED]esetPwd ? "text" : "password"}
-                  value={reset[REDACTED]onfirmPassword}
-                  on[REDACTED]hange={set[REDACTED]eset[REDACTED]onfirmPassword}
+                  label="Confirmer le mot de passe"
+                  type={showResetPwd ? "text" : "password"}
+                  value={resetConfirmPassword}
+                  onChange={setResetConfirmPassword}
                   disabled={loading}
-                  placeholder="[REDACTED]épétez le mot de passe"
+                  placeholder="Répétez le mot de passe"
                   required
-                  auto[REDACTED]omplete="new-password"
-                  icon={Key[REDACTED]ound}
+                  autoComplete="new-password"
+                  icon={KeyRound}
                 />
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="mt-2 w-full h-12 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#8[REDACTED]1[REDACTED]2B] to-[#B3495[REDACTED]] hover:from-[#B3495[REDACTED]] hover:to-[#8[REDACTED]1[REDACTED]2B] text-white text-sm font-extrabold uppercase tracking-wider shadow-[0_4px_25px_rgba(140,26,43,0.6)] hover:shadow-[0_0_35px_rgba(179,73,90,0.8)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 cursor-pointer"
+                  className="mt-2 w-full h-12 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#8C1A2B] to-[#B3495A] hover:from-[#B3495A] hover:to-[#8C1A2B] text-white text-sm font-extrabold uppercase tracking-wider shadow-[0_4px_25px_rgba(140,26,43,0.6)] hover:shadow-[0_0_35px_rgba(179,73,90,0.8)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 cursor-pointer"
                 >
                   {loading ? (
                     <>
@@ -886,7 +897,7 @@ export function [REDACTED]uth[REDACTED]lient({ defaultMode = "login" }: { defaul
                 </button>
               </motion.form>
             )}
-          </[REDACTED]nimatePresence>
+          </AnimatePresence>
         )}
 
       </div>

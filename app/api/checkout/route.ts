@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createAdminClient, createClient } from "@/lib/supabase/server"
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit"
 
 // ── Helpers ────────────────────────────────────────────────────
 function validateMoroccanPhone(raw: string): boolean {
@@ -40,6 +41,13 @@ function err(msg: string, field?: string, status = 400) {
 // ── POST /api/checkout ─────────────────────────────────────────
 export async function POST(request: NextRequest) {
   try {
+    // ── 0. Rate Limiting (10 orders / 15 min per IP) ───────────
+    const clientIp = getClientIp(request)
+    const rateCheck = await checkRateLimit("checkout", clientIp)
+    if (!rateCheck.success) {
+      return err("Trop de tentatives de commande. Veuillez patienter avant de réessayer.", undefined, 429)
+    }
+
     // ── 1. Parse body ──────────────────────────────────────────
     let body: RequestPayload
     try {
@@ -78,14 +86,44 @@ export async function POST(request: NextRequest) {
       return err("Adresse email invalide.", "email")
     }
 
-    // ── 4. Determine authenticated user (if logged in) ────────
+    // ── 4. Determine authenticated user (if logged in or matched by email) ──
     let userId: string | null = null
     try {
       const userClient = await createClient()
-      const { data: { user } } = await userClient.auth.getUser()
-      if (user?.id) userId = user.id
+      const { data: userData } = await userClient.auth.getUser()
+      if (userData?.user?.id) userId = userData.user.id
     } catch {
-      // Guest order
+      // No active cookie session
+    }
+
+    if (!userId && request) {
+      const authHeader = request.headers.get("authorization")
+      if (authHeader && authHeader.startsWith("Bearer ")) {
+        try {
+          const userClient = await createClient()
+          const token = authHeader.replace("Bearer ", "").trim()
+          const { data: tokenUser } = await userClient.auth.getUser(token)
+          if (tokenUser?.user?.id) userId = tokenUser.user.id
+        } catch {
+          // Invalid or expired token
+        }
+      }
+    }
+
+    if (!userId && email) {
+      try {
+        const adminDb = await createAdminClient()
+        const { data: matchedProfile } = await adminDb
+          .from("profiles")
+          .select("id")
+          .ilike("email", email.trim())
+          .maybeSingle()
+        if (matchedProfile?.id) {
+          userId = matchedProfile.id
+        }
+      } catch (err) {
+        console.warn("[checkout] Error matching user by email:", err)
+      }
     }
 
     // ── 5. Execute Transactional Checkout RPC in PostgreSQL ─────
@@ -134,6 +172,22 @@ export async function POST(request: NextRequest) {
       discount_amount: number
       total: number
     }
+
+    // ── 6. Cache Revalidation & Order Confirmation Email ───────
+    try {
+      const { revalidatePath } = await import("next/cache")
+      revalidatePath("/admin/orders", "page")
+      revalidatePath("/admin/customers", "page")
+      revalidatePath("/account", "page")
+    } catch (revErr) {
+      console.warn("[checkout] Revalidation notice:", revErr)
+    }
+
+    // Trigger order confirmation email server-side
+    const { sendOrderConfirmationEmail } = await import("@/lib/email/order-confirmation")
+    sendOrderConfirmationEmail(result.order_id).catch((err) => {
+      console.warn("[checkout] Failed to send order confirmation email:", err)
+    })
 
     return NextResponse.json({
       success: true,

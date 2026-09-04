@@ -57,6 +57,13 @@ export default function FeaturedProductsAdminPage() {
       }
       setSavedSuccess(true)
       setTimeout(() => setSavedSuccess(false), 2000)
+
+      // Revalidate storefront so homepage bestsellers/new arrivals sections update
+      fetch("/api/admin/revalidate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ path: "/", type: "page" }),
+      }).catch(() => {/* non-critical */})
     } catch {
       // ignore
     }

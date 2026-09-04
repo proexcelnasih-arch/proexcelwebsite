@@ -53,6 +53,13 @@ export default function PromoTilesAdminPage() {
       }
       setSavedSuccess(true)
       setTimeout(() => setSavedSuccess(false), 2000)
+
+      // Revalidate storefront cache so the homepage reflects changes immediately
+      fetch("/api/admin/revalidate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ path: "/", type: "page" }),
+      }).catch(() => {/* non-critical */})
     } catch (err) {
       console.warn("[promo-tiles] Error saving:", err)
     }

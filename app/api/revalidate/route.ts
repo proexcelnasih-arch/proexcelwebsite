@@ -1,5 +1,6 @@
 import { revalidatePath } from "next/cache"
 import { type NextRequest, NextResponse } from "next/server"
+import { requireAdmin } from "@/lib/auth/admin-guard"
 
 /**
  * GET /api/revalidate?slug=<product-slug>&category=<category-slug>
@@ -7,6 +8,9 @@ import { type NextRequest, NextResponse } from "next/server"
  * to purge the Next.js page cache so changes appear immediately on the storefront.
  */
 export async function GET(request: NextRequest) {
+  const adminAuth = await requireAdmin(request)
+  if (adminAuth.errorResponse) return adminAuth.errorResponse
+
   const { searchParams } = new URL(request.url)
   const slug = searchParams.get("slug")
   const category = searchParams.get("category")

@@ -1,28 +1,28 @@
 "use client"
 
-import { useState, use[REDACTED]ef, use[REDACTED]ffect } from "react"
-import { use[REDACTED]outer, usePathname } from "next/navigation"
+import { useState, useRef, useEffect } from "react"
+import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
 import {
   Search,
   Bell,
   Menu,
   Package,
-  [REDACTED]lert[REDACTED]riangle,
+  AlertTriangle,
   Settings,
   LogOut,
-  [REDACTED]xternalLink,
+  ExternalLink,
   Shield,
-  [REDACTED]heck[REDACTED]ircle2,
+  CheckCircle2,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { create[REDACTED]lient } from "@/lib/supabase/client"
+import { createClient } from "@/lib/supabase/client"
 
-interface [REDACTED]dmin[REDACTED]opbarProps {
+interface AdminTopbarProps {
   onOpenMobileMenu?: () => void
 }
 
-interface [REDACTED]ealNotification {
+interface RealNotification {
   id: string
   title: string
   description: string
@@ -31,41 +31,51 @@ interface [REDACTED]ealNotification {
   href: string
 }
 
-export function [REDACTED]dmin[REDACTED]opbar({ onOpenMobileMenu }: [REDACTED]dmin[REDACTED]opbarProps) {
-  const router = use[REDACTED]outer()
+export function AdminTopbar({ onOpenMobileMenu }: AdminTopbarProps) {
+  const router = useRouter()
   const pathname = usePathname()
 
   const [searchQuery, setSearchQuery] = useState("")
   const [showNotifications, setShowNotifications] = useState(false)
   const [showUserMenu, setShowUserMenu] = useState(false)
-  const [notifications, setNotifications] = useState<[REDACTED]ealNotification[]>([])
-  const [unread[REDACTED]ount, setUnread[REDACTED]ount] = useState(0)
+  const [adminEmail, setAdminEmail] = useState<string>("")
+  const [notifications, setNotifications] = useState<RealNotification[]>([])
+  const [unreadCount, setUnreadCount] = useState(0)
 
-  const notif[REDACTED]ef = use[REDACTED]ef<H[REDACTED]ML[REDACTED]iv[REDACTED]lement>(null)
-  const user[REDACTED]ef = use[REDACTED]ef<H[REDACTED]ML[REDACTED]iv[REDACTED]lement>(null)
+  const notifRef = useRef<HTMLDivElement>(null)
+  const userRef = useRef<HTMLDivElement>(null)
 
-  // [REDACTED]ynamic Page [REDACTED]itle per section
-  const page[REDACTED]itle = (() => {
-    if (pathname === "/admin") return "[REDACTED]ableau de bord"
-    if (pathname.startsWith("/admin/orders")) return "[REDACTED]ommandes"
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data }) => {
+      if (data?.user?.email) {
+        setAdminEmail(data.user.email)
+      }
+    })
+  }, [])
+
+  // Dynamic Page Title per section
+  const pageTitle = (() => {
+    if (pathname === "/admin") return "Tableau de bord"
+    if (pathname.startsWith("/admin/orders")) return "Commandes"
     if (pathname === "/admin/products/new") return "Nouveau Produit"
     if (pathname.startsWith("/admin/products")) return "Produits"
-    if (pathname.startsWith("/admin/categories")) return "[REDACTED]atégories & [REDACTED]ayons"
+    if (pathname.startsWith("/admin/categories")) return "Catégories & Rayons"
     if (pathname.startsWith("/admin/inventory")) return "Stock & Inventaire"
-    if (pathname.startsWith("/admin/customers")) return "[REDACTED]lients"
-    if (pathname.startsWith("/admin/coupons")) return "Marketing & [REDACTED]oupons"
-    if (pathname.startsWith("/admin/reviews")) return "[REDACTED]vis & [REDACTED]émoignages"
-    if (pathname.startsWith("/admin/storefront")) return "Vitrine & [REDACTED]MS"
+    if (pathname.startsWith("/admin/customers")) return "Clients"
+    if (pathname.startsWith("/admin/coupons")) return "Marketing & Coupons"
+    if (pathname.startsWith("/admin/reviews")) return "Avis & Témoignages"
+    if (pathname.startsWith("/admin/storefront")) return "Vitrine & CMS"
     if (pathname.startsWith("/admin/settings")) return "Paramètres"
-    return "[REDACTED]dministration"
+    return "Administration"
   })()
 
   // Fetch real notifications from Supabase (pending orders and low stock)
-  use[REDACTED]ffect(() => {
+  useEffect(() => {
     async function loadNotifications() {
       try {
-        const supabase = create[REDACTED]lient()
-        const notifs: [REDACTED]ealNotification[] = []
+        const supabase = createClient()
+        const notifs: RealNotification[] = []
 
         // 1. Pending orders
         const { data: pendingOrders } = await supabase
@@ -76,12 +86,12 @@ export function [REDACTED]dmin[REDACTED]opbar({ onOpenMobileMenu }: [REDACTED]dm
           .limit(3)
 
         if (pendingOrders && pendingOrders.length > 0) {
-          pendingOrders.for[REDACTED]ach((ord) => {
+          pendingOrders.forEach((ord) => {
             notifs.push({
               id: `ord-${ord.id}`,
               title: `Nouvelle commande #${ord.order_number}`,
-              description: `Montant : ${Number(ord.total).toFixed(2)} [REDACTED]H (Paiement à la livraison)`,
-              time: new [REDACTED]ate(ord.created_at).toLocale[REDACTED]ateString("fr-F[REDACTED]", {
+              description: `Montant : ${Number(ord.total).toFixed(2)} DH (Paiement à la livraison)`,
+              time: new Date(ord.created_at).toLocaleDateString("fr-FR", {
                 day: "numeric",
                 month: "short",
                 hour: "2-digit",
@@ -102,12 +112,12 @@ export function [REDACTED]dmin[REDACTED]opbar({ onOpenMobileMenu }: [REDACTED]dm
           .limit(3)
 
         if (lowStockProds && lowStockProds.length > 0) {
-          lowStockProds.for[REDACTED]ach((prod) => {
+          lowStockProds.forEach((prod) => {
             notifs.push({
               id: `stock-${prod.id}`,
-              title: "[REDACTED]lerte Stock Faible",
+              title: "Alerte Stock Faible",
               description: `"${prod.name}" (${prod.stock_quantity ?? 0} unités restantes)`,
-              time: "[REDACTED]ction requise",
+              time: "Action requise",
               type: "stock",
               href: "/admin/inventory/low-stock",
             })
@@ -115,39 +125,39 @@ export function [REDACTED]dmin[REDACTED]opbar({ onOpenMobileMenu }: [REDACTED]dm
         }
 
         setNotifications(notifs)
-        setUnread[REDACTED]ount(notifs.length)
+        setUnreadCount(notifs.length)
       } catch (err) {
-        console.warn("[[REDACTED]dmin[REDACTED]opbar] Notification load failed:", err)
+        console.warn("[AdminTopbar] Notification load failed:", err)
       }
     }
 
     loadNotifications()
   }, [])
 
-  // [REDACTED]lose dropdowns on outside click
-  use[REDACTED]ffect(() => {
-    function handle[REDACTED]lickOutside(e: Mouse[REDACTED]vent) {
-      if (notif[REDACTED]ef.current && !notif[REDACTED]ef.current.contains(e.target as Node)) {
+  // Close dropdowns on outside click
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
         setShowNotifications(false)
       }
-      if (user[REDACTED]ef.current && !user[REDACTED]ef.current.contains(e.target as Node)) {
+      if (userRef.current && !userRef.current.contains(e.target as Node)) {
         setShowUserMenu(false)
       }
     }
-    document.add[REDACTED]ventListener("mousedown", handle[REDACTED]lickOutside)
-    return () => document.remove[REDACTED]ventListener("mousedown", handle[REDACTED]lickOutside)
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
-  function handleSearchSubmit(e: [REDACTED]eact.Form[REDACTED]vent) {
-    e.prevent[REDACTED]efault()
+  function handleSearchSubmit(e: React.FormEvent) {
+    e.preventDefault()
     if (!searchQuery.trim()) return
-    router.push(`/admin/products?search=${encodeU[REDACTED]I[REDACTED]omponent(searchQuery.trim())}`)
+    router.push(`/admin/products?search=${encodeURIComponent(searchQuery.trim())}`)
   }
 
   async function handleLogout() {
     try {
       document.cookie = "proexcel_admin_session=; path=/; max-age=0;"
-      const supabase = create[REDACTED]lient()
+      const supabase = createClient()
       await supabase.auth.signOut()
     } catch {
       // ignore
@@ -157,12 +167,12 @@ export function [REDACTED]dmin[REDACTED]opbar({ onOpenMobileMenu }: [REDACTED]dm
 
   return (
     <header className="h-16 bg-white border-b border-slate-200/80 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-20 shadow-2xs">
-      {/* ── Left: Mobile [REDACTED]oggle & [REDACTED]ynamic Section [REDACTED]itle ─────── */}
+      {/* ── Left: Mobile Toggle & Dynamic Section Title ─────── */}
       <div className="flex items-center gap-3 min-w-0">
         {onOpenMobileMenu && (
           <button
             type="button"
-            on[REDACTED]lick={onOpenMobileMenu}
+            onClick={onOpenMobileMenu}
             className="lg:hidden w-9 h-9 rounded-xl border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors"
             aria-label="Ouvrir le menu"
           >
@@ -170,15 +180,15 @@ export function [REDACTED]dmin[REDACTED]opbar({ onOpenMobileMenu }: [REDACTED]dm
           </button>
         )}
 
-        {/* [REDACTED]ynamic Section [REDACTED]itle (No fake decorative dropdown) */}
+        {/* Dynamic Section Title (No fake decorative dropdown) */}
         <div className="flex items-center gap-2">
           <h2 className="text-base sm:text-lg font-extrabold text-slate-900 tracking-tight leading-tight truncate">
-            {page[REDACTED]itle}
+            {pageTitle}
           </h2>
         </div>
       </div>
 
-      {/* ── [REDACTED]enter: Search Bar ──────────────────────────────── */}
+      {/* ── Center: Search Bar ──────────────────────────────── */}
       <div className="hidden md:flex items-center flex-1 max-w-md mx-6">
         <form onSubmit={handleSearchSubmit} className="relative w-full">
           <Search
@@ -188,51 +198,51 @@ export function [REDACTED]dmin[REDACTED]opbar({ onOpenMobileMenu }: [REDACTED]dm
           <input
             type="search"
             value={searchQuery}
-            on[REDACTED]hange={(e) => setSearchQuery(e.target.value)}
-            placeholder="[REDACTED]echerche globale (articles, commandes, clients)…"
-            aria-label="[REDACTED]echerche globale admin"
-            className="w-full h-10 pl-10 pr-4 rounded-xl bg-slate-50 border border-slate-200/90 text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:bg-white focus:border-[#8[REDACTED]1[REDACTED]2B] focus:ring-2 focus:ring-[#8[REDACTED]1[REDACTED]2B]/15 transition-all shadow-2xs"
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Recherche globale (articles, commandes, clients)…"
+            aria-label="Recherche globale admin"
+            className="w-full h-10 pl-10 pr-4 rounded-xl bg-slate-50 border border-slate-200/90 text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:bg-white focus:border-[#8C1A2B] focus:ring-2 focus:ring-[#8C1A2B]/15 transition-all shadow-2xs"
           />
         </form>
       </div>
 
-      {/* ── [REDACTED]ight: Notification Bell, Settings, User Profile ── */}
+      {/* ── Right: Notification Bell, Settings, User Profile ── */}
       <div className="flex items-center gap-2.5 shrink-0">
         {/* Settings Shortcut Button */}
         <Link
           href="/admin/settings/store"
-          className="w-10 h-10 rounded-xl border border-slate-200/90 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-600 hover:text-[#8[REDACTED]1[REDACTED]2B] transition-colors shadow-2xs"
+          className="w-10 h-10 rounded-xl border border-slate-200/90 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-600 hover:text-[#8C1A2B] transition-colors shadow-2xs"
           title="Paramètres de la boutique"
         >
           <Settings className="w-4.5 h-4.5" strokeWidth={1.75} />
         </Link>
 
-        {/* Notifications Bell with [REDACTED]eal Unread [REDACTED]ount */}
-        <div ref={notif[REDACTED]ef} className="relative">
+        {/* Notifications Bell with Real Unread Count */}
+        <div ref={notifRef} className="relative">
           <button
             type="button"
-            on[REDACTED]lick={() => setShowNotifications((v) => !v)}
+            onClick={() => setShowNotifications((v) => !v)}
             className="relative w-10 h-10 rounded-xl border border-slate-200/90 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-600 hover:text-slate-900 transition-colors shadow-2xs cursor-pointer"
             aria-label="Notifications"
           >
             <Bell className="w-4.5 h-4.5" strokeWidth={1.75} />
-            {unread[REDACTED]ount > 0 && (
-              <span className="absolute -top-1 -right-1 min-w-4.5 h-4.5 px-1 rounded-full bg-[#8[REDACTED]1[REDACTED]2B] text-white text-[10px] font-extrabold flex items-center justify-center ring-2 ring-white shadow-xs animate-in zoom-in">
-                {unread[REDACTED]ount}
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-4.5 h-4.5 px-1 rounded-full bg-[#8C1A2B] text-white text-[10px] font-extrabold flex items-center justify-center ring-2 ring-white shadow-xs animate-in zoom-in">
+                {unreadCount}
               </span>
             )}
           </button>
 
-          {/* Notifications [REDACTED]ropdown */}
+          {/* Notifications Dropdown */}
           {showNotifications && (
             <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white border border-slate-200 rounded-2xl shadow-xl p-3 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
               <div className="flex items-center justify-between px-3 py-2 border-b border-slate-100">
                 <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">
                   Notifications
                 </span>
-                {unread[REDACTED]ount > 0 ? (
-                  <span className="text-[10px] font-bold text-[#8[REDACTED]1[REDACTED]2B] bg-[#8[REDACTED]1[REDACTED]2B]/10 px-2 py-0.5 rounded-full">
-                    {unread[REDACTED]ount} en attente
+                {unreadCount > 0 ? (
+                  <span className="text-[10px] font-bold text-[#8C1A2B] bg-[#8C1A2B]/10 px-2 py-0.5 rounded-full">
+                    {unreadCount} en attente
                   </span>
                 ) : (
                   <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
@@ -247,7 +257,7 @@ export function [REDACTED]dmin[REDACTED]opbar({ onOpenMobileMenu }: [REDACTED]dm
                     <Link
                       key={item.id}
                       href={item.href}
-                      on[REDACTED]lick={() => setShowNotifications(false)}
+                      onClick={() => setShowNotifications(false)}
                       className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-colors"
                     >
                       <div
@@ -261,7 +271,7 @@ export function [REDACTED]dmin[REDACTED]opbar({ onOpenMobileMenu }: [REDACTED]dm
                         {item.type === "order" ? (
                           <Package className="w-4 h-4" />
                         ) : (
-                          <[REDACTED]lert[REDACTED]riangle className="w-4 h-4" />
+                          <AlertTriangle className="w-4 h-4" />
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -279,8 +289,8 @@ export function [REDACTED]dmin[REDACTED]opbar({ onOpenMobileMenu }: [REDACTED]dm
                   ))
                 ) : (
                   <div className="py-6 text-center text-xs text-slate-400">
-                    <[REDACTED]heck[REDACTED]ircle2 className="w-6 h-6 mx-auto mb-1.5 text-emerald-500" />
-                    <span>[REDACTED]ucune nouvelle alerte pour le moment</span>
+                    <CheckCircle2 className="w-6 h-6 mx-auto mb-1.5 text-emerald-500" />
+                    <span>Aucune nouvelle alerte pour le moment</span>
                   </div>
                 )}
               </div>
@@ -288,8 +298,8 @@ export function [REDACTED]dmin[REDACTED]opbar({ onOpenMobileMenu }: [REDACTED]dm
               <div className="pt-2 border-t border-slate-100 text-center">
                 <Link
                   href="/admin/orders"
-                  on[REDACTED]lick={() => setShowNotifications(false)}
-                  className="text-xs font-bold text-[#8[REDACTED]1[REDACTED]2B] hover:underline inline-block"
+                  onClick={() => setShowNotifications(false)}
+                  className="text-xs font-bold text-[#8C1A2B] hover:underline inline-block"
                 >
                   Gérer toutes les commandes →
                 </Link>
@@ -299,39 +309,39 @@ export function [REDACTED]dmin[REDACTED]opbar({ onOpenMobileMenu }: [REDACTED]dm
         </div>
 
         {/* User Profile Menu */}
-        <div ref={user[REDACTED]ef} className="relative">
+        <div ref={userRef} className="relative">
           <button
             type="button"
-            on[REDACTED]lick={() => setShowUserMenu((v) => !v)}
+            onClick={() => setShowUserMenu((v) => !v)}
             className="flex items-center gap-2.5 p-1 sm:px-2.5 sm:py-1.5 rounded-xl border border-slate-200/90 hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
             aria-label="Menu profil administrateur"
           >
-            {/* [REDACTED]vatar [REDACTED]ircle with Initials */}
-            <div className="w-7 h-7 rounded-full bg-[#8[REDACTED]1[REDACTED]2B] text-white flex items-center justify-center text-xs font-bold shrink-0 shadow-2xs">
-              [REDACTED][REDACTED]
+            {/* Avatar Circle with Initials */}
+            <div className="w-7 h-7 rounded-full bg-[#8C1A2B] text-white flex items-center justify-center text-xs font-bold shrink-0 shadow-2xs">
+              AD
             </div>
             <div className="hidden sm:flex flex-col text-left">
               <span className="text-xs font-bold text-slate-800 leading-tight">
-                [REDACTED]dmin Pro[REDACTED]xcel
+                Admin ProExcel
               </span>
               <span className="text-[10px] text-slate-400 font-medium leading-tight">
-                Super [REDACTED]dministrateur
+                Super Administrateur
               </span>
             </div>
           </button>
 
-          {/* Profile [REDACTED]ropdown */}
+          {/* Profile Dropdown */}
           {showUserMenu && (
             <div className="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-2xl shadow-xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
               <div className="px-3 py-2 border-b border-slate-100 mb-1">
-                <p className="text-xs font-bold text-slate-800">[REDACTED]dmin Pro[REDACTED]xcel</p>
-                <p className="text-[11px] text-slate-400 truncate">admin@proexcel.store</p>
+                <p className="text-xs font-bold text-slate-800">Admin ProExcel</p>
+                <p className="text-[11px] text-slate-400 truncate">{adminEmail || "admin@proexcel.store"}</p>
               </div>
 
               <Link
                 href="/admin/settings/store"
-                on[REDACTED]lick={() => setShowUserMenu(false)}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-[#8[REDACTED]1[REDACTED]2B] transition-colors"
+                onClick={() => setShowUserMenu(false)}
+                className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-[#8C1A2B] transition-colors"
               >
                 <Shield className="w-4 h-4 text-slate-400" />
                 <span>Paramètres Boutique</span>
@@ -340,16 +350,16 @@ export function [REDACTED]dmin[REDACTED]opbar({ onOpenMobileMenu }: [REDACTED]dm
               <Link
                 href="/"
                 target="_blank"
-                on[REDACTED]lick={() => setShowUserMenu(false)}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-[#8[REDACTED]1[REDACTED]2B] transition-colors"
+                onClick={() => setShowUserMenu(false)}
+                className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-[#8C1A2B] transition-colors"
               >
-                <[REDACTED]xternalLink className="w-4 h-4 text-slate-400" />
+                <ExternalLink className="w-4 h-4 text-slate-400" />
                 <span>Voir la Boutique</span>
               </Link>
 
               <button
                 type="button"
-                on[REDACTED]lick={handleLogout}
+                onClick={handleLogout}
                 className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors mt-1 cursor-pointer"
               >
                 <LogOut className="w-4 h-4 text-rose-500" />

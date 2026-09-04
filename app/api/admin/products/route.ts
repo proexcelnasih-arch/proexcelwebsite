@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createAdminClient } from "@/lib/supabase/server"
+import { requireAdmin } from "@/lib/auth/admin-guard"
+import { checkRateLimit } from "@/lib/rate-limit"
 
 export const dynamic = "force-dynamic"
 export const maxDuration = 60
@@ -56,8 +58,51 @@ async function processImageUrl(supabase: any, imageSource: string, productName: 
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json()
+    // 0. Verify Admin Role
+    const adminAuth = await requireAdmin(req)
+    if (adminAuth.errorResponse) return adminAuth.errorResponse
+
+    // Rate limit authenticated admin actions (30/min)
+    const rateCheck = await checkRateLimit("adminApi", adminAuth.user.id)
+    if (!rateCheck.success) {
+      return NextResponse.json(
+        { success: false, error: "Limite de requêtes atteinte pour les actions administrateur. Veuillez patienter." },
+        { status: 429 }
+      )
+    }
+
+    const body = await req.json().catch(() => null)
+    if (!body || typeof body !== "object") {
+      return NextResponse.json({ success: false, error: "Corps de requête invalide" }, { status: 400 })
+    }
+
     const { formData, variants, isEdit } = body
+    if (!formData || typeof formData !== "object") {
+      return NextResponse.json({ success: false, error: "Données de formulaire requises" }, { status: 400 })
+    }
+
+    // Strict input validation
+    const name = typeof formData.name === "string" ? formData.name.trim() : ""
+    if (!name || name.length < 2 || name.length > 255) {
+      return NextResponse.json({ success: false, error: "Le nom du produit doit comporter entre 2 et 255 caractères." }, { status: 400 })
+    }
+
+    const price = Number(formData.price)
+    if (isNaN(price) || price <= 0 || price > 100000) {
+      return NextResponse.json({ success: false, error: "Le prix doit être un nombre strictement positif inférieur à 100 000 DH." }, { status: 400 })
+    }
+
+    const stock = Number(formData.stock)
+    if (isNaN(stock) || stock < 0 || !Number.isInteger(stock) || stock > 1000000) {
+      return NextResponse.json({ success: false, error: "Le stock doit être un entier positif ou nul." }, { status: 400 })
+    }
+
+    if (formData.compare_at_price != null && formData.compare_at_price !== "") {
+      const comparePrice = Number(formData.compare_at_price)
+      if (isNaN(comparePrice) || comparePrice < 0) {
+        return NextResponse.json({ success: false, error: "Le prix barré doit être un nombre positif." }, { status: 400 })
+      }
+    }
 
     const supabase = await createAdminClient()
 
@@ -250,6 +295,19 @@ export async function PATCH(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
+    // 0. Verify Admin Role
+    const adminAuth = await requireAdmin(req)
+    if (adminAuth.errorResponse) return adminAuth.errorResponse
+
+    // Rate limit authenticated admin actions (30/min)
+    const rateCheck = await checkRateLimit("adminApi", adminAuth.user.id)
+    if (!rateCheck.success) {
+      return NextResponse.json(
+        { success: false, error: "Limite de requêtes atteinte pour les actions administrateur. Veuillez patienter." },
+        { status: 429 }
+      )
+    }
+
     const { searchParams } = new URL(req.url)
     let productId = searchParams.get("id")
 

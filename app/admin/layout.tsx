@@ -10,19 +10,22 @@ export default async function AdminLayout({
   children: React.ReactNode
 }) {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
-  // In development / demo when no user is logged in yet, allow access or check role
-  if (user) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .maybeSingle()
+  if (!user) {
+    redirect("/login?redirect=/admin")
+  }
 
-    if (profile && profile.role !== "admin") {
-      redirect("/?error=unauthorized_admin_access")
-    }
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .maybeSingle()
+
+  if (!profile || profile.role !== "admin") {
+    redirect("/?error=unauthorized_admin_access")
   }
 
   return <AdminShell>{children}</AdminShell>

@@ -1,6 +1,7 @@
 "use server"
 
 import { createClient } from "@/lib/supabase/server"
+import { checkRateLimit } from "@/lib/rate-limit"
 
 export interface SubscribeResult {
   success: boolean
@@ -9,10 +10,19 @@ export interface SubscribeResult {
 
 export async function subscribeToNewsletter(email: string): Promise<SubscribeResult> {
   const cleanEmail = (email || "").trim().toLowerCase()
-  if (!cleanEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+  if (!cleanEmail || cleanEmail.length > 255 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
     return {
       success: false,
       message: "Veuillez saisir une adresse email valide.",
+    }
+  }
+
+  // Rate limiting (5 attempts / 10 min per email)
+  const rateCheck = await checkRateLimit("newsletter", cleanEmail)
+  if (!rateCheck.success) {
+    return {
+      success: false,
+      message: "Trop de tentatives d'inscription. Veuillez réessayer ultérieurement.",
     }
   }
 

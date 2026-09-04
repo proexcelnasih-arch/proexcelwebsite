@@ -1,8 +1,18 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit"
 
 export async function POST(request: NextRequest) {
   try {
+    const clientIp = getClientIp(request)
+    const rateCheck = await checkRateLimit("couponValidate", clientIp)
+    if (!rateCheck.success) {
+      return NextResponse.json(
+        { valid: false, message: "Trop de tentatives de validation. Veuillez patienter avant de réessayer." },
+        { status: 429 }
+      )
+    }
+
     const body = await request.json().catch(() => null)
     if (!body || !body.code) {
       return NextResponse.json(

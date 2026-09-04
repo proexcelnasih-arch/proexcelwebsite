@@ -70,7 +70,7 @@ export default function CustomerDetailPage() {
   const orders = customer.orders || []
   const totalSpent = orders.reduce((sum, ord) => sum + (Number(ord.total) || 0), 0)
   const avgBasket = orders.length > 0 ? Math.round(totalSpent / orders.length) : 0
-  const primaryAddress = customer.addresses?.[0]
+  const primaryAddress = customer.addresses?.[0] || (orders[0]?.shipping_address as any)
 
   return (
     <div className="space-y-6">
@@ -125,13 +125,17 @@ export default function CustomerDetailPage() {
               <span className="font-bold text-slate-800">{customer.full_name || "Non renseigné"}</span>
             </div>
             <div className="flex items-center gap-2.5">
+              <Mail className="w-4 h-4 text-slate-400 shrink-0" />
+              <span className="text-slate-700 font-medium">{customer.email || "Non renseigné"}</span>
+            </div>
+            <div className="flex items-center gap-2.5">
               <Phone className="w-4 h-4 text-slate-400 shrink-0" />
               <span className="text-slate-700 font-medium">{customer.phone || "Non renseigné"}</span>
             </div>
             <div className="flex items-center gap-2.5">
               <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
               <span className="text-slate-700 font-medium">
-                {primaryAddress ? `${primaryAddress.address_line}, ${primaryAddress.city}` : "Adresse de livraison non enregistrée"}
+                {primaryAddress ? `${primaryAddress.address_line || primaryAddress.address || ""}, ${primaryAddress.city || ""}` : "Adresse de livraison non enregistrée"}
               </span>
             </div>
           </div>
