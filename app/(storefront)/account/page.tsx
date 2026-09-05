@@ -27,6 +27,10 @@ export default async function AccountPage() {
     .eq("id", user.id)
     .maybeSingle()
 
+  if (profile?.role === "admin") {
+    redirect("/admin")
+  }
+
   // Fetch Customer's Orders with Order Items & Product details
   const { data: orders } = await supabase
     .from("orders")

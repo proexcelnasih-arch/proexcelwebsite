@@ -120,7 +120,7 @@ export async function POST(req: NextRequest) {
   } catch (err: any) {
     console.error("[api/admin/upload] Error:", err)
     return NextResponse.json(
-      { success: false, error: err?.message || "Erreur lors du téléchargement de l'image" },
+      { success: false, error: "Erreur lors du téléchargement du fichier. Veuillez réessayer." },
       { status: 500 }
     )
   }

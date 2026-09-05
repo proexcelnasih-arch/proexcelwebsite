@@ -6,6 +6,7 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { ArrowLeft, Save, Check, Building2, Phone, Mail, MapPin, Upload, Loader2, AlertCircle } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
+import { recordAdminAuditAction } from "@/lib/admin/audit"
 
 export default function StoreSettingsPage() {
   const router = useRouter()
@@ -111,6 +112,12 @@ export default function StoreSettingsPage() {
       router.refresh()
       setSavedSuccess(true)
       setTimeout(() => setSavedSuccess(false), 2500)
+
+      recordAdminAuditAction({
+        action: "settings.update_store",
+        targetTable: "store_settings",
+        details: { store_name: storeName, contact_email: email, contact_phone: phone },
+      }).catch((e) => console.warn("[admin-audit] Store settings log failed:", e))
     } catch (err) {
       console.warn("[store-settings] Error saving:", err)
     }

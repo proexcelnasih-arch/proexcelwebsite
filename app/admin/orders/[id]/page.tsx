@@ -21,6 +21,7 @@ import {
 } from "lucide-react"
 import { StatusBadge } from "@/components/admin/StatusBadge"
 import { createClient } from "@/lib/supabase/client"
+import { recordAdminAuditAction } from "@/lib/admin/audit"
 import type { Database } from "@/types/database"
 
 type OrderDetails = Database["public"]["Tables"]["orders"]["Row"] & {
@@ -116,6 +117,15 @@ export default function OrderDetailPage() {
           note: `Statut modifié vers ${newStatus}`,
         })
       }
+
+      // Record audit log for admin action
+      recordAdminAuditAction({
+        action: "order.status_change",
+        targetTable: "orders",
+        targetId: orderId,
+        details: { new_status: newStatus, previous_status: order?.status },
+      }).catch((e) => console.warn("[admin-audit] Order status log failed:", e))
+
       loadOrder()
     } catch (err) {
       console.warn("[order-detail] Error updating status:", err)

@@ -216,7 +216,7 @@ function MobileDrawer({
 }: {
   open: boolean
   onClose: () => void
-  user: { id: string; email?: string; full_name?: string } | null
+  user: { id: string; email?: string; full_name?: string; role?: string } | null
   logoUrl?: string | null
 }) {
   return (
@@ -268,16 +268,16 @@ function MobileDrawer({
               ))}
             </div>
 
-            {/* Direct Login or Account CTA */}
+            {/* Direct Login or Account / Admin CTA */}
             <div className="px-5 py-4 border-t border-[var(--color-border)]">
               {user ? (
                 <Link
-                  href="/account"
+                  href={user.role === "admin" ? "/admin" : "/account"}
                   onClick={onClose}
                   className="flex items-center justify-center gap-2 w-full h-11 bg-[var(--color-primary)] text-white font-bold text-sm uppercase tracking-wider rounded-full shadow-sm hover:bg-[var(--color-primary-dark)] active:scale-[0.98] transition-all duration-200"
                 >
                   <User className="w-4.5 h-4.5" strokeWidth={1.75} />
-                  <span>Mon compte ({user.full_name?.split(" ")[0]})</span>
+                  <span>{user.role === "admin" ? "Administration" : `Mon compte (${user.full_name?.split(" ")[0]})`}</span>
                 </Link>
               ) : (
                 <Link
@@ -321,7 +321,7 @@ export function Navbar({
 } = {}) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [user, setUser] = useState<{ id: string; email?: string; full_name?: string } | null>(null)
+  const [user, setUser] = useState<{ id: string; email?: string; full_name?: string; role?: string } | null>(null)
   const cartCount = useCartCount()
 
   useEffect(() => {
@@ -335,28 +335,42 @@ export function Navbar({
   // Reactive Supabase Auth Listener
   useEffect(() => {
     const supabase = createClient()
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) {
-        setUser({
-          id: user.id,
-          email: user.email,
-          full_name: user.user_metadata?.full_name || user.email?.split("@")[0] || "Client",
-        })
-      } else {
+
+    async function syncUserData(authUser: any) {
+      if (!authUser) {
         setUser(null)
+        return
       }
+
+      try {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role, full_name")
+          .eq("id", authUser.id)
+          .maybeSingle()
+
+        setUser({
+          id: authUser.id,
+          email: authUser.email,
+          full_name: profile?.full_name || authUser.user_metadata?.full_name || authUser.email?.split("@")[0] || "Client",
+          role: profile?.role || "customer",
+        })
+      } catch {
+        setUser({
+          id: authUser.id,
+          email: authUser.email,
+          full_name: authUser.user_metadata?.full_name || authUser.email?.split("@")[0] || "Client",
+          role: "customer",
+        })
+      }
+    }
+
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      syncUserData(user)
     })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        setUser({
-          id: session.user.id,
-          email: session.user.email,
-          full_name: session.user.user_metadata?.full_name || session.user.email?.split("@")[0] || "Client",
-        })
-      } else {
-        setUser(null)
-      }
+      syncUserData(session?.user || null)
     })
 
     return () => {
@@ -407,20 +421,36 @@ export function Navbar({
               <Search className="w-5 h-5 transition-transform duration-300 ease-out group-hover:scale-125 active:scale-95" strokeWidth={1.75} />
             </Link>
 
-            {/* Connexion / Mon Compte Icon Button */}
+            {/* Connexion / Mon Compte / Admin Icon Button */}
             {user ? (
               <Link
-                href="/account"
+                href={user.role === "admin" ? "/admin" : "/account"}
                 id="navbar-account-btn"
                 className="group relative flex items-center gap-2 h-10 px-2 sm:px-3 rounded-full hover:bg-slate-50 transition-colors text-[var(--color-text-primary)]"
-                aria-label="Mon compte client"
-                title={`Mon compte (${user.full_name})`}
+                aria-label={user.role === "admin" ? "Panneau d'administration" : "Mon compte client"}
+                title={user.role === "admin" ? "Accéder à l'administration" : `Mon compte (${user.full_name})`}
               >
-                <div className="w-8 h-8 rounded-full bg-[color-mix(in_srgb,var(--color-primary)_10%,transparent)] border border-[var(--color-primary)]/20 flex items-center justify-center text-[var(--color-primary)] font-bold text-xs">
-                  {user.full_name ? user.full_name.charAt(0).toUpperCase() : <User className="w-4 h-4" />}
+                <div
+                  className={cn(
+                    "w-8 h-8 rounded-full border flex items-center justify-center font-bold text-xs transition-transform group-hover:scale-105",
+                    user.role === "admin"
+                      ? "bg-[#8C1A2B] border-[#8C1A2B] text-white shadow-xs"
+                      : "bg-[color-mix(in_srgb,var(--color-primary)_10%,transparent)] border-[var(--color-primary)]/20 text-[var(--color-primary)]"
+                  )}
+                >
+                  {user.role === "admin" ? "A" : (user.full_name ? user.full_name.charAt(0).toUpperCase() : <User className="w-4 h-4" />)}
                 </div>
-                <span className="hidden xl:inline-block text-xs font-bold text-slate-800 max-w-[100px] truncate">
-                  {user.full_name?.split(" ")[0]}
+                <span className="hidden xl:inline-flex items-center gap-1.5 text-xs font-bold text-slate-800 max-w-[130px] truncate">
+                  {user.role === "admin" ? (
+                    <>
+                      <span>Admin</span>
+                      <span className="px-1.5 py-0.5 text-[9px] font-extrabold uppercase bg-rose-100 text-[#8C1A2B] rounded">
+                        Panel
+                      </span>
+                    </>
+                  ) : (
+                    user.full_name?.split(" ")[0]
+                  )}
                 </span>
               </Link>
             ) : (

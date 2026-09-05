@@ -35,8 +35,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ revalidated: true, slug, category })
   } catch (err) {
-    console.warn("[api/revalidate] Error:", err)
-    return NextResponse.json({ revalidated: false, error: String(err) }, { status: 500 })
+    console.error("[api/revalidate] Error:", err)
+    return NextResponse.json({ revalidated: false, error: "Erreur lors de la revalidation du cache." }, { status: 500 })
   }
 }
 

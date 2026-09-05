@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { createAdminClient } from "@/lib/supabase/server"
 import { requireAdmin } from "@/lib/auth/admin-guard"
 import { checkRateLimit } from "@/lib/rate-limit"
+import { logAdminAuditServer } from "@/lib/admin/audit"
 
 export const dynamic = "force-dynamic"
 export const maxDuration = 60
@@ -258,7 +259,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, productId, categorySlug })
   } catch (err: any) {
     console.error("[api/admin/products] Error:", err)
-    return NextResponse.json({ success: false, error: err?.message || String(err) }, { status: 500 })
+    return NextResponse.json(
+      { success: false, error: "Une erreur est survenue lors de l'enregistrement du produit." },
+      { status: 500 }
+    )
   }
 }
 
@@ -289,7 +293,10 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ success: true })
   } catch (err: any) {
     console.error("[api/admin/products/patch] Error:", err)
-    return NextResponse.json({ success: false, error: err?.message || String(err) }, { status: 500 })
+    return NextResponse.json(
+      { success: false, error: "Une erreur est survenue lors de la mise à jour du produit." },
+      { status: 500 }
+    )
   }
 }
 
@@ -408,9 +415,21 @@ export async function DELETE(req: NextRequest) {
       throw new Error(deleteError.message || "Failed to delete product from database")
     }
 
+    // Record audit log for product deletion
+    await logAdminAuditServer({
+      adminId: adminAuth.user.id,
+      action: "product.delete",
+      targetTable: "products",
+      targetId: productId,
+      details: { deleted_at: new Date().toISOString() },
+    })
+
     return NextResponse.json({ success: true, message: "Produit supprimé avec succès" })
   } catch (err: any) {
     console.error("[api/admin/products/delete] Error:", err)
-    return NextResponse.json({ success: false, error: err?.message || String(err) }, { status: 500 })
+    return NextResponse.json(
+      { success: false, error: "Une erreur est survenue lors de la suppression du produit." },
+      { status: 500 }
+    )
   }
 }

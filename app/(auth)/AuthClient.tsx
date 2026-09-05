@@ -21,6 +21,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
+import { getSafeRedirectUrl } from "@/lib/auth/safe-redirect"
 
 type AuthMode = "login" | "register" | "forgot-password" | "reset-password"
 
@@ -132,19 +133,8 @@ function DarkGlassField({
   )
 }
 
-function getSafeRedirectUrl(target: string | null): string {
-  if (!target) return "/account"
-  const trimmed = target.trim()
-  if (
-    trimmed.startsWith("/") &&
-    !trimmed.startsWith("//") &&
-    !trimmed.startsWith("/\\") &&
-    !trimmed.includes(":")
-  ) {
-    return trimmed
-  }
-  return "/account"
 }
+
 
 export function AuthClient({ defaultMode = "login" }: { defaultMode?: AuthMode }) {
   const router = useRouter()
@@ -252,6 +242,23 @@ export function AuthClient({ defaultMode = "login" }: { defaultMode?: AuthMode }
       }
 
       if (data?.user) {
+        if (redirectTo === "/account") {
+          try {
+            const { data: profile } = await supabase
+              .from("profiles")
+              .select("role")
+              .eq("id", data.user.id)
+              .maybeSingle()
+
+            if (profile?.role === "admin") {
+              router.push("/admin")
+              router.refresh()
+              return
+            }
+          } catch {
+            // fallback to default redirect
+          }
+        }
         router.push(redirectTo)
         router.refresh()
       }

@@ -5,6 +5,7 @@ import { Plus, Tag, Calendar, Percent, DollarSign, Check, Trash2, X } from "luci
 import { DataTable, type Column } from "@/components/admin/DataTable"
 import { StatusBadge } from "@/components/admin/StatusBadge"
 import { createClient } from "@/lib/supabase/client"
+import { recordAdminAuditAction } from "@/lib/admin/audit"
 import type { Database } from "@/types/database"
 
 type CouponRow = Database["public"]["Tables"]["coupons"]["Row"]
@@ -52,6 +53,13 @@ export default function AdminCouponsPage() {
     try {
       const supabase = createClient()
       await supabase.from("coupons").update({ is_active: nextState }).eq("id", id)
+
+      recordAdminAuditAction({
+        action: "coupon.toggle_status",
+        targetTable: "coupons",
+        targetId: id,
+        details: { is_active: nextState },
+      }).catch((e) => console.warn("[admin-audit] Coupon toggle log failed:", e))
     } catch {
       // ignore
     }
@@ -81,6 +89,13 @@ export default function AdminCouponsPage() {
 
       if (!error && data) {
         setCoupons((prev) => [data, ...prev])
+
+        recordAdminAuditAction({
+          action: "coupon.create",
+          targetTable: "coupons",
+          targetId: data.id,
+          details: { code: newCode, type, value, min_order_amount: minOrder },
+        }).catch((e) => console.warn("[admin-audit] Coupon create log failed:", e))
       }
     } catch {
       // ignore
