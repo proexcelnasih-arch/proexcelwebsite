@@ -90,6 +90,16 @@ export const rateLimiters = {
         analytics: true,
       })
     : null,
+
+  // 6. User Registration: 10 attempts per 15 minutes per IP
+  register: redis
+    ? new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(10, "15 m"),
+        prefix: "rl:register",
+        analytics: true,
+      })
+    : null,
 }
 
 const LIMIT_CONFIGS: Record<keyof typeof rateLimiters, { limit: number; windowMs: number }> = {
@@ -98,6 +108,7 @@ const LIMIT_CONFIGS: Record<keyof typeof rateLimiters, { limit: number; windowMs
   checkout: { limit: 10, windowMs: 15 * 60 * 1000 },
   couponValidate: { limit: 15, windowMs: 60 * 1000 },
   newsletter: { limit: 5, windowMs: 10 * 60 * 1000 },
+  register: { limit: 10, windowMs: 15 * 60 * 1000 },
 }
 
 /**

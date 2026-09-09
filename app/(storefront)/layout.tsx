@@ -4,6 +4,8 @@ import { Footer } from "@/components/layout/Footer"
 import { FloatingChatButton } from "@/components/layout/FloatingChatButton"
 import { getStoreSettings } from "@/lib/supabase/queries"
 
+export const dynamic = "force-dynamic"
+
 export default async function StorefrontLayout({
   children,
 }: {

@@ -157,6 +157,7 @@ export async function getStoreSettings(): Promise<StoreSettings | null> {
       console.warn("[queries] getStoreSettings error:", error?.message)
       return null
     }
+    console.log(`[queries] getStoreSettings loaded from DB: phone=${data.contact_phone}, whatsapp=${data.social_links?.whatsapp}, updated_at=${data.updated_at}`)
     return data
   } catch (err) {
     console.warn("[queries] getStoreSettings exception:", err)

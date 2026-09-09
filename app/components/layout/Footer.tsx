@@ -91,6 +91,23 @@ function WhatsAppOutlineIcon({ className = "w-4.5 h-4.5" }: { className?: string
   )
 }
 
+function TikTokIcon({ className = "w-4.5 h-4.5" }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+    </svg>
+  )
+}
+
 export function Footer({
   logoUrl,
   storeSettings,
@@ -105,6 +122,9 @@ export function Footer({
     STORE_INFO.whatsapp
   const whatsappClean = rawWhatsapp.replace(/[^0-9]/g, "")
   const storeName = storeSettings?.store_name || STORE_INFO.name
+  const instagramUrl = storeSettings?.social_links?.instagram || SOCIAL_LINKS.instagram
+  const facebookUrl = storeSettings?.social_links?.facebook || SOCIAL_LINKS.facebook
+  const tiktokUrl = storeSettings?.social_links?.tiktok || null
 
   return (
     <footer
@@ -125,26 +145,30 @@ export function Footer({
             {/* Outline Social Icons (Filled with brand color only on hover) */}
             <div className="flex items-center gap-3">
               {/* Instagram Outline */}
-              <a
-                href={SOCIAL_LINKS.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center w-10 h-10 rounded-full border border-slate-300 text-slate-700 bg-white hover:border-[#E1306C] hover:bg-[#E1306C] hover:text-white hover:shadow-[0_0_16px_rgba(225,48,108,0.45)] hover:scale-110 active:scale-95 transition-all duration-200"
-                aria-label="Instagram Pro Excel"
-              >
-                <InstagramIcon />
-              </a>
+              {instagramUrl && (
+                <a
+                  href={instagramUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center w-10 h-10 rounded-full border border-slate-300 text-slate-700 bg-white hover:border-[#E1306C] hover:bg-[#E1306C] hover:text-white hover:shadow-[0_0_16px_rgba(225,48,108,0.45)] hover:scale-110 active:scale-95 transition-all duration-200"
+                  aria-label="Instagram Pro Excel"
+                >
+                  <InstagramIcon />
+                </a>
+              )}
 
               {/* Facebook Outline */}
-              <a
-                href={SOCIAL_LINKS.facebook}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center w-10 h-10 rounded-full border border-slate-300 text-slate-700 bg-white hover:border-[#1877F2] hover:bg-[#1877F2] hover:text-white hover:shadow-[0_0_16px_rgba(24,119,242,0.45)] hover:scale-110 active:scale-95 transition-all duration-200"
-                aria-label="Facebook Pro Excel"
-              >
-                <FacebookIcon />
-              </a>
+              {facebookUrl && (
+                <a
+                  href={facebookUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center w-10 h-10 rounded-full border border-slate-300 text-slate-700 bg-white hover:border-[#1877F2] hover:bg-[#1877F2] hover:text-white hover:shadow-[0_0_16px_rgba(242,119,242,0.45)] hover:scale-110 active:scale-95 transition-all duration-200"
+                  aria-label="Facebook Pro Excel"
+                >
+                  <FacebookIcon />
+                </a>
+              )}
 
               {/* WhatsApp Outline */}
               <a
@@ -156,6 +180,19 @@ export function Footer({
               >
                 <WhatsAppOutlineIcon />
               </a>
+
+              {/* TikTok Outline */}
+              {tiktokUrl && (
+                <a
+                  href={tiktokUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center w-10 h-10 rounded-full border border-slate-300 text-slate-700 bg-white hover:border-black hover:bg-black hover:text-white hover:shadow-[0_0_16px_rgba(0,0,0,0.35)] hover:scale-110 active:scale-95 transition-all duration-200"
+                  aria-label="TikTok Pro Excel"
+                >
+                  <TikTokIcon />
+                </a>
+              )}
             </div>
           </div>
 

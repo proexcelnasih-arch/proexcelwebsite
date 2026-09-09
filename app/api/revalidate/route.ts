@@ -20,6 +20,7 @@ export async function GET(request: NextRequest) {
     revalidatePath("/", "layout")
 
     // Revalidate the shop/catalog pages
+    revalidatePath("/boutique", "page")
     revalidatePath("/shop", "page")
     revalidatePath("/all", "page")
 

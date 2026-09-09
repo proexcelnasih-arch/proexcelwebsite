@@ -150,20 +150,23 @@ function SearchBar({ className }: { className?: string }) {
         <form onSubmit={handleSubmit} role="search" className="w-full">
           <div
             className={cn(
-              "flex items-center h-11 px-1.5 border rounded-full bg-white transition-all duration-300 ease-out",
+              "flex items-center h-10 sm:h-11 rounded-full overflow-hidden bg-white border transition-all duration-300 ease-out",
               isFocused
-                ? "border-[var(--color-primary)] shadow-[0_8px_30px_rgba(140,26,43,0.18)] ring-3 ring-[var(--color-primary)]/15 scale-[1.01]"
-                : "border-[var(--color-border-strong)] hover:border-[var(--color-primary)]/70 shadow-2xs"
+                ? "border-[var(--color-primary)]/40 shadow-[0_4px_20px_rgba(140,26,43,0.10)] ring-3 ring-[var(--color-primary)]/10"
+                : "border-slate-200 hover:border-slate-300 shadow-2xs"
             )}
           >
-            <Search
-              className={cn(
-                "ml-3.5 w-4.5 h-4.5 shrink-0 transition-colors duration-200 pointer-events-none",
-                isFocused ? "text-[var(--color-primary)]" : "text-[var(--color-text-muted)]"
-              )}
-              strokeWidth={1.75}
-              aria-hidden="true"
-            />
+            <div className="flex items-center pl-3.5 sm:pl-4 text-slate-400 pointer-events-none shrink-0">
+              <Search
+                className={cn(
+                  "w-4 h-4 transition-colors duration-200",
+                  isFocused ? "text-[var(--color-primary)]" : "text-slate-400"
+                )}
+                strokeWidth={2}
+                aria-hidden="true"
+              />
+            </div>
+
             <input
               ref={inputRef}
               type="search"
@@ -172,10 +175,11 @@ function SearchBar({ className }: { className?: string }) {
               onFocus={() => setIsFocused(true)}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Rechercher un produit, livre, fourniture…"
-              className="flex-1 h-full px-3 text-sm bg-transparent border-0 outline-none focus:outline-none focus:ring-0 text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)]"
+              className="flex-1 h-full pl-2.5 pr-2 text-xs sm:text-sm bg-transparent border-none outline-none focus:outline-none focus:ring-0 text-[var(--color-text-primary)] placeholder:text-slate-400"
               aria-label="Rechercher des produits"
               autoComplete="off"
             />
+
             {query && (
               <button
                 type="button"
@@ -183,18 +187,18 @@ function SearchBar({ className }: { className?: string }) {
                   setQuery("")
                   inputRef.current?.focus()
                 }}
-                className="mr-1 p-1 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors duration-150"
+                className="p-1.5 mr-1 text-slate-400 hover:text-slate-600 transition-colors duration-150 rounded-full"
                 aria-label="Effacer la recherche"
               >
-                <X className="w-4 h-4" strokeWidth={1.75} />
+                <X className="w-3.5 h-3.5" strokeWidth={2} />
               </button>
             )}
+
             <button
               type="submit"
               className={cn(
-                "px-4.5 py-2 text-xs font-bold text-white rounded-full transition-all duration-200 shrink-0 shadow-xs",
-                "bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] active:scale-[0.97]",
-                isFocused && "shadow-md bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-light)]"
+                "h-full px-4 sm:px-6 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white text-xs font-bold tracking-wide transition-all duration-200 shrink-0 flex items-center justify-center cursor-pointer select-none",
+                "active:opacity-95"
               )}
               aria-label="Rechercher"
             >

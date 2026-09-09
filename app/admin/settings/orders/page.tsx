@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
-import { Save, Check, ShoppingCart, ShieldAlert } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Save, Check, ShoppingCart, ShieldAlert, Loader2 } from "lucide-react"
+import { recordAdminAuditAction } from "@/lib/admin/audit"
 
 export default function OrderSettingsPage() {
   const [prefix, setPrefix] = useState("PE-2026-")
@@ -9,11 +10,42 @@ export default function OrderSettingsPage() {
   const [allowGuestCheckout, setAllowGuestCheckout] = useState(true)
   const [autoEmailNotify, setAutoEmailNotify] = useState(true)
   const [savedSuccess, setSavedSuccess] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("proexcel_order_settings")
+      if (stored) {
+        const parsed = JSON.parse(stored)
+        if (parsed.prefix) setPrefix(parsed.prefix)
+        if (parsed.defaultStatus) setDefaultStatus(parsed.defaultStatus)
+        if (typeof parsed.allowGuestCheckout === "boolean") setAllowGuestCheckout(parsed.allowGuestCheckout)
+        if (typeof parsed.autoEmailNotify === "boolean") setAutoEmailNotify(parsed.autoEmailNotify)
+      }
+    } catch {
+      // fallback to defaults
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
 
   function handleSave(e: React.FormEvent) {
     e.preventDefault()
-    setSavedSuccess(true)
-    setTimeout(() => setSavedSuccess(false), 2000)
+    try {
+      const payload = { prefix, defaultStatus, allowGuestCheckout, autoEmailNotify }
+      localStorage.setItem("proexcel_order_settings", JSON.stringify(payload))
+      
+      recordAdminAuditAction({
+        action: "settings.update_orders",
+        targetTable: "store_settings",
+        details: payload,
+      }).catch((err) => console.warn("[admin-audit] Order settings log failed:", err))
+
+      setSavedSuccess(true)
+      setTimeout(() => setSavedSuccess(false), 2500)
+    } catch (err) {
+      console.warn("Error saving order settings:", err)
+    }
   }
 
   return (
@@ -36,7 +68,8 @@ export default function OrderSettingsPage() {
 
           <button
             type="submit"
-            className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-[#8C1A2B] hover:bg-[#5E0F1D] text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
+            disabled={isLoading}
+            className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-[#8C1A2B] hover:bg-[#5E0F1D] text-white text-xs font-bold shadow-xs transition-all cursor-pointer disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
             <span>Enregistrer</span>

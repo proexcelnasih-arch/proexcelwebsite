@@ -296,29 +296,36 @@ export function AuthClient({ defaultMode = "login" }: { defaultMode?: AuthMode }
 
     setLoading(true)
     try {
-      const supabase = createClient()
-      const callbackUrl = typeof window !== "undefined" ? `${window.location.origin}/auth/callback` : undefined
-
-      const authPromise = supabase.auth.signUp({
-        email: signupEmail.trim(),
-        password: signupPassword,
-        options: {
-          data: { full_name: signupName.trim() },
-          emailRedirectTo: callbackUrl,
-        },
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: signupName.trim(),
+          email: signupEmail.trim(),
+          password: signupPassword,
+        }),
       })
 
-      const { data, error } = await withTimeout(authPromise, 8000)
+      const result = await response.json().catch(() => ({}))
 
-      if (error) {
-        setGlobalError(error.message)
+      if (!response.ok) {
+        setGlobalError(result.error || "Une erreur est survenue lors de l'inscription.")
         return
       }
 
-      if (data.user && !data.session) {
-        setRegisteredEmailPending(signupEmail.trim())
+      // Automatically sign in the newly registered user
+      const supabase = createClient()
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: signupEmail.trim(),
+        password: signupPassword,
+      })
+
+      if (signInError) {
+        setMode("login")
+        setSuccessMsg("Votre compte a été créé avec succès ! Vous pouvez maintenant vous connecter.")
       } else {
-        setRegisteredEmailPending(signupEmail.trim())
+        router.push(redirectTo)
+        router.refresh()
       }
     } catch (err: any) {
       setGlobalError(err?.message || "Une erreur inattendue est survenue. Veuillez réessayer.")
