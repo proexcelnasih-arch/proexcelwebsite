@@ -108,11 +108,32 @@ export async function POST(req: NextRequest) {
     const supabase = await createAdminClient()
 
     // 1. Resolve category and brand IDs
-    const { data: catRow } = await supabase
-      .from("categories")
-      .select("id, slug")
-      .ilike("name", formData.category_name)
-      .maybeSingle()
+    let categoryId = formData.category_id || null
+    let categorySlug = "all"
+
+    if (categoryId) {
+      const { data: catRow } = await supabase
+        .from("categories")
+        .select("id, slug")
+        .eq("id", categoryId)
+        .maybeSingle()
+
+      if (catRow) {
+        categoryId = catRow.id
+        categorySlug = catRow.slug
+      }
+    }
+
+    if (!categoryId && formData.category_name) {
+      const { data: catRow } = await supabase
+        .from("categories")
+        .select("id, slug")
+        .ilike("name", formData.category_name)
+        .maybeSingle()
+
+      categoryId = catRow?.id ?? null
+      categorySlug = catRow?.slug ?? formData.category_name.toLowerCase().replace(/\s+/g, "-")
+    }
 
     const { data: brandRow } = await supabase
       .from("brands")
@@ -120,10 +141,7 @@ export async function POST(req: NextRequest) {
       .ilike("name", formData.brand_name)
       .maybeSingle()
 
-    const categoryId = catRow?.id ?? null
     const brandId = brandRow?.id ?? null
-    const categorySlug = catRow?.slug ?? (formData.category_name ? formData.category_name.toLowerCase().replace(/\s+/g, "-") : "all")
-
     let productId = formData.id
 
     // 2. Process images (upload base64 to Storage or keep valid URLs)

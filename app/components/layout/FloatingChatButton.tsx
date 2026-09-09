@@ -7,15 +7,20 @@ import { motion } from "framer-motion"
 import { STORE_INFO } from "@/lib/navigation"
 import { cn } from "@/lib/utils"
 
-export function FloatingChatButton() {
+export function FloatingChatButton({
+  whatsappNumber,
+}: {
+  whatsappNumber?: string | null
+} = {}) {
   const pathname = usePathname()
   const [hasInteracted, setHasInteracted] = useState(false)
 
   // Detect product page where mobile sticky "Ajouter au panier" bar is present
   const isProductPage = pathname?.startsWith("/product/")
 
-  // Real WhatsApp number configured in STORE_INFO
-  const cleanPhone = STORE_INFO.whatsapp.replace(/[^0-9]/g, "")
+  // Dynamic WhatsApp number from store_settings (fallback to STORE_INFO)
+  const rawPhone = whatsappNumber || STORE_INFO.whatsapp
+  const cleanPhone = rawPhone.replace(/[^0-9]/g, "")
   const whatsappUrl = `https://wa.me/${cleanPhone}?text=Bonjour%20Pro%20Excel,%20je%20souhaite%20un%20renseignement.`
 
   return (

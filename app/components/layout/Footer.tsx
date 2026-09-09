@@ -98,7 +98,13 @@ export function Footer({
   logoUrl?: string | null
   storeSettings?: any
 } = {}) {
-  const whatsappClean = STORE_INFO.whatsapp.replace(/[^0-9]/g, "")
+  const phone = storeSettings?.contact_phone || STORE_INFO.phone
+  const rawWhatsapp =
+    storeSettings?.social_links?.whatsapp ||
+    storeSettings?.contact_phone ||
+    STORE_INFO.whatsapp
+  const whatsappClean = rawWhatsapp.replace(/[^0-9]/g, "")
+  const storeName = storeSettings?.store_name || STORE_INFO.name
 
   return (
     <footer
@@ -223,7 +229,7 @@ export function Footer({
             
             {/* Phone link */}
             <a
-              href={`tel:${STORE_INFO.phone}`}
+              href={`tel:${phone}`}
               className="flex items-center gap-3 p-2.5 rounded-xl bg-[var(--color-surface-2)]/60 hover:bg-[color-mix(in_srgb,var(--color-primary)_8%,transparent)] transition-all duration-150 group border border-transparent hover:border-[var(--color-primary)]/20"
             >
               <div className="w-8 h-8 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
@@ -232,7 +238,7 @@ export function Footer({
               <div className="flex flex-col min-w-0">
                 <span className="text-[9px] text-[var(--color-text-muted)] font-bold uppercase tracking-wider">Assistance téléphonique</span>
                 <span className="text-xs sm:text-sm font-bold text-[var(--color-text-primary)] tracking-tight group-hover:text-[var(--color-primary)] transition-colors truncate">
-                  {STORE_INFO.phone}
+                  {phone}
                 </span>
               </div>
             </a>
@@ -263,7 +269,7 @@ export function Footer({
       <div className="border-t border-[var(--color-border)] bg-white py-5">
         <div className="container-site flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs font-medium text-[var(--color-text-muted)]">
-            © {new Date().getFullYear()} {STORE_INFO.name}. Tous droits réservés.
+            © {new Date().getFullYear()} {storeName}. Tous droits réservés.
           </p>
 
           <div className="flex items-center gap-5">

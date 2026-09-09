@@ -133,8 +133,6 @@ function DarkGlassField({
   )
 }
 
-}
-
 
 export function AuthClient({ defaultMode = "login" }: { defaultMode?: AuthMode }) {
   const router = useRouter()

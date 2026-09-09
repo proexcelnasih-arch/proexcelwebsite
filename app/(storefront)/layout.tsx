@@ -28,7 +28,11 @@ export default async function StorefrontLayout({
       <Footer logoUrl={logoUrl} storeSettings={storeSettings} />
 
       {/* Global Floating Chat */}
-      <FloatingChatButton />
+      <FloatingChatButton
+        whatsappNumber={
+          storeSettings?.social_links?.whatsapp || storeSettings?.contact_phone
+        }
+      />
     </div>
   )
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
@@ -24,6 +24,7 @@ import {
   GraduationCap,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { createClient } from "@/lib/supabase/client"
 
 export interface VariantItem {
   id?: string
@@ -42,6 +43,7 @@ export interface ProductFormData {
   compare_at_price: number | null
   stock: number
   sku: string
+  category_id?: string | null
   category_name: string
   school_level?: string
   subject?: string
@@ -181,6 +183,57 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
   const [savedSuccess, setSavedSuccess] = useState(false)
   const [formError, setFormError] = useState("")
 
+  // ── Dynamic Categories & Subcategories State ─────────────────
+  const [dbCategories, setDbCategories] = useState<{
+    id: string
+    name: string
+    parent_id: string | null
+    slug: string
+  }[]>([])
+  const [selectedRootId, setSelectedRootId] = useState<string>("")
+  const [selectedSubId, setSelectedSubId] = useState<string>("")
+
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const supabase = createClient()
+        const { data, error } = await supabase
+          .from("categories")
+          .select("id, name, parent_id, slug")
+          .order("name", { ascending: true })
+
+        if (data && data.length > 0) {
+          setDbCategories(data)
+
+          // Find current category from initialData
+          const currentCat = data.find(
+            (c) =>
+              (formData.category_id && c.id === formData.category_id) ||
+              c.name.toLowerCase() === formData.category_name.toLowerCase()
+          )
+
+          if (currentCat) {
+            if (currentCat.parent_id) {
+              setSelectedRootId(currentCat.parent_id)
+              setSelectedSubId(currentCat.id)
+            } else {
+              setSelectedRootId(currentCat.id)
+              setSelectedSubId("")
+            }
+          }
+        }
+      } catch (err) {
+        console.warn("[ProductForm] Error loading categories:", err)
+      }
+    }
+    loadCategories()
+  }, [])
+
+  const rootCategories = dbCategories.filter((c) => !c.parent_id)
+  const availableSubcategories = dbCategories.filter(
+    (c) => c.parent_id && c.parent_id === selectedRootId
+  )
+
   const isBookOrKitCategory =
     formData.category_name === "Livres Scolaires" ||
     formData.category_name === "Kits Scolaires" ||
@@ -309,8 +362,10 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
     setIsSubmitting(true)
     setFormError("")
 
+    const targetCategoryId = selectedSubId || selectedRootId || formData.category_id || null
     const payloadData = {
       ...formData,
+      category_id: targetCategoryId,
       is_active: publishState,
     }
 
@@ -980,21 +1035,69 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
               </p>
             </div>
 
-            {/* Category Dropdown */}
+            {/* Top-Level Category Dropdown */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700">Catégorie / Rayon *</label>
+              <label className="text-xs font-bold text-slate-700">Catégorie / Rayon Principal *</label>
               <select
-                value={formData.category_name}
-                onChange={(e) => setFormData({ ...formData, category_name: e.target.value })}
+                value={selectedRootId}
+                onChange={(e) => {
+                  const rootId = e.target.value
+                  setSelectedRootId(rootId)
+                  setSelectedSubId("")
+                  const cat = dbCategories.find((c) => c.id === rootId)
+                  setFormData((prev) => ({
+                    ...prev,
+                    category_id: rootId,
+                    category_name: cat ? cat.name : prev.category_name,
+                  }))
+                }}
                 className="w-full h-11 px-3 rounded-lg bg-gray-50 border border-gray-200 text-sm font-semibold text-slate-800 outline-none focus:bg-white focus:border-[#8C1A2B] focus:ring-2 focus:ring-[#8C1A2B]/15 cursor-pointer"
               >
-                {CATEGORY_CHOICES.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
+                <option value="">Sélectionner une catégorie...</option>
+                {rootCategories.length > 0
+                  ? rootCategories.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))
+                  : CATEGORY_CHOICES.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
               </select>
             </div>
+
+            {/* Subcategory Dropdown (if available) */}
+            {availableSubcategories.length > 0 && (
+              <div className="space-y-1.5 animate-in fade-in">
+                <label className="text-xs font-bold text-slate-700">
+                  Sous-catégorie (Optionnel)
+                </label>
+                <select
+                  value={selectedSubId}
+                  onChange={(e) => {
+                    const subId = e.target.value
+                    setSelectedSubId(subId)
+                    const chosenId = subId || selectedRootId
+                    const cat = dbCategories.find((c) => c.id === chosenId)
+                    setFormData((prev) => ({
+                      ...prev,
+                      category_id: chosenId,
+                      category_name: cat ? cat.name : prev.category_name,
+                    }))
+                  }}
+                  className="w-full h-11 px-3 rounded-lg bg-gray-50 border border-gray-200 text-sm font-semibold text-slate-800 outline-none focus:bg-white focus:border-[#8C1A2B] focus:ring-2 focus:ring-[#8C1A2B]/15 cursor-pointer"
+                >
+                  <option value="">— Rayon principal (Toutes sous-catégories) —</option>
+                  {availableSubcategories.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             {/* Brand / Publisher Dropdown */}
             <div className="space-y-1.5">

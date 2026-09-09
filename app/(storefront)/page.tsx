@@ -53,6 +53,12 @@ export default async function HomePage() {
   const bestsellerIds = bestSellers.map((p) => p.id)
   const bestOffers = await getBestOfferProducts(bestsellerIds, 8)
 
+  // Compute stats for promo banner
+  const maxDiscount =
+    bestOffers.length > 0
+      ? Math.max(...bestOffers.map((o) => o.discount_percentage ?? 0), 30)
+      : 30
+
   return (
     <div className="flex flex-col w-full">
       {/* 1. Hero Section */}
@@ -65,7 +71,7 @@ export default async function HomePage() {
       <HomeBestSellers products={bestSellers} />
 
       {/* 4. Promotional Banner */}
-      <HomePromoBanner />
+      <HomePromoBanner maxDiscount={maxDiscount} promoCount={130} deliveryHours={24} />
 
       {/* 5. Featured Products: New Arrivals */}
       <HomeNewArrivals products={newArrivals} />

@@ -10,26 +10,26 @@ function AnimatedCounter({
   target,
   prefix = "",
   suffix = "",
-  duration = 1800,
+  duration = 1500,
 }: {
   target: number
   prefix?: string
   suffix?: string
   duration?: number
 }) {
-  const [count, setCount] = useState(0)
-  const ref = useRef<HTMLSpanElement>(null)
-  const isInView = useInView(ref, { once: true, margin: "-40px" })
+  // Initialize with target so SSR and initial mount never show broken 0
+  const [count, setCount] = useState(target)
 
   useEffect(() => {
-    if (!isInView) return
     let startTime: number | null = null
     let frameId: number
+
+    // Smooth counting animation on mount
+    setCount(0)
 
     function step(timestamp: number) {
       if (!startTime) startTime = timestamp
       const progress = Math.min((timestamp - startTime) / duration, 1)
-      // Ease out exponential curve for ultra-smooth easing
       const ease = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress)
       setCount(Math.floor(ease * target))
 
@@ -42,10 +42,10 @@ function AnimatedCounter({
 
     frameId = requestAnimationFrame(step)
     return () => cancelAnimationFrame(frameId)
-  }, [isInView, target, duration])
+  }, [target, duration])
 
   return (
-    <span ref={ref} className="tabular-nums">
+    <span className="tabular-nums">
       {prefix}
       {count}
       {suffix}
@@ -53,7 +53,15 @@ function AnimatedCounter({
   )
 }
 
-export function HomePromoBanner() {
+export function HomePromoBanner({
+  maxDiscount = 35,
+  promoCount = 130,
+  deliveryHours = 24,
+}: {
+  maxDiscount?: number
+  promoCount?: number
+  deliveryHours?: number
+} = {}) {
   return (
     <section
       className="py-10 bg-white border-t border-[var(--color-border)]"
@@ -61,9 +69,9 @@ export function HomePromoBanner() {
     >
       <div className="container-site">
         <Link
-          href="/category/kits-scolaires"
+          href="/meilleures-offres"
           className="group relative flex flex-col lg:flex-row items-center justify-between overflow-hidden rounded-3xl bg-gradient-to-r from-[#4A0A16] via-[#7B1525] to-[#5E0F1D] px-8 py-8 sm:py-10 lg:px-12 gap-8 shadow-md hover:shadow-2xl transition-all duration-300 border border-white/10"
-          aria-label="Préparez la rentrée — Découvrir les kits scolaires"
+          aria-label="Préparez la rentrée — Découvrir les offres"
         >
           {/* Subtle Background Radial Glow & Watermark */}
           <div
@@ -95,7 +103,7 @@ export function HomePromoBanner() {
               {/* Stat 1: Max Discount */}
               <div className="bg-black/20 backdrop-blur-sm rounded-2xl py-3 px-2 sm:px-4 border border-white/15 text-center">
                 <span className="font-sans font-extrabold text-2xl sm:text-3xl text-[var(--color-accent-light)] block leading-tight tracking-tight">
-                  <AnimatedCounter target={30} prefix="-" suffix="%" />
+                  <AnimatedCounter target={maxDiscount} prefix="-" suffix="%" />
                 </span>
                 <span className="text-[10px] sm:text-xs font-semibold text-white/85 leading-tight block mt-0.5">
                   De réduction
@@ -105,7 +113,7 @@ export function HomePromoBanner() {
               {/* Stat 2: Items in promo */}
               <div className="bg-black/20 backdrop-blur-sm rounded-2xl py-3 px-2 sm:px-4 border border-white/15 text-center">
                 <span className="font-sans font-extrabold text-2xl sm:text-3xl text-white block leading-tight tracking-tight">
-                  <AnimatedCounter target={500} prefix="+" />
+                  <AnimatedCounter target={promoCount} prefix="+" />
                 </span>
                 <span className="text-[10px] sm:text-xs font-semibold text-white/85 leading-tight block mt-0.5">
                   Articles en promo
@@ -115,7 +123,7 @@ export function HomePromoBanner() {
               {/* Stat 3: Fast Shipping */}
               <div className="bg-black/20 backdrop-blur-sm rounded-2xl py-3 px-2 sm:px-4 border border-white/15 text-center">
                 <span className="font-sans font-extrabold text-2xl sm:text-3xl text-[var(--color-accent-light)] block leading-tight tracking-tight">
-                  <AnimatedCounter target={24} suffix="h" />
+                  <AnimatedCounter target={deliveryHours} suffix="h" />
                 </span>
                 <span className="text-[10px] sm:text-xs font-semibold text-white/85 leading-tight block mt-0.5">
                   Livraison Maroc

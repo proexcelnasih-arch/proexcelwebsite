@@ -261,7 +261,7 @@ export async function getBestOfferProducts(excludeIds: string[] = [], limit = 8)
       query = query.not("id", "in", `(${excludeIds.join(",")})`)
     }
 
-    const { data, error } = await query.limit(limit * 2)
+    const { data, error } = await query.limit(Math.max(limit * 4, 50))
 
     if (error || !data) {
       console.warn("[queries] getBestOfferProducts error:", error?.message)
@@ -274,6 +274,11 @@ export async function getBestOfferProducts(excludeIds: string[] = [], limit = 8)
       .map((p) => formatProductListItem(p as any))
       .sort((a, b) => (b.discount_percentage ?? 0) - (a.discount_percentage ?? 0))
       .slice(0, limit)
+
+    // If formatted has fewer than needed and excludeIds was passed, fallback to query without excludeIds
+    if (formatted.length < limit && excludeIds.length > 0) {
+      return getBestOfferProducts([], limit)
+    }
 
     return formatted
   } catch (err) {
