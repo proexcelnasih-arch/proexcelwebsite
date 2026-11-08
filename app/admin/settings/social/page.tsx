@@ -27,7 +27,10 @@ export default function SocialSettingsPage() {
           .maybeSingle()
 
         if (data) {
-          const links = data.social_links || {}
+          const links =
+            typeof data.social_links === "object" && data.social_links !== null && !Array.isArray(data.social_links)
+              ? (data.social_links as Record<string, string>)
+              : {}
           setInstagram(links.instagram || "https://instagram.com/proexcel.store")
           setFacebook(links.facebook || "https://facebook.com/proexcel.store")
           setWhatsappNumber(links.whatsapp || data.contact_phone || "+212 661-234567")

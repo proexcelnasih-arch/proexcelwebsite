@@ -68,6 +68,7 @@ export type ProductListItem = Pick<
   | "review_count"
   | "is_active"
 > & {
+  sku?: string | null
   needs_manual_image?: boolean
   pending_image_source?: string | null
   rating_avg?: number

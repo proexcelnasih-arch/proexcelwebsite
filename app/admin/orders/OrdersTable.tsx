@@ -6,7 +6,6 @@ import Link from "next/link"
 import { Eye } from "lucide-react"
 import { DataTable, type Column, type FilterTab } from "@/components/admin/DataTable"
 import { StatusBadge, type StatusType } from "@/components/admin/StatusBadge"
-import { createClient } from "@/lib/supabase/client"
 import type { AdminOrderRow } from "@/lib/admin/admin-queries"
 
 // ── Client Component: interactive table with status changes ───
@@ -35,23 +34,14 @@ function OrdersContent({ initialOrders }: { initialOrders: AdminOrderRow[] }) {
     )
 
     try {
-      const supabase = createClient()
-      if (newStatus === "cancelled") {
-        await supabase.rpc("cancel_order_and_restore_stock", {
-          p_order_id: orderId,
-          p_note: "Annulation manuelle par l'administrateur",
-        })
-      } else {
-        await supabase
-          .from("orders")
-          .update({ status: newStatus, updated_at: new Date().toISOString() })
-          .eq("id", orderId)
+      const res = await fetch(`/api/admin/orders/${orderId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      })
 
-        await supabase.from("order_status_history").insert({
-          order_id: orderId,
-          status: newStatus,
-          note: `Statut modifié vers ${newStatus}`,
-        })
+      if (!res.ok) {
+        console.warn("[admin-orders] Error updating order status:", await res.text())
       }
     } catch (err) {
       console.warn("[admin-orders] Error updating order status:", err)

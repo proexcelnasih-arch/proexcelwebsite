@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createAdminClient, createClient } from "@/lib/supabase/server"
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit"
+import { signOrderToken } from "@/lib/auth/order-token"
 
 // ── Helpers ────────────────────────────────────────────────────
 function validateMoroccanPhone(raw: string): boolean {
@@ -110,21 +111,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    if (!userId && email) {
-      try {
-        const adminDb = await createAdminClient()
-        const { data: matchedProfile } = await adminDb
-          .from("profiles")
-          .select("id")
-          .ilike("email", email.trim())
-          .maybeSingle()
-        if (matchedProfile?.id) {
-          userId = matchedProfile.id
-        }
-      } catch (err) {
-        console.warn("[checkout] Error matching user by email:", err)
-      }
-    }
+    // (SEC-05) Identity hijacking prevented: user_id is strictly derived from the verified session above.
+    // Unauthenticated guest checkouts always have user_id = null.
 
     // ── 5. Execute Transactional Checkout RPC in PostgreSQL ─────
     const adminSupabase = await createAdminClient()
@@ -189,7 +177,7 @@ export async function POST(request: NextRequest) {
       console.warn("[checkout] Failed to send order confirmation email:", err)
     })
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       orderId: result.order_id,
       orderNumber: result.order_number,
@@ -198,6 +186,18 @@ export async function POST(request: NextRequest) {
       discount: result.discount_amount,
       total: result.total,
     })
+
+    // (SEC-04) Set HMAC-signed, time-limited token cookie allowing access to success page for this exact order
+    const token = signOrderToken(result.order_id)
+    response.cookies.set(`order_token_${result.order_id}`, token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 3600,
+      path: "/checkout/success",
+    })
+
+    return response
   } catch (error) {
     console.error("[checkout] unexpected error:", error)
     return NextResponse.json(

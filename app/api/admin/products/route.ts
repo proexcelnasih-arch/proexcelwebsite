@@ -286,17 +286,39 @@ export async function POST(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   try {
-    const body = await req.json()
+    // 0. Verify Admin Role (SEC-02)
+    const adminAuth = await requireAdmin(req)
+    if (adminAuth.errorResponse) return adminAuth.errorResponse
+
+    // Rate limit authenticated admin actions (30/min)
+    const rateCheck = await checkRateLimit("adminApi", adminAuth.user.id)
+    if (!rateCheck.success) {
+      return NextResponse.json(
+        { success: false, error: "Limite de requêtes atteinte pour les actions administrateur. Veuillez patienter." },
+        { status: 429 }
+      )
+    }
+
+    const body = await req.json().catch(() => null)
+    if (!body || typeof body !== "object") {
+      return NextResponse.json({ success: false, error: "Corps de requête invalide" }, { status: 400 })
+    }
+
     const { id, is_active } = body
 
-    if (!id) {
-      return NextResponse.json({ success: false, error: "Product ID is required" }, { status: 400 })
+    // Strict UUID validation
+    if (!id || typeof id !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+      return NextResponse.json({ success: false, error: "Identifiant de produit invalide." }, { status: 400 })
+    }
+
+    if (is_active === undefined || typeof is_active !== "boolean") {
+      return NextResponse.json({ success: false, error: "Champ 'is_active' (booléen) requis." }, { status: 400 })
     }
 
     const supabase = await createAdminClient()
-    const updateData: Record<string, any> = { updated_at: new Date().toISOString() }
-    if (is_active !== undefined) {
-      updateData.is_active = Boolean(is_active)
+    const updateData = {
+      is_active: Boolean(is_active),
+      updated_at: new Date().toISOString(),
     }
 
     const { error } = await supabase
@@ -305,12 +327,25 @@ export async function PATCH(req: NextRequest) {
       .eq("id", id)
 
     if (error) {
-      throw new Error(error.message || "Failed to update product status")
+      console.error("[api/admin/products/patch] Supabase error:", error.message)
+      return NextResponse.json(
+        { success: false, error: "Impossible de modifier l'état du produit." },
+        { status: 500 }
+      )
     }
 
-    return NextResponse.json({ success: true })
-  } catch (err: any) {
-    console.error("[api/admin/products/patch] Error:", err)
+    // Record audit log
+    await logAdminAuditServer({
+      adminId: adminAuth.user.id,
+      action: "product.update_status",
+      targetTable: "products",
+      targetId: id,
+      details: { is_active: updateData.is_active },
+    })
+
+    return NextResponse.json({ success: true, message: "Statut du produit mis à jour avec succès" })
+  } catch (err: unknown) {
+    console.error("[api/admin/products/patch] Unexpected error:", err)
     return NextResponse.json(
       { success: false, error: "Une erreur est survenue lors de la mise à jour du produit." },
       { status: 500 }
@@ -413,17 +448,8 @@ export async function DELETE(req: NextRequest) {
       console.warn("[api/admin/products/delete] Images cleanup warning:", imgErr)
     }
 
-    // 7. Nullify product_id on order_items so historical orders remain valid without breaking constraint
-    try {
-      await supabase
-        .from("order_items")
-        .update({ product_id: null })
-        .eq("product_id", productId)
-    } catch (orderErr) {
-      console.warn("[api/admin/products/delete] Order items nullify warning:", orderErr)
-    }
-
-    // 8. Delete the product itself from products table
+    // 7. Delete the product itself from products table
+    // (order_items.product_id has ON DELETE SET NULL, preserving order history automatically)
     const { error: deleteError } = await supabase
       .from("products")
       .delete()

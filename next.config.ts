@@ -33,16 +33,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   experimental: {
     optimizePackageImports: ["lucide-react", "framer-motion"],
   },
   async headers() {
+    const isDev = process.env.NODE_ENV !== "production";
     const cspHeader = `
       default-src 'self';
-      script-src 'self' 'unsafe-inline' 'unsafe-eval';
+      script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""};
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
       font-src 'self' data: https://fonts.gstatic.com;
       img-src 'self' data: blob: https://*.supabase.co https://images.unsplash.com https://mylibrairie.ma https://*.mylibrairie.ma https://*.googleapis.com;
@@ -50,6 +48,7 @@ const nextConfig: NextConfig = {
       frame-ancestors 'none';
       form-action 'self';
       base-uri 'self';
+      object-src 'none';
     `
       .replace(/\s{2,}/g, " ")
       .trim();

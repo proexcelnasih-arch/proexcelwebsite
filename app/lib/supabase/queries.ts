@@ -157,7 +157,11 @@ export async function getStoreSettings(): Promise<StoreSettings | null> {
       console.warn("[queries] getStoreSettings error:", error?.message)
       return null
     }
-    console.log(`[queries] getStoreSettings loaded from DB: phone=${data.contact_phone}, whatsapp=${data.social_links?.whatsapp}, updated_at=${data.updated_at}`)
+    const socialLinks =
+      typeof data.social_links === "object" && data.social_links !== null && !Array.isArray(data.social_links)
+        ? (data.social_links as Record<string, string>)
+        : null
+    console.log(`[queries] getStoreSettings loaded from DB: phone=${data.contact_phone}, whatsapp=${socialLinks?.whatsapp}, updated_at=${data.updated_at}`)
     return data
   } catch (err) {
     console.warn("[queries] getStoreSettings exception:", err)
@@ -252,17 +256,18 @@ export async function getNewArrivalProducts(limit = 8): Promise<ProductListItem[
 export async function getBestOfferProducts(excludeIds: string[] = [], limit = 8): Promise<ProductListItem[]> {
   try {
     const supabase = await createClient()
-    let query = supabase
+    const baseQuery = supabase
       .from("products")
       .select(PRODUCT_LIST_SELECT)
       .eq("is_active", true)
       .not("compare_at_price", "is", null)
 
-    if (excludeIds.length > 0) {
-      query = query.not("id", "in", `(${excludeIds.join(",")})`)
-    }
+    const finalQuery =
+      excludeIds.length > 0
+        ? baseQuery.not("id", "in", `(${excludeIds.join(",")})`)
+        : baseQuery
 
-    const { data, error } = await query.limit(Math.max(limit * 4, 50))
+    const { data, error } = await finalQuery.limit(Math.max(limit * 4, 50))
 
     if (error || !data) {
       console.warn("[queries] getBestOfferProducts error:", error?.message)

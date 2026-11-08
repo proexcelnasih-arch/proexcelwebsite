@@ -1,6 +1,7 @@
 import { revalidatePath } from "next/cache"
 import { type NextRequest, NextResponse } from "next/server"
 import { requireAdmin } from "@/lib/auth/admin-guard"
+import { checkRateLimit } from "@/lib/rate-limit"
 
 /**
  * GET /api/revalidate?slug=<product-slug>&category=<category-slug>
@@ -10,6 +11,15 @@ import { requireAdmin } from "@/lib/auth/admin-guard"
 export async function GET(request: NextRequest) {
   const adminAuth = await requireAdmin(request)
   if (adminAuth.errorResponse) return adminAuth.errorResponse
+
+  // Rate limit authenticated admin actions
+  const rateCheck = await checkRateLimit("adminApi", adminAuth.user.id)
+  if (!rateCheck.success) {
+    return NextResponse.json(
+      { revalidated: false, error: "Limite de requêtes atteinte. Veuillez patienter." },
+      { status: 429 }
+    )
+  }
 
   const { searchParams } = new URL(request.url)
   const slug = searchParams.get("slug")

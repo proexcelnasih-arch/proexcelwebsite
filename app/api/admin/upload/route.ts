@@ -12,23 +12,57 @@ const ALLOWED_MIME_TYPES = new Set([
   "image/png",
   "image/webp",
   "image/jpg",
-  "image/svg+xml",
 ])
-
-const MIME_TO_EXT: Record<string, string> = {
-  "image/jpeg": "jpg",
-  "image/jpg": "jpg",
-  "image/png": "png",
-  "image/webp": "webp",
-  "image/svg+xml": "svg",
-}
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 
 /**
+ * Validates real file type by magic bytes header instead of trusting client MIME type or extension.
+ * Rejects SVGs to prevent Stored Cross-Site Scripting (XSS).
+ */
+function detectImageType(buffer: Buffer): { mime: string; ext: string } | null {
+  if (buffer.length < 12) return null
+
+  // JPEG: FF D8 FF
+  if (buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) {
+    return { mime: "image/jpeg", ext: "jpg" }
+  }
+
+  // PNG: 89 50 4E 47 0D 0A 1A 0A
+  if (
+    buffer[0] === 0x89 &&
+    buffer[1] === 0x50 &&
+    buffer[2] === 0x4e &&
+    buffer[3] === 0x47 &&
+    buffer[4] === 0x0d &&
+    buffer[5] === 0x0a &&
+    buffer[6] === 0x1a &&
+    buffer[7] === 0x0a
+  ) {
+    return { mime: "image/png", ext: "png" }
+  }
+
+  // WEBP: RIFF....WEBP
+  if (
+    buffer[0] === 0x52 &&
+    buffer[1] === 0x49 &&
+    buffer[2] === 0x46 &&
+    buffer[3] === 0x46 &&
+    buffer[8] === 0x57 &&
+    buffer[9] === 0x45 &&
+    buffer[10] === 0x42 &&
+    buffer[11] === 0x50
+  ) {
+    return { mime: "image/webp", ext: "webp" }
+  }
+
+  return null
+}
+
+/**
  * POST /api/admin/upload
  * Handles multipart/form-data image upload to Supabase Storage with strict admin authorization,
- * MIME type allowlisting, file size enforcement, and random UUID filename sanitization.
+ * MIME type allowlisting, magic byte inspection, file size enforcement, and random UUID filename sanitization.
  */
 export async function POST(req: NextRequest) {
   try {
@@ -71,13 +105,13 @@ export async function POST(req: NextRequest) {
         )
       }
 
-      // MIME type validation
-      const mimeType = (file.type || "").toLowerCase().trim()
-      if (!ALLOWED_MIME_TYPES.has(mimeType)) {
+      // Claimed MIME type validation
+      const claimedMime = (file.type || "").toLowerCase().trim()
+      if (!ALLOWED_MIME_TYPES.has(claimedMime)) {
         return NextResponse.json(
           {
             success: false,
-            error: `Type de fichier non autorisé : "${mimeType}". Seuls JPEG, PNG, WEBP et SVG sont acceptés.`,
+            error: "Type de fichier non autorisé. Seuls les formats JPEG, PNG et WEBP sont acceptés.",
           },
           { status: 400 }
         )
@@ -86,15 +120,26 @@ export async function POST(req: NextRequest) {
       const bytes = await file.arrayBuffer()
       const buffer = Buffer.from(bytes)
 
+      // Strict Magic Byte verification (SEC-06: prevents SVG XSS and extension spoofing)
+      const detected = detectImageType(buffer)
+      if (!detected) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Contenu de fichier invalide. Le fichier doit être une image valide (JPEG, PNG ou WEBP). Les fichiers SVG ne sont pas autorisés.",
+          },
+          { status: 400 }
+        )
+      }
+
       // Random UUID filename sanitization (eliminates path traversal and user-controlled names)
-      const ext = MIME_TO_EXT[mimeType] || "jpg"
       const safeRandomId = crypto.randomUUID().replace(/-/g, "")
-      const fileName = `${folder}/${Date.now()}-${safeRandomId}.${ext}`
+      const fileName = `${folder}/${Date.now()}-${safeRandomId}.${detected.ext}`
 
       const { error } = await supabase.storage
         .from(targetBucket)
         .upload(fileName, buffer, {
-          contentType: mimeType,
+          contentType: detected.mime,
           upsert: true,
         })
 
@@ -117,7 +162,7 @@ export async function POST(req: NextRequest) {
       urls: uploadedUrls,
       url: uploadedUrls[0] || null,
     })
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("[api/admin/upload] Error:", err)
     return NextResponse.json(
       { success: false, error: "Erreur lors du téléchargement du fichier. Veuillez réessayer." },

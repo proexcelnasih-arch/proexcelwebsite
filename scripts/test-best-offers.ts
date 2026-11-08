@@ -14,7 +14,7 @@ async function testOffers() {
     price: o.price,
     compare_at_price: o.compare_at_price,
     discount_percentage: o.discount_percentage,
-    image: o.primary_image?.url
+    image: o.primary_image
   })), null, 2))
 }
 

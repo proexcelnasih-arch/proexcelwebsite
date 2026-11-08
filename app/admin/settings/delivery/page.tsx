@@ -39,9 +39,15 @@ export default function DeliverySettingsPage() {
             setCodEnabled(data.cod_enabled)
           }
           if (Array.isArray(data.delivery_zones) && data.delivery_zones.length > 0) {
-            setCities(data.delivery_zones)
-            if (data.delivery_zones[0]?.price) {
-              setStandardRate(data.delivery_zones[1]?.price || data.delivery_zones[0].price)
+            const validZones = (data.delivery_zones as unknown[]).filter(
+              (z): z is { name: string; delay: string; price: number } =>
+                typeof z === "object" && z !== null && "name" in z && "price" in z
+            )
+            if (validZones.length > 0) {
+              setCities(validZones)
+              if (validZones[0]?.price !== undefined) {
+                setStandardRate(validZones[1]?.price ?? validZones[0].price)
+              }
             }
           }
         }

@@ -20,6 +20,7 @@ export interface Database {
           phone: string | null
           avatar_url: string | null
           role: "customer" | "admin"
+          email: string | null
           created_at: string
           updated_at: string
         }
@@ -29,6 +30,7 @@ export interface Database {
           phone?: string | null
           avatar_url?: string | null
           role?: "customer" | "admin"
+          email?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -38,6 +40,7 @@ export interface Database {
           phone?: string | null
           avatar_url?: string | null
           role?: "customer" | "admin"
+          email?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -815,6 +818,36 @@ export interface Database {
           cod_enabled?: boolean
           social_links?: Json | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      admin_audit_log: {
+        Row: {
+          id: string
+          admin_id: string | null
+          action: string
+          target_table: string | null
+          target_id: string | null
+          details: Json | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          admin_id?: string | null
+          action: string
+          target_table?: string | null
+          target_id?: string | null
+          details?: Json | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          admin_id?: string | null
+          action?: string
+          target_table?: string | null
+          target_id?: string | null
+          details?: Json | null
+          created_at?: string
         }
         Relationships: []
       }

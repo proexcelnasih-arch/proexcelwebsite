@@ -8,89 +8,143 @@ import {
   Clock,
   Truck,
   MapPin,
-  Phone,
   AlertCircle,
   ArrowRight,
-  ShieldCheck,
-  Calendar,
+  XCircle,
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Breadcrumb } from "@/components/ui/Breadcrumb"
 import { STORE_INFO } from "@/lib/navigation"
 import { cn } from "@/lib/utils"
 
+interface TrackingOrderResult {
+  orderNumber: string
+  date: string
+  status: string
+  itemsCount: number
+  totalAmount: string
+  items: { name: string; quantity: number }[]
+  history: { status: string; createdAt: string }[]
+}
+
 export function TrackOrderClient() {
   const [orderQuery, setOrderQuery] = useState("")
   const [phoneQuery, setPhoneQuery] = useState("")
   const [loading, setLoading] = useState(false)
-  const [searched, setSearched] = useState(false)
-  const [orderResult, setOrderResult] = useState<{
-    orderNumber: string
-    date: string
-    estimatedDelivery: string
-    status: "confirmed" | "preparing" | "shipped" | "delivered"
-    customerName: string
-    city: string
-    itemsCount: number
-    totalAmount: string
-    paymentMethod: string
-  } | null>(null)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [orderResult, setOrderResult] = useState<TrackingOrderResult | null>(null)
 
-  function handleSearch(e: React.FormEvent) {
+  async function handleSearch(e: React.FormEvent) {
     e.preventDefault()
-    if (!orderQuery.trim()) return
+    if (!orderQuery.trim() || !phoneQuery.trim()) {
+      setErrorMessage("Veuillez renseigner le numéro de commande et votre numéro de téléphone.")
+      return
+    }
 
     setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-      setSearched(true)
-      const cleanNum = orderQuery.trim().toUpperCase()
-      setOrderResult({
-        orderNumber: cleanNum.startsWith("CMD-") ? cleanNum : `CMD-${cleanNum}`,
-        date: "27 Août 2026",
-        estimatedDelivery: "Sous 24h à 48h ouvrées",
-        status: "shipped",
-        customerName: "Client ProExcel",
-        city: "Casablanca, Maroc",
-        itemsCount: 3,
-        totalAmount: "349 DH",
-        paymentMethod: "Paiement en espèces à la livraison",
+    setErrorMessage(null)
+    setOrderResult(null)
+
+    try {
+      const res = await fetch("/api/orders/track", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderNumber: orderQuery.trim(),
+          phone: phoneQuery.trim(),
+        }),
       })
-    }, 600)
+
+      const data = await res.json()
+
+      if (!res.ok || !data.success) {
+        setErrorMessage(
+          data.error ||
+            "Commande introuvable. Veuillez vérifier votre numéro de commande et votre numéro de téléphone."
+        )
+      } else {
+        const ord = data.order
+        const formattedDate = new Date(ord.createdAt).toLocaleDateString("fr-MA", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        })
+
+        setOrderResult({
+          orderNumber: ord.orderNumber,
+          date: formattedDate,
+          status: ord.status,
+          itemsCount: (ord.items || []).reduce(
+            (sum: number, i: { quantity: number }) => sum + i.quantity,
+            0
+          ),
+          totalAmount: `${ord.total} DH`,
+          items: ord.items || [],
+          history: ord.history || [],
+        })
+      }
+    } catch {
+      setErrorMessage(
+        "Une erreur est survenue lors de la recherche. Veuillez vérifier votre connexion."
+      )
+    } finally {
+      setLoading(false)
+    }
   }
+
+  // Calculate dynamic progression steps based on real order status
+  const currentStatus = orderResult?.status || "pending"
+  const isCancelled = currentStatus === "cancelled"
+
+  const statusRank: Record<string, number> = {
+    pending: 1,
+    confirmed: 2,
+    processing: 3,
+    shipped: 4,
+    delivered: 5,
+  }
+  const currentRank = statusRank[currentStatus] ?? 1
 
   const steps = [
     {
-      id: "confirmed",
-      label: "Commande confirmée",
-      desc: "Commande enregistrée et validée par notre équipe",
-      icon: CheckCircle2,
-      active: true,
-      completed: true,
+      id: "pending",
+      label: "Commande reçue",
+      desc: "Commande enregistrée sur notre plateforme",
+      icon: Clock,
+      active: currentRank >= 1 && !isCancelled,
+      completed: currentRank > 1 && !isCancelled,
     },
     {
-      id: "preparing",
+      id: "confirmed",
+      label: "Commande confirmée",
+      desc: "Validée par notre équipe logistique",
+      icon: CheckCircle2,
+      active: currentRank >= 2 && !isCancelled,
+      completed: currentRank > 2 && !isCancelled,
+    },
+    {
+      id: "processing",
       label: "En préparation",
-      desc: "Colis soigneusement emballé dans notre entrepôt",
+      desc: "Colis emballé et prêt à l'expédition",
       icon: Package,
-      active: true,
-      completed: true,
+      active: currentRank >= 3 && !isCancelled,
+      completed: currentRank > 3 && !isCancelled,
     },
     {
       id: "shipped",
       label: "En cours d'acheminement",
       desc: "Pris en charge par notre transporteur express",
       icon: Truck,
-      active: true,
-      completed: false,
+      active: currentRank >= 4 && !isCancelled,
+      completed: currentRank > 4 && !isCancelled,
     },
     {
       id: "delivered",
-      label: "Livré & Encaissé",
+      label: "Livrée & Encaissée",
       desc: "Remise en main propre contre règlement",
       icon: MapPin,
-      active: false,
-      completed: false,
+      active: currentRank >= 5 && !isCancelled,
+      completed: currentRank >= 5 && !isCancelled,
     },
   ]
 
@@ -111,7 +165,7 @@ export function TrackOrderClient() {
             Suivre l&apos;état de ma commande
           </h1>
           <p className="text-sm sm:text-base text-[var(--color-text-secondary)] mt-2 max-w-xl mx-auto">
-            Renseignez votre numéro de commande reçu par SMS / Email pour connaître l&apos;état d&apos;acheminement de votre colis.
+            Renseignez votre numéro de commande et votre numéro de téléphone pour connaître l&apos;état d&apos;acheminement de votre colis.
           </p>
         </div>
 
@@ -129,22 +183,23 @@ export function TrackOrderClient() {
                   required
                   value={orderQuery}
                   onChange={(e) => setOrderQuery(e.target.value)}
-                  placeholder="Ex: CMD-1049 ou 1049"
+                  placeholder="Ex: CMD-20260827-XXXXXX"
                   className="h-12 px-4 rounded-xl border border-slate-300 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/10 font-mono uppercase"
                 />
               </div>
 
               <div className="flex flex-col gap-1.5">
                 <label htmlFor="order-phone" className="text-xs font-bold text-slate-700">
-                  Numéro de téléphone ou Email
+                  Numéro de téléphone <span className="text-[var(--color-primary)]">*</span>
                 </label>
                 <input
                   id="order-phone"
-                  type="text"
+                  type="tel"
+                  required
                   value={phoneQuery}
                   onChange={(e) => setPhoneQuery(e.target.value)}
                   placeholder="06 XX XX XX XX"
-                  className="h-12 px-4 rounded-xl border border-slate-300 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/10"
+                  className="h-12 px-4 rounded-xl border border-slate-300 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/10 font-mono"
                 />
               </div>
             </div>
@@ -152,7 +207,7 @@ export function TrackOrderClient() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full h-12 rounded-xl bg-[var(--color-primary)] text-white font-bold text-xs sm:text-sm uppercase tracking-wider hover:bg-[var(--color-primary-dark)] active:scale-[0.98] disabled:opacity-50 transition-all duration-200 shadow-md flex items-center justify-center gap-2"
+              className="w-full h-12 rounded-xl bg-[var(--color-primary)] text-white font-bold text-xs sm:text-sm uppercase tracking-wider hover:bg-[var(--color-primary-dark)] active:scale-[0.98] disabled:opacity-50 transition-all duration-200 shadow-md flex items-center justify-center gap-2 cursor-pointer"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -164,11 +219,18 @@ export function TrackOrderClient() {
               )}
             </button>
           </form>
+
+          {errorMessage && (
+            <div className="mt-4 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-2.5">
+              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+              <p className="font-medium">{errorMessage}</p>
+            </div>
+          )}
         </div>
 
         {/* ── Tracking Result Timeline ── */}
         <AnimatePresence>
-          {searched && orderResult && (
+          {orderResult && (
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
@@ -177,14 +239,21 @@ export function TrackOrderClient() {
               {/* Top order summary header */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 mb-8 border-b border-slate-100">
                 <div>
-                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-md mb-2 inline-block">
-                    En cours de livraison
-                  </span>
+                  {isCancelled ? (
+                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-rose-700 bg-rose-50 px-2.5 py-1 rounded-md mb-2 inline-flex items-center gap-1">
+                      <XCircle className="w-3.5 h-3.5" />
+                      Commande annulée
+                    </span>
+                  ) : (
+                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-md mb-2 inline-block">
+                      Suivi actif
+                    </span>
+                  )}
                   <h2 className="font-display font-bold text-xl sm:text-2xl text-slate-900">
-                    Commande {orderResult.orderNumber}
+                    Commande #{orderResult.orderNumber}
                   </h2>
                   <p className="text-xs text-slate-500 mt-1">
-                    Date de commande : {orderResult.date} • {orderResult.city}
+                    Date : {orderResult.date} • {orderResult.itemsCount} article{orderResult.itemsCount > 1 ? "s" : ""}
                   </p>
                 </div>
 
@@ -197,49 +266,78 @@ export function TrackOrderClient() {
                 </div>
               </div>
 
-              {/* Step Progression Timeline */}
-              <div className="relative pl-6 sm:pl-8 border-l-2 border-slate-200 space-y-8 my-8 ml-3 sm:ml-4">
-                {steps.map((step, idx) => {
-                  const Icon = step.icon
-                  return (
-                    <div key={step.id} className="relative">
-                      {/* Step Indicator Dot */}
-                      <div
-                        className={cn(
-                          "absolute -left-[31px] sm:-left-[39px] top-0 w-8 h-8 rounded-full flex items-center justify-center text-white border-2 border-white shadow-xs transition-colors",
-                          step.completed
-                            ? "bg-emerald-500"
-                            : step.active
-                            ? "bg-[var(--color-primary)] ring-4 ring-[var(--color-primary)]/15"
-                            : "bg-slate-200 text-slate-400"
-                        )}
-                      >
-                        <Icon className="w-4 h-4" strokeWidth={2} />
-                      </div>
+              {/* Items List */}
+              <div className="mb-8 p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                  Articles commandés
+                </h3>
+                <div className="divide-y divide-slate-200/60">
+                  {orderResult.items.map((it, idx) => (
+                    <div key={idx} className="py-2 flex items-center justify-between text-xs">
+                      <span className="font-semibold text-slate-800">{it.name}</span>
+                      <span className="text-slate-500 font-medium">Qté : {it.quantity}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
-                      <div>
-                        <h4
+              {/* Step Progression Timeline */}
+              {!isCancelled ? (
+                <div className="relative pl-6 sm:pl-8 border-l-2 border-slate-200 space-y-8 my-8 ml-3 sm:ml-4">
+                  {steps.map((step) => {
+                    const Icon = step.icon
+                    return (
+                      <div key={step.id} className="relative">
+                        {/* Step Indicator Dot */}
+                        <div
                           className={cn(
-                            "font-bold text-sm sm:text-base",
-                            step.active ? "text-slate-900" : "text-slate-400"
+                            "absolute -left-[31px] sm:-left-[39px] top-0 w-8 h-8 rounded-full flex items-center justify-center text-white border-2 border-white shadow-xs transition-colors",
+                            step.completed
+                              ? "bg-emerald-500"
+                              : step.active
+                              ? "bg-[var(--color-primary)] ring-4 ring-[var(--color-primary)]/15"
+                              : "bg-slate-200 text-slate-400"
                           )}
                         >
-                          {step.label}
-                        </h4>
-                        <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{step.desc}</p>
+                          <Icon className="w-4 h-4" strokeWidth={2} />
+                        </div>
+
+                        <div>
+                          <h4
+                            className={cn(
+                              "font-bold text-sm sm:text-base",
+                              step.active ? "text-slate-900" : "text-slate-400"
+                            )}
+                          >
+                            {step.label}
+                          </h4>
+                          <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{step.desc}</p>
+                        </div>
                       </div>
-                    </div>
-                  )
-                })}
-              </div>
+                    )
+                  })}
+                </div>
+              ) : (
+                <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-900 text-xs flex items-start gap-3 my-6">
+                  <XCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+                  <div>
+                    <strong className="block font-bold">Cette commande a été annulée.</strong>
+                    <p className="mt-0.5">
+                      Si vous pensez qu&apos;il s&apos;agit d&apos;une erreur ou souhaitez recommander, contactez notre équipe sur WhatsApp.
+                    </p>
+                  </div>
+                </div>
+              )}
 
               {/* Delivery notice */}
-              <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200 text-amber-900 text-xs flex items-start gap-3 mt-6">
-                <Clock className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                <p>
-                  <strong>Délai estimé :</strong> Votre colis sera livré d&apos;ici demain. Le livreur vous passera un appel téléphonique avant de se présenter à votre adresse.
-                </p>
-              </div>
+              {!isCancelled && (
+                <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200 text-amber-900 text-xs flex items-start gap-3 mt-6">
+                  <Clock className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                  <p>
+                    <strong>Délai estimé :</strong> Votre colis sera livré sous 24h à 48h ouvrées. Le livreur vous passera un appel téléphonique avant de se présenter à votre adresse.
+                  </p>
+                </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>

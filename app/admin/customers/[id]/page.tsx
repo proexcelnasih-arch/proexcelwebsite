@@ -1,68 +1,40 @@
-"use client"
-
-import { useState, useEffect } from "react"
-import { useParams } from "next/navigation"
 import Link from "next/link"
+import { notFound } from "next/navigation"
 import {
   ArrowLeft,
   User,
   Phone,
   Mail,
   MapPin,
-  Calendar,
-  CreditCard,
-  ShoppingBag,
   Eye,
 } from "lucide-react"
 import { StatusBadge } from "@/components/admin/StatusBadge"
-import { createClient } from "@/lib/supabase/client"
-import type { Database } from "@/types/database"
+import { getAdminCustomer } from "@/lib/admin/admin-queries"
 
-type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"] & {
-  addresses?: Database["public"]["Tables"]["addresses"]["Row"][]
-  orders?: Database["public"]["Tables"]["orders"]["Row"][]
-}
-
-export default function CustomerDetailPage() {
-  const params = useParams()
-  const customerId = params.id as string
-  const [customer, setCustomer] = useState<ProfileRow | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    async function loadCustomer() {
-      if (!customerId) return
-      setIsLoading(true)
-      try {
-        const supabase = createClient()
-        const { data } = await supabase
-          .from("profiles")
-          .select("*, addresses(*), orders(*)")
-          .eq("id", customerId)
-          .maybeSingle()
-
-        if (data) setCustomer(data as any)
-      } catch (err) {
-        console.warn("[customer-detail] Error loading customer:", err)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-    loadCustomer()
-  }, [customerId])
-
-  if (isLoading) {
-    return (
-      <div className="p-12 flex justify-center items-center">
-        <div className="w-8 h-8 rounded-full border-2 border-[var(--color-primary)] border-t-transparent animate-spin" />
-      </div>
-    )
+// Server Component fetching via createAdminClient() (BUG-04: fixes client RLS blocking)
+export default async function CustomerDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id: customerId } = await params
+  if (!customerId) {
+    notFound()
   }
+
+  const customer = await getAdminCustomer(customerId)
 
   if (!customer) {
     return (
       <div className="p-8 text-center text-slate-500">
-        Client introuvable.
+        <p className="mb-4">Client introuvable.</p>
+        <Link
+          href="/admin/customers"
+          className="inline-flex items-center gap-2 text-xs font-bold text-[#8C1A2B] hover:underline"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Retour aux clients
+        </Link>
       </div>
     )
   }
@@ -70,7 +42,7 @@ export default function CustomerDetailPage() {
   const orders = customer.orders || []
   const totalSpent = orders.reduce((sum, ord) => sum + (Number(ord.total) || 0), 0)
   const avgBasket = orders.length > 0 ? Math.round(totalSpent / orders.length) : 0
-  const primaryAddress = customer.addresses?.[0] || (orders[0]?.shipping_address as any)
+  const primaryAddress = customer.addresses?.[0]
 
   return (
     <div className="space-y-6">
@@ -135,7 +107,7 @@ export default function CustomerDetailPage() {
             <div className="flex items-center gap-2.5">
               <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
               <span className="text-slate-700 font-medium">
-                {primaryAddress ? `${primaryAddress.address_line || primaryAddress.address || ""}, ${primaryAddress.city || ""}` : "Adresse de livraison non enregistrée"}
+                {primaryAddress ? `${primaryAddress.address_line || ""}, ${primaryAddress.city || ""}` : "Adresse de livraison non enregistrée"}
               </span>
             </div>
           </div>

@@ -63,8 +63,6 @@ export const ADMIN_NAVIGATION: AdminNavGroup[] = [
     icon: Layers,
     items: [
       { title: "All Categories", href: "/admin/categories" },
-      { title: "Add Category", href: "/admin/categories/new" },
-      { title: "Subcategories", href: "/admin/categories?tab=subcategories" },
     ],
   },
   {
@@ -113,7 +111,6 @@ export const ADMIN_NAVIGATION: AdminNavGroup[] = [
     items: [
       { title: "Store Settings", href: "/admin/settings/store" },
       { title: "Delivery", href: "/admin/settings/delivery" },
-      { title: "Order Settings", href: "/admin/settings/orders" },
       { title: "Social Links", href: "/admin/settings/social" },
     ],
   },

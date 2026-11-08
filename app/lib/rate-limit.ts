@@ -100,6 +100,16 @@ export const rateLimiters = {
         analytics: true,
       })
     : null,
+
+  // 7. Order Tracking lookup: 5 attempts per minute per IP (prevents enumeration)
+  orderTrack: redis
+    ? new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(5, "1 m"),
+        prefix: "rl:order-track",
+        analytics: true,
+      })
+    : null,
 }
 
 const LIMIT_CONFIGS: Record<keyof typeof rateLimiters, { limit: number; windowMs: number }> = {
@@ -109,32 +119,57 @@ const LIMIT_CONFIGS: Record<keyof typeof rateLimiters, { limit: number; windowMs
   couponValidate: { limit: 15, windowMs: 60 * 1000 },
   newsletter: { limit: 5, windowMs: 10 * 60 * 1000 },
   register: { limit: 10, windowMs: 15 * 60 * 1000 },
+  orderTrack: { limit: 5, windowMs: 60 * 1000 },
 }
 
 /**
- * Extracts a client IP from NextRequest
+ * Extracts a trusted client IP from NextRequest (SEC-07).
+ * Prevents spoofing via arbitrary X-Forwarded-For by prioritizing verified platform headers:
+ * 1. x-vercel-forwarded-for (Vercel Edge verified)
+ * 2. cf-connecting-ip (Cloudflare Edge verified)
+ * 3. x-real-ip (Trusted reverse proxy)
+ * Falls back to "unknown-ip" (subject to strict shared bucket).
  */
 export function getClientIp(req: NextRequest): string {
-  const forwardedFor = req.headers.get("x-forwarded-for")
-  if (forwardedFor) {
-    return forwardedFor.split(",")[0].trim()
+  // 1. Vercel Edge verified header
+  const vercelIp = req.headers.get("x-vercel-forwarded-for")
+  if (vercelIp) {
+    return vercelIp.split(",")[0].trim()
   }
+
+  // 2. Cloudflare Edge verified header
+  const cfIp = req.headers.get("cf-connecting-ip")
+  if (cfIp) {
+    return cfIp.trim()
+  }
+
+  // 3. Standard Reverse Proxy Real IP
   const realIp = req.headers.get("x-real-ip")
-  if (realIp) return realIp.trim()
-  return "127.0.0.1"
+  if (realIp) {
+    return realIp.trim()
+  }
+
+  // 4. Do NOT trust raw client-supplied x-forwarded-for leftmost value.
+  // Fall back to a shared "unknown-ip" bucket with stricter limits.
+  return "unknown-ip"
 }
 
 /**
- * Checks rate limit for a specific route/action
+ * Checks rate limit for a specific route/action.
+ * Falls back to local memory store if Upstash Redis is unreachable or unconfigured.
  */
 export async function checkRateLimit(
   type: keyof typeof rateLimiters,
   identifier: string
 ): Promise<{ success: boolean; limit: number; remaining: number; reset: number }> {
+  // If IP could not be verified from platform headers, enforce a strict shared bucket
+  const isUnknown = identifier === "unknown-ip"
+  const effectiveIdentifier = isUnknown ? `unknown_pool:${type}` : identifier
+
   const limiter = rateLimiters[type]
-  if (limiter && isRedisConfigured) {
+  if (limiter && isRedisConfigured && !isUnknown) {
     try {
-      const result = await limiter.limit(identifier)
+      const result = await limiter.limit(effectiveIdentifier)
       return {
         success: result.success,
         limit: result.limit,
@@ -146,7 +181,9 @@ export async function checkRateLimit(
     }
   }
 
-  // Fallback to local memory limiter
+  // Fallback to local memory limiter with stricter limit for unknown IPs
   const config = LIMIT_CONFIGS[type]
-  return memoryStore.limit(`${type}:${identifier}`, config.limit, config.windowMs)
+  const effectiveLimit = isUnknown ? Math.max(2, Math.floor(config.limit / 2)) : config.limit
+
+  return memoryStore.limit(`${type}:${effectiveIdentifier}`, effectiveLimit, config.windowMs)
 }

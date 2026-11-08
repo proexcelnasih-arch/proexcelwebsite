@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
-import { createClient, createAdminClient } from "@/lib/supabase/server"
+import { requireAdmin } from "@/lib/auth/admin-guard"
+import { checkRateLimit } from "@/lib/rate-limit"
 import { revalidatePath } from "next/cache"
 
 /**
@@ -12,22 +13,16 @@ import { revalidatePath } from "next/cache"
 export async function POST(request: NextRequest) {
   try {
     // ── 1. Verify caller is an authenticated admin ─────────────
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const adminAuth = await requireAdmin(request)
+    if (adminAuth.errorResponse) return adminAuth.errorResponse
 
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
-
-    const adminDb = await createAdminClient()
-    const { data: profile } = await adminDb
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .maybeSingle()
-
-    if (!profile || profile.role !== "admin") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+    // Rate limit authenticated admin actions
+    const rateCheck = await checkRateLimit("adminApi", adminAuth.user.id)
+    if (!rateCheck.success) {
+      return NextResponse.json(
+        { error: "Limite de requêtes atteinte. Veuillez patienter." },
+        { status: 429 }
+      )
     }
 
     // ── 2. Parse and validate body ─────────────────────────────
@@ -38,8 +33,8 @@ export async function POST(request: NextRequest) {
       body = {}
     }
 
-    const path = body.path ?? "/"
-    const type = body.type ?? "page"
+    const path = typeof body.path === "string" ? body.path : "/"
+    const type = body.type === "layout" ? "layout" : "page"
 
     // ── 3. Revalidate ──────────────────────────────────────────
     revalidatePath(path, type)
@@ -52,6 +47,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ revalidated: true, path, type })
   } catch (err) {
     console.error("[api/admin/revalidate] Error:", err)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    return NextResponse.json({ error: "Une erreur est survenue lors de la révalidation." }, { status: 500 })
   }
 }

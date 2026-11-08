@@ -13,6 +13,12 @@ export default async function StorefrontLayout({
 }) {
   const storeSettings = await getStoreSettings()
   const logoUrl = storeSettings?.logo_url ?? null
+  const socialLinks =
+    storeSettings?.social_links &&
+    typeof storeSettings.social_links === "object" &&
+    !Array.isArray(storeSettings.social_links)
+      ? (storeSettings.social_links as Record<string, string>)
+      : null
 
   return (
     <div className="flex flex-col min-h-screen bg-[var(--color-background)]">
@@ -32,7 +38,7 @@ export default async function StorefrontLayout({
       {/* Global Floating Chat */}
       <FloatingChatButton
         whatsappNumber={
-          storeSettings?.social_links?.whatsapp || storeSettings?.contact_phone
+          socialLinks?.whatsapp || storeSettings?.contact_phone
         }
       />
     </div>
